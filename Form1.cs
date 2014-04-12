@@ -19,242 +19,6 @@ namespace ShaderIDE
 {
     public partial class Form1 : Form
     {
-        #region Vestigial Fields
-        /* public struct SToken
-        {
-            public string Text;
-            public FontStyle Style;
-            public Color FontColor;
-            public int OriginalTextOffset;
-        }*/
-        /*
-        public Color DelColor = Color.Gray;
-        public Color ResColor = Color.Orange;
-        public Color TypColor = Color.Yellow;
-        public Color FunColor = Color.Lime;
-        public Color TxtColor = Color.White;
-        public Color NumColor = Color.RoyalBlue;
-        public Color ComColor = Color.DrarkGreen;
-        */
-        /*
-        private readonly char[] _delimiterTokens =
-        {
-            '\t', '\r', '\n', ' ', ',', ';', '/', '+', '-', '*', '(', ')', '{', '}', '=', '<', '>'
-        };*/
-        /*
-        private readonly string[] _reservedTokens =
-        {
-            "#version", "uniform", "layout", "in", "out", "location", "void", "for", "else", "if", "main",
-            "smooth", "varying", "const", "flat​", "noperspective​"
-        };*/
-        /*
-        private readonly string[] _typesTokens =
-        {
-            "bool", "int", "float", "vec2", "vec3", "vec4", "mat3", "mat4"
-        };*/
-        /*
-        private readonly string[] _functionTokens =
-        {
-            "gl_Position", "min", "max", "dot", "normalize", "clamp", "mix"
-        };*/
-        //    public int LastSelection;
-
-        #endregion
-
-        #region Vestigial Methods
-        /*
-        public int FindFirst(char[] list, char target)
-        {
-            for (var i = 0; i < list.Length; i++)
-            {
-                if (list[i] == target)
-                {
-                    return i;
-                }
-            }
-            return -1;
-        }*/
-        /*
-        public Color GetTokenColor(string s)
-        {
-            if (functionTokens.Contains(s)) return FunColor;
-            if (reservedTokens.Contains(s)) return ResColor;
-            if (IsNum(s)) return NumColor;
-            if (typesTokens.Contains(s)) return TypColor;
-            return TxtColor;
-        }*/
-        /*
-        public FontStyle GetTokenStyle(string s)
-        {
-            if (_functionTokens.Contains(s)) return FontStyle.Italic;
-            if (_reservedTokens.Contains(s)) return FontStyle.Bold;
-            return FontStyle.Regular;
-        }*/
-        /*
-        public SFontColor GetTokenFont(string s)
-        {
-            foreach (var d in s)
-            {
-                
-            }
-            if (_reservedTokens.Contains(s)) return ResFont;
-            if (_typesTokens.Contains(s)) return TypFont;
-            if (_functionTokens.Contains(s)) return FunFont;
-
-            if (IsNum(s)) return NumbersFont;
-            return DefaultTextFont;
-        }*/
-
-        /*
-         public List<SToken> Tokenize(string line)
-        {
-            var result = new List<SToken>();
-            var linePointer = 0;
-            for (var i = 0; i < line.Length; i++)
-            {
-                // 0123456789012345678901234567890
-                // vec4 buf_specular, buf_normal;
-                if (delimiterTokens.Contains(line[i]))
-                {
-                    if (linePointer != i)
-                    {
-                        var currentText = line.Substring(linePointer, i - linePointer);
-                        result.Add(new SToken
-                        {
-                            Text = currentText,
-                            FontColor = GetTokenColor(currentText),
-                            Style = GetTokenStyle(currentText),
-                            OriginalTextOffset = linePointer
-                        });
-                }
-
-                result.Add(new SToken
-                    {
-                        Text = line[i].ToString(),
-                        FontColor = DelColor,
-                        Style = FontStyle.Bold,
-                        OriginalTextOffset = i
-                    });
-                    linePointer = i+1;
-                }
-
-            }               
-            if (linePointer < line.Length) result.Add(new SToken
-                {
-                    Text = line.Substring(linePointer, line.Length - linePointer),
-                    FontColor = GetTokenColor(line.Substring(linePointer, line.Length - linePointer)),
-                    Style = GetTokenStyle(line.Substring(linePointer, line.Length - linePointer))
-                });
-            return result;
-        }
-         * */
-        //private void Panel1_MouseWheel(object sender, MouseEventArgs e)
-        //{
-        //    label1.Refresh();
-        // }
-        /*
-       private Size Measure(IDeviceContext g, string s)
-       {
-           return TextRenderer.MeasureText(g, s, label1.Font, label1.ClientSize, TextFormatFlags.NoPadding | TextFormatFlags.ExpandTabs);   
-       }*/
-
-        /*    private Point GetOffsetFromCharIndex(IDeviceContext g, int index)
-            {
-                var startLine = textBox1.GetLineFromCharIndex(index);
-
-                var startLinePosition = textBox1.GetFirstCharIndexFromLine(startLine);
-
-                var result = new Point(0, Measure(g, textBox1.Text.Substring(0, (startLinePosition ==0) ? 1 : startLinePosition)).Height-23);
-
-                if (startLinePosition != index)
-                {
-                    result.X = Measure(g, textBox1.Lines[startLine].Substring(0, index - startLinePosition)).Width;
-                }
-                return result;
-            }*/
-        /* private void label1_Paint(object sender, PaintEventArgs e)
- {
-    if (TokenList.Count > 0)
-     {
-         //get top-left char offset
-         var topLeftPosition = GetOffsetFromCharIndex(e.Graphics, textBox1.GetCharIndexFromPosition(new Point(1, 1)));
-         Text = topLeftPosition.ToString() +" "+ textBox1.GetCharIndexFromPosition(new Point(1, 1));
-         var textPosition = new Point(-topLeftPosition.X, -topLeftPosition.Y);
-
-         //left margin
-         textPosition.X += 5;
-
-         //save for subsequent lines
-         var startOffset = textPosition.X;
-
-         for (var i = 0; i < TokenList.Count; i++)
-         {
-             var curFont = new Font(label1.Font, TokenList[i].Style);
-             var tokenSize = Measure(e.Graphics, TokenList[i].Text);
-             if (TokenList[i].Text == "\n")
-             {
-                 textPosition.X = startOffset;
-                 textPosition.Y += tokenSize.Height / 2; // 1 height for text + 1 height for line break
-             }
-             else if ((TokenList[i].Text != "\r") & (TokenList[i].Text != ""))
-             {
-                 TextRenderer.DrawText(e.Graphics, TokenList[i].Text, curFont, new Rectangle(textPosition, tokenSize), TokenList[i].FontColor, TextFormatFlags.NoPadding | TextFormatFlags.ExpandTabs);
-                 textPosition.X += tokenSize.Width;
-             }
-         }
-
-         if (textBox1.SelectionLength > 0)
-         {
-             var brush = new SolidBrush(Color.FromArgb(128, 255, 255, 255));
-             var SelStartLine = textBox1.GetLineFromCharIndex(textBox1.SelectionStart);
-             var SelStopLine = textBox1.GetLineFromCharIndex(textBox1.SelectionStart + textBox1.SelectionLength);
-
-             if (SelStartLine == SelStopLine)
-             {   //single line selection
-                 textPosition = GetOffsetFromCharIndex(e.Graphics, textBox1.SelectionStart);
-                 textPosition.X -= topLeftPosition.X - 5;
-                 textPosition.Y -= topLeftPosition.Y;
-                 e.Graphics.FillRectangle(brush, new Rectangle(textPosition, Measure(e.Graphics, textBox1.SelectedText)));
-             }
-             else
-             {
-                 //start of multiline selection
-                        
-                 textPosition = GetOffsetFromCharIndex(e.Graphics, textBox1.SelectionStart);
-                 textPosition.X -= topLeftPosition.X - 5;
-                 textPosition.Y -= topLeftPosition.Y;
-                 var SelStartLineLength =  textBox1.SelectionStart - textBox1.GetFirstCharIndexFromLine(SelStartLine);
-                 e.Graphics.FillRectangle(brush, new Rectangle(textPosition, Measure(e.Graphics, textBox1.Lines[SelStartLine].Substring(SelStartLineLength))));
-                        
-                 //full lines between selections
-                 for (var i = SelStartLine+1; i < SelStopLine; i++)
-                 {
-                     textPosition = GetOffsetFromCharIndex(e.Graphics, textBox1.GetFirstCharIndexFromLine(i));
-                     textPosition.X -= topLeftPosition.X - 5;
-                     textPosition.Y -= topLeftPosition.Y;
-                     e.Graphics.FillRectangle(brush, new Rectangle(textPosition, Measure(e.Graphics, textBox1.Lines[i])));
-                 }
-               
-                 //end of multiline selection
-                 textPosition = GetOffsetFromCharIndex(e.Graphics, textBox1.GetFirstCharIndexFromLine(SelStopLine));
-                 textPosition.X -= topLeftPosition.X - 5;
-                 textPosition.Y -= topLeftPosition.Y;
-                 var SelStopLineLength = textBox1.SelectionStart + textBox1.SelectionLength - textBox1.GetFirstCharIndexFromLine(SelStopLine);
-                 var LastLine = (SelStopLineLength != textBox1.Lines[SelStopLine].Length)
-                     ? textBox1.Lines[SelStopLine].Remove(SelStopLineLength)
-                     : textBox1.Lines[SelStopLine];
-                     e.Graphics.FillRectangle(brush, new Rectangle(textPosition, Measure(e.Graphics, LastLine)));
-             }
-         }
-
-         textPosition = GetOffsetFromCharIndex(e.Graphics, textBox1.SelectionStart + textBox1.SelectionLength);
-         textPosition.X -= topLeftPosition.X - 5;
-         textPosition.Y -= topLeftPosition.Y;
-         e.Graphics.DrawLine(new Pen(Color.White), textPosition.X, textPosition.Y, textPosition.X, textPosition.Y + 23);
-     }
- }*/
-        #endregion
-        
         #region Debug Fields
         public Stopwatch DebugStopwatch = new Stopwatch();
         private Int64 _totalTokenize, _totalCheckChanges, _totalApplyColors;
@@ -319,7 +83,8 @@ namespace ShaderIDE
         public SWord[] Words;
         public SSpan[] Spans;
         #endregion
-        
+
+        #region Properties
         public Point BoxOriginPoint; // RichEditBox client area point
         public bool InParser;
 
@@ -329,8 +94,9 @@ namespace ShaderIDE
             DelFont, OpeFont,   //delimiters fonts
             ResFont, TypFont, FunFont,  //words fonts
             ComFont, StrFont;   // spans fonts
+        #endregion
 
-
+        #region Parsing / Tokens
         public bool IsValue(string s)
         {
             double doubleBuffer;
@@ -356,8 +122,8 @@ namespace ShaderIDE
             }
             return DefaultTextFont;
         }
-
-        public List<SToken> Pre_Tokenize(string[] lines)
+        
+        public List<SToken> Parse_Lines(string[] lines)
         {
             var textOffset = 0;
             var result = new List<SToken>();
@@ -427,7 +193,9 @@ namespace ShaderIDE
             });
             return result;
         }
+        #endregion
 
+        #region GUI
         public Form1()
         {
             InitializeComponent();
@@ -454,7 +222,7 @@ namespace ShaderIDE
                 Tokens = new[] { '/', '+', '-', '*', '=', '<', '>', '!' },
                 Style = new SFontColor
                 {
-                    StyleColor = Color.Red,
+                    StyleColor = Color.DarkTurquoise,
                     StyleFont = new Font(richTextBox1.Font, FontStyle.Bold)
                 }}
             };
@@ -493,18 +261,21 @@ namespace ShaderIDE
                 new SSpan
                 {StartDelimiter = "\"", StopDelimiter = "\"", EscapeChar = '\\', Style = StrFont}
             };
-        }
+        }        
+        
+        private void richTextBox1_Resize(object sender, EventArgs e)
+        {
+            BoxOriginPoint = new Point(richTextBox1.ClientSize) { Y = 1 };
+        }   
 
         private void button1_Click(object sender, EventArgs e) // Force Parsing
         {
-
-         //   TokenList = Pre_Tokenize(textBox1.Lines);
-          //  label1.Refresh();
             LastTokenList = new List<SToken>();
             InParser = false;
             timer1_Tick(sender, e);
         }
 
+        #region Font and Styles Selections
         private void button2_Click(object sender, EventArgs e)
         {
             colorDialog1.Color = DefaultTextFont.StyleColor;
@@ -565,31 +336,14 @@ namespace ShaderIDE
             }
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
+        private void richTextBox1_FontChanged(object sender, EventArgs e)
         {
-            TokenList = Pre_Tokenize(textBox1.Lines);
-            label1.Refresh();
+            DefaultTextFont.StyleColor = richTextBox1.ForeColor;
+            DefaultTextFont.StyleFont = richTextBox1.Font;
         }
+        #endregion
 
-        private void textBox1_KeyDown(object sender, KeyEventArgs e)
-        {
-            label1.Refresh();
-        }
-
-        private void textBox1_MouseDown(object sender, MouseEventArgs e)
-        {
-            label1.Refresh();
-        }
-
-        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            label1.Refresh();
-        }
-
-        private void textBox1_MouseUp(object sender, MouseEventArgs e)
-        {
-            label1.Refresh();
-        }
+    
 
         private bool[] CheckForChanges()
         {
@@ -654,8 +408,7 @@ namespace ShaderIDE
             LastTokenList = new List<SToken>(TokenList);
             return result;
         }
-
-
+        
         private void timer1_Tick(object sender, EventArgs e)
         {
             if (!InParser)
@@ -667,9 +420,9 @@ namespace ShaderIDE
                 _totalCheckChanges = 0;
                 _totalTokenize = 0;
                 var totalUpdated = 0;
-                DebugStopwatch.Start();
+                DebugStopwatch.Restart();
 
-                    TokenList = Pre_Tokenize(richTextBox1.Lines);
+                    TokenList = Parse_Lines(richTextBox1.Lines);
                     _totalTokenize += DebugStopwatch.Elapsed.Ticks;
                     DebugStopwatch.Restart();
 
@@ -718,16 +471,6 @@ namespace ShaderIDE
 
                 }
         }
-
-        private void richTextBox1_FontChanged(object sender, EventArgs e)
-        {
-            DefaultTextFont.StyleColor = richTextBox1.ForeColor;
-            DefaultTextFont.StyleFont = richTextBox1.Font;
-        }
-
-        private void richTextBox1_Resize(object sender, EventArgs e)
-        {
-            BoxOriginPoint = new Point(richTextBox1.ClientSize) { Y = 1 };
-        }
     }
+    #endregion
 }
