@@ -124,14 +124,10 @@ namespace ShaderIDE
 
             foreach (var line in lines)
             {
-                if (Spans.Any(currentSpan => line.Contains(currentSpan.StartDelimiter)))
-                {
-                    result.AddRange(TokenizeLinePerSpan(line, textOffset));
-                }
-                else
-                {
-                    result.AddRange(TokenizeLinePerDelimiter(line, textOffset));
-                }
+                result.AddRange(Spans.Any(currentSpan => line.Contains(currentSpan.StartDelimiter))
+                    ? TokenizeLinePerSpan(line, textOffset)
+                    : TokenizeLinePerDelimiter(line, textOffset));
+
                 textOffset += line.Length + 1;// implicit "\n",  +1 for "\r"
             }
             return result;
@@ -173,15 +169,25 @@ namespace ShaderIDE
                         // Reduce line to current start of span
                         line = line.Substring(spanStartIndices[firstSpanType]);
                     }
+
                     // Find end of current Span
-                    var spanEndIndex = line.IndexOf(Spans[firstSpanType].StopDelimiter,
-                        Spans[firstSpanType].StartDelimiter.Length, StringComparison.Ordinal);
+                    var spanEndIndex = line.IndexOf(Spans[firstSpanType].StopDelimiter, Spans[firstSpanType].StartDelimiter.Length, StringComparison.Ordinal);
                     if (spanEndIndex == -1) spanEndIndex = line.Length;
-                    else
+
+                    // Skip Escape Char
+                    while ((spanEndIndex < line.Length) & (line[spanEndIndex - 1] == Spans[firstSpanType].EscapeChar))
+                    {
+                        spanEndIndex = line.IndexOf(Spans[firstSpanType].StopDelimiter, spanEndIndex + 1, StringComparison.Ordinal);
+                        if (spanEndIndex == -1) spanEndIndex = line.Length;
+                    }
+
+                    // Include Stop Delimiter
+                    if (spanEndIndex < line.Length)
                     {
                         spanEndIndex += Spans[firstSpanType].StopDelimiter.Length;
                         if (spanEndIndex > line.Length) spanEndIndex = line.Length;
                     }
+
                     // Create Token for current Span
                     result.Add(new SToken
                     {
@@ -189,6 +195,7 @@ namespace ShaderIDE
                         Text = line.SafeRemove(spanEndIndex),
                         Style = Spans[firstSpanType].Style
                     });
+
                     // Increase Line Pointer to next char
                     line = line.Substring(spanEndIndex);
                     lineOffset += spanEndIndex;
@@ -516,8 +523,6 @@ namespace ShaderIDE
 
                 _totalApplyColors += DebugStopwatch.Elapsed.Ticks;//Debug
                 DebugStopwatch.Restart();//Debug
-
-
 
                 DebugStopwatch.Stop();//debug
                 Debug.WriteLine("Tokenize: " + (1000 * _totalTokenize / (float)Stopwatch.Frequency).ToString("F6") + "ms");//debug
