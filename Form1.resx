@@ -120,4 +120,12 @@
   <metadata name="colorDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
+  <data name="richTextBox1.Text" xml:space="preserve">
+    <value>uniform int light_qty;
+//Full line Comment Span
+out = "String Span"
+string = "String Span" + "other String Span"; //Comment
+uniform float test; //end of line Comment Span
+gl_Position = max(0.0, 1.0); //TODO Todo Span</value>
+  </data>
 </root>

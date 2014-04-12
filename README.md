@@ -10,7 +10,7 @@ Current work-in-progress
 Next Steps
 -----------
 1. Dialogs for keywords and font customization.
-2. Saving and laoding of Themes
+2. Saving and loading of Themes
 2. Compiler linking and feedback.
 3. Actual IDE for GLSL shaders.
 4. Test IDE for PIC ASM.

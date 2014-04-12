@@ -137,85 +137,6 @@ namespace ShaderIDE
             return result;
         }
 
-
-            /*
-            var spanStartIndices = new int[Spans.Count()];
-            foreach (var line in lines)
-            {
-                for (var i = 0; i < line.Length; i++) // TODO convert to textOffset runner
-                {
-                    // Check for Spans StartDelimiters occurences
-
-                    // Get list of indexOf for each span StartDelimiters
-                    for (var j = 0; j < Spans.Count(); j++)
-                    {
-                        spanStartIndices[j] = line.IndexOf(Spans[j].StartDelimiter, StringComparison.Ordinal);
-                    }
-
-                    // Find the first one on the line
-                    var firstSpanStartIndex = line.Length;
-                    var firstSpanType = -1;
-                    for (var j = 0; j < spanStartIndices.Length; j++)
-                    {
-                        if ((spanStartIndices[j] >= 0) & (spanStartIndices[j] < firstSpanStartIndex))
-                        {
-                            firstSpanStartIndex = spanStartIndices[j];
-                            firstSpanType = j;
-                        }
-                    }
-
-                    // If an occurence was found
-                    if (firstSpanType > -1)
-                    {
-                        if (spanStartIndices[firstSpanType] > 0)
-                        {
-                            // Tokenize line up to first occurence
-                            result.AddRange(TokenizeLinePerDelimiter(line.Substring(0, spanStartIndices[firstSpanType]), textOffset));
-                            // Increase Line Pointer up to current position
-                            i = spanStartIndices[firstSpanType];
-                            textOffset += spanStartIndices[firstSpanType];
-                            line = line.Substring()
-                        }
-                        // Find end of current Span
-                        var spanEndIndex = line.IndexOf(Spans[firstSpanType].StopDelimiter, StringComparison.Ordinal);
-
-                        // Create Token for current Span
-
-                        // Increase Line Pointer to next char
-                    }
-                    else
-                    {// No span found in this line, tokenize complete line
-                        result.AddRange(TokenizeLinePerDelimiter(line, textOffset));
-                        i = line.Length; //exit line loop
-                    }
-                   
-
-                }
-            
-
-
-                /*
-                if (Spans.Any(currentSpan => line.Contains(currentSpan.StartDelimiter)))
-                {
-                    var commentStart = line.IndexOf("//", StringComparison.InvariantCulture);
-                    result.Add(new SToken
-                    {
-                        Offset = textOffset + commentStart,
-                        Style = ComFont,
-                        Text = line.Substring(commentStart, line.Length - commentStart)
-                    });
-                    result.AddRange(Tokenize(line.Substring(0, commentStart), textOffset));
-
-                }
-                else
-                {
-                    result.AddRange(Tokenize(line, textOffset));
-                }
-           }
- 
-*/
-
-
         public List<SToken> TokenizeLinePerSpan(string line, int offset)
         {
             var result = new List<SToken>();
@@ -231,7 +152,7 @@ namespace ShaderIDE
                 } 
                 // Find the first one on the line
                 var firstSpanStartIndex = line.Length;
-                var firstSpanType = 0;
+                var firstSpanType = -1;
                 for (var j = 0; j < spanStartIndices.Length; j++)
                 {
                     if ((spanStartIndices[j] >= 0) & (spanStartIndices[j] < firstSpanStartIndex))
@@ -240,28 +161,43 @@ namespace ShaderIDE
                         firstSpanType = j;
                     }
                 }
-                if (spanStartIndices[firstSpanType] > 0)
+                if (firstSpanType > -1) //Check if there is still a span to tokenize in the line
+                { 
+                    if (spanStartIndices[firstSpanType] > 0)
                     {
                         // Tokenize line up to first occurence
-                        result.AddRange(TokenizeLinePerDelimiter(line.Substring(0, spanStartIndices[firstSpanType]), offset + lineOffset));
+                        result.AddRange(TokenizeLinePerDelimiter(line.Substring(0, spanStartIndices[firstSpanType]),
+                            offset + lineOffset));
                         // Increase Line Pointer up to current position
                         lineOffset += spanStartIndices[firstSpanType];
                         // Reduce line to current start of span
                         line = line.Substring(spanStartIndices[firstSpanType]);
                     }
-                // Find end of current Span
-                var spanEndIndex = line.IndexOf(Spans[firstSpanType].StopDelimiter, Spans[firstSpanType].StartDelimiter.Length, StringComparison.Ordinal);
-                if (spanEndIndex == -1) spanEndIndex = line.Length; // EOL
-                // Create Token for current Span
-                result.Add(new SToken
-                {
-                    Offset = offset + lineOffset,
-                    Text = line.SafeRemove(spanEndIndex),
-                    Style = Spans[firstSpanType].Style
-                });
-                // Increase Line Pointer to next char
-                line = line.Substring(spanEndIndex);
-                lineOffset += spanEndIndex;
+                    // Find end of current Span
+                    var spanEndIndex = line.IndexOf(Spans[firstSpanType].StopDelimiter,
+                        Spans[firstSpanType].StartDelimiter.Length, StringComparison.Ordinal);
+                    if (spanEndIndex == -1) spanEndIndex = line.Length;
+                    else
+                    {
+                        spanEndIndex += Spans[firstSpanType].StopDelimiter.Length;
+                        if (spanEndIndex > line.Length) spanEndIndex = line.Length;
+                    }
+                    // Create Token for current Span
+                    result.Add(new SToken
+                    {
+                        Offset = offset + lineOffset,
+                        Text = line.SafeRemove(spanEndIndex),
+                        Style = Spans[firstSpanType].Style
+                    });
+                    // Increase Line Pointer to next char
+                    line = line.Substring(spanEndIndex);
+                    lineOffset += spanEndIndex;
+                }
+                else 
+                {   // No more span in this line
+                    result.AddRange(TokenizeLinePerDelimiter(line, offset + lineOffset));
+                    line = "";
+                }
             } // while (line.Length > 0)
             return result;
         } 
@@ -368,7 +304,7 @@ namespace ShaderIDE
 
             Spans = new[]
             {   new SSpan
-                {StartDelimiter = "//TODO", StopDelimiter = "\"", EscapeChar = '\n', Style = TdoFont},
+                {StartDelimiter = "//TODO", StopDelimiter = "\n", EscapeChar = '\n', Style = TdoFont},
                 new SSpan
                 {StartDelimiter = "//", StopDelimiter = "\n", EscapeChar = '\n', Style = ComFont},
                 new SSpan
@@ -448,7 +384,7 @@ namespace ShaderIDE
         #region Editor Update
         private void button1_Click(object sender, EventArgs e) // Force Parsing
         {
-            LastTokenList = new List<SToken>();
+            LastTokenList = new List<SToken>(); //Clear old list
             InParser = false;
             richEditBox_ReDraw(sender, e);
         }
@@ -517,38 +453,22 @@ namespace ShaderIDE
             return result;
         }
 
-        private void richEditBox_ReDraw(object sender, EventArgs e)
+        private int ReDraw(bool[] changedList)
         {
-            if (!InParser)
-            {
-                InParser = true;
-
-                //debug / perf test
-                _totalApplyColors = 0;
-                _totalCheckChanges = 0;
-                _totalTokenize = 0;
-                var totalUpdated = 0;
-                DebugStopwatch.Restart();
-
-                TokenList = TokenizeLines(richTextBox1.Lines);
-                _totalTokenize += DebugStopwatch.Elapsed.Ticks;//Debug
-                DebugStopwatch.Restart();//Debug
-
-                var changedTokens = CheckForChanges();
-                _totalCheckChanges += DebugStopwatch.Elapsed.Ticks;//Debug
-                DebugStopwatch.Restart();//Debug
+            var totalReDrawn = 0;
 
                 SuspendUpdate.Suspend(richTextBox1);
-                //richTextBox1.SuspendLayout();
+                richTextBox1.SuspendLayout();
 
                 var carretPositionBuffer = richTextBox1.SelectionStart;
                 var carretLengthBuffer = richTextBox1.SelectionLength;
 
                 var boxOrigin = richTextBox1.GetCharIndexFromPosition(BoxOriginPoint);
+
                 for (var i = 0; i < TokenList.Count; i++)
-                    if (changedTokens[i])
+                    if (changedList[i] | checkBox1.Checked)
                     {
-                        totalUpdated++;//Debug
+                        totalReDrawn++;//Debug
                         richTextBox1.SelectionStart = TokenList[i].Offset;
                         richTextBox1.SelectionLength = TokenList[i].Text.Length;
                         richTextBox1.SelectionColor = TokenList[i].Style.StyleColor;
@@ -564,20 +484,46 @@ namespace ShaderIDE
                 richTextBox1.SelectionColor = DefaultTextFont.StyleColor;
                 richTextBox1.SelectionFont = DefaultTextFont.StyleFont;
 
-                //richTextBox1.ResumeLayout();
+                richTextBox1.ResumeLayout();
                 SuspendUpdate.Resume(richTextBox1);
+            return totalReDrawn;
+        }
+
+        private void richEditBox_ReDraw(object sender, EventArgs e)
+        {
+            if (!InParser)
+            {
+                InParser = true;
+                
+                _totalApplyColors = 0;//debug
+                _totalCheckChanges = 0;//debug
+                _totalTokenize = 0;//debug
+                DebugStopwatch.Restart();//debug
+
+                TokenList = TokenizeLines(richTextBox1.Lines);
+                
+                _totalTokenize += DebugStopwatch.Elapsed.Ticks;//Debug
+                DebugStopwatch.Restart();//Debug
+
+                var changedTokens = CheckForChanges();
+                
+                _totalCheckChanges += DebugStopwatch.Elapsed.Ticks;//Debug
+                DebugStopwatch.Restart();//Debug
+
+                var totalUpdated = ReDraw(changedTokens);
+
                 InParser = false;
 
                 _totalApplyColors += DebugStopwatch.Elapsed.Ticks;//Debug
                 DebugStopwatch.Restart();//Debug
 
 
-                //Debug
-                DebugStopwatch.Stop();
-                Debug.WriteLine("Tokenize: " + (1000 * _totalTokenize / (float)Stopwatch.Frequency).ToString("F6") + "ms");
-                Debug.WriteLine("CheckChanges: " + (1000 * _totalCheckChanges / (float)Stopwatch.Frequency).ToString("F6") + "ms");
-                Debug.WriteLine("ApplyColors: " + (1000 * _totalApplyColors / (float)Stopwatch.Frequency).ToString("F6") + "ms");
-                Debug.WriteLine("TokenUpdated: " + totalUpdated + " / " + changedTokens.Count());
+
+                DebugStopwatch.Stop();//debug
+                Debug.WriteLine("Tokenize: " + (1000 * _totalTokenize / (float)Stopwatch.Frequency).ToString("F6") + "ms");//debug
+                Debug.WriteLine("CheckChanges: " + (1000 * _totalCheckChanges / (float)Stopwatch.Frequency).ToString("F6") + "ms");//debug
+                Debug.WriteLine("ApplyColors: " + (1000 * _totalApplyColors / (float)Stopwatch.Frequency).ToString("F6") + "ms");//debug
+                Debug.WriteLine("TokenUpdated: " + totalUpdated + " / " + changedTokens.Count());//debug
 
             }
         }
