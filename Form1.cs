@@ -418,7 +418,7 @@ namespace ShaderIDE
                 _totalCheckChanges += DebugStopwatch.Elapsed.Ticks;//Debug
                 DebugStopwatch.Restart();//Debug
 
-                SuspendUpdateClass.Suspend(richTextBox1);
+                SuspendUpdate.Suspend(richTextBox1);
                 //richTextBox1.SuspendLayout();
 
                 var carretPositionBuffer = richTextBox1.SelectionStart;
@@ -445,7 +445,7 @@ namespace ShaderIDE
                 richTextBox1.SelectionFont = DefaultTextFont.StyleFont;
 
                 //richTextBox1.ResumeLayout();
-                SuspendUpdateClass.Resume(richTextBox1);
+                SuspendUpdate.Resume(richTextBox1);
                 InParser = false;
 
                 _totalApplyColors += DebugStopwatch.Elapsed.Ticks;//Debug

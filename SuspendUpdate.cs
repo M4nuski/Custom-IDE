@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+
+// Class to set and clear WM_REDRAW message of control by ceztko
+// http://stackoverflow.com/questions/487661/how-do-i-suspend-painting-for-a-control-and-its-children
+//
 
 namespace ShaderIDE
 {
-    public static class SuspendUpdateClass
+    public static class SuspendUpdate
     {
         private const int WmSetredraw = 0x000B;
 
