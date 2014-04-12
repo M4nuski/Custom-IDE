@@ -1,4 +1,7 @@
-﻿		/*
+﻿Methods, Structures and Fields that got obsoleted before the project was set on Github.
+Kept here in reference.
+		
+		/*
 		public int FindFirst(char[] list, char target)
 		{
 			for (var i = 0; i < list.Length; i++)
