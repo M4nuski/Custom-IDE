@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.button1 = new System.Windows.Forms.Button();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.button2 = new System.Windows.Forms.Button();
@@ -133,7 +132,8 @@
             this.richTextBox1.Size = new System.Drawing.Size(1196, 786);
             this.richTextBox1.TabIndex = 12;
             this.richTextBox1.TabStop = false;
-            this.richTextBox1.Text = resources.GetString("richTextBox1.Text");
+            this.richTextBox1.Text = "uniform int light_qty;\n//Comment Span\nout = \"String Span\"\nuniform float test; // " +
+    "other Comment Span\ngl_Position = max(0.0, 1.0); //TODO Todo Span";
             this.richTextBox1.WordWrap = false;
             this.richTextBox1.FontChanged += new System.EventHandler(this.richTextBox1_FontChanged);
             this.richTextBox1.ForeColorChanged += new System.EventHandler(this.richTextBox1_FontChanged);

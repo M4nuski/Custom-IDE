@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -86,7 +87,7 @@ namespace ShaderIDE
             ValuesFont,         //font values (int bool float etc)
             DelFont, OpeFont,   //delimiters fonts
             ResFont, TypFont, FunFont,  //words fonts
-            ComFont, StrFont;   // spans fonts
+            ComFont, StrFont, TdoFont;   // spans fonts
         #endregion
 
         #region Parsing / Tokens
@@ -111,21 +112,90 @@ namespace ShaderIDE
             foreach (var wordStruct in Words)
             {
                 if (wordStruct.Words.Contains(s)) return wordStruct.Style;
-                if (IsValue(s)) return ValuesFont;
             }
+            if (IsValue(s)) return ValuesFont;
             return DefaultTextFont;
         }
 
-        public List<SToken> Parse_Lines(string[] lines)
+        public List<SToken> TokenizeLines(string[] lines)
         {
             var textOffset = 0;
             var result = new List<SToken>();
+
             foreach (var line in lines)
             {
+                if (Spans.Any(currentSpan => line.Contains(currentSpan.StartDelimiter)))
+                {
+                    result.AddRange(TokenizeLinePerSpan(line, textOffset));
+                }
+                else
+                {
+                    result.AddRange(TokenizeLinePerDelimiter(line, textOffset));
+                }
+                textOffset += line.Length + 1;// implicit "\n",  +1 for "\r"
+            }
+            return result;
+        }
 
 
-                //TODO per SSpans with escape chars
-                if (line.Contains("//"))
+            /*
+            var spanStartIndices = new int[Spans.Count()];
+            foreach (var line in lines)
+            {
+                for (var i = 0; i < line.Length; i++) // TODO convert to textOffset runner
+                {
+                    // Check for Spans StartDelimiters occurences
+
+                    // Get list of indexOf for each span StartDelimiters
+                    for (var j = 0; j < Spans.Count(); j++)
+                    {
+                        spanStartIndices[j] = line.IndexOf(Spans[j].StartDelimiter, StringComparison.Ordinal);
+                    }
+
+                    // Find the first one on the line
+                    var firstSpanStartIndex = line.Length;
+                    var firstSpanType = -1;
+                    for (var j = 0; j < spanStartIndices.Length; j++)
+                    {
+                        if ((spanStartIndices[j] >= 0) & (spanStartIndices[j] < firstSpanStartIndex))
+                        {
+                            firstSpanStartIndex = spanStartIndices[j];
+                            firstSpanType = j;
+                        }
+                    }
+
+                    // If an occurence was found
+                    if (firstSpanType > -1)
+                    {
+                        if (spanStartIndices[firstSpanType] > 0)
+                        {
+                            // Tokenize line up to first occurence
+                            result.AddRange(TokenizeLinePerDelimiter(line.Substring(0, spanStartIndices[firstSpanType]), textOffset));
+                            // Increase Line Pointer up to current position
+                            i = spanStartIndices[firstSpanType];
+                            textOffset += spanStartIndices[firstSpanType];
+                            line = line.Substring()
+                        }
+                        // Find end of current Span
+                        var spanEndIndex = line.IndexOf(Spans[firstSpanType].StopDelimiter, StringComparison.Ordinal);
+
+                        // Create Token for current Span
+
+                        // Increase Line Pointer to next char
+                    }
+                    else
+                    {// No span found in this line, tokenize complete line
+                        result.AddRange(TokenizeLinePerDelimiter(line, textOffset));
+                        i = line.Length; //exit line loop
+                    }
+                   
+
+                }
+            
+
+
+                /*
+                if (Spans.Any(currentSpan => line.Contains(currentSpan.StartDelimiter)))
                 {
                     var commentStart = line.IndexOf("//", StringComparison.InvariantCulture);
                     result.Add(new SToken
@@ -141,15 +211,62 @@ namespace ShaderIDE
                 {
                     result.AddRange(Tokenize(line, textOffset));
                 }
+           }
+ 
+*/
 
 
+        public List<SToken> TokenizeLinePerSpan(string line, int offset)
+        {
+            var result = new List<SToken>();
+            var spanStartIndices = new int[Spans.Count()];
+            var lineOffset = 0;
 
-                textOffset = textOffset + line.Length + 1; // implicit "\n",  +1 for "\r"
-            }
+            while (line.Length > 0)
+            {
+                // Get list of indexOf for each span StartDelimiters
+                for (var j = 0; j < Spans.Count(); j++)
+                {
+                    spanStartIndices[j] = line.IndexOf(Spans[j].StartDelimiter, StringComparison.Ordinal);
+                } 
+                // Find the first one on the line
+                var firstSpanStartIndex = line.Length;
+                var firstSpanType = 0;
+                for (var j = 0; j < spanStartIndices.Length; j++)
+                {
+                    if ((spanStartIndices[j] >= 0) & (spanStartIndices[j] < firstSpanStartIndex))
+                    {
+                        firstSpanStartIndex = spanStartIndices[j];
+                        firstSpanType = j;
+                    }
+                }
+                if (spanStartIndices[firstSpanType] > 0)
+                    {
+                        // Tokenize line up to first occurence
+                        result.AddRange(TokenizeLinePerDelimiter(line.Substring(0, spanStartIndices[firstSpanType]), offset + lineOffset));
+                        // Increase Line Pointer up to current position
+                        lineOffset += spanStartIndices[firstSpanType];
+                        // Reduce line to current start of span
+                        line = line.Substring(spanStartIndices[firstSpanType]);
+                    }
+                // Find end of current Span
+                var spanEndIndex = line.IndexOf(Spans[firstSpanType].StopDelimiter, Spans[firstSpanType].StartDelimiter.Length, StringComparison.Ordinal);
+                if (spanEndIndex == -1) spanEndIndex = line.Length; // EOL
+                // Create Token for current Span
+                result.Add(new SToken
+                {
+                    Offset = offset + lineOffset,
+                    Text = line.SafeRemove(spanEndIndex),
+                    Style = Spans[firstSpanType].Style
+                });
+                // Increase Line Pointer to next char
+                line = line.Substring(spanEndIndex);
+                lineOffset += spanEndIndex;
+            } // while (line.Length > 0)
             return result;
-        }
+        } 
 
-        public List<SToken> Tokenize(string line, int offset)
+        public List<SToken> TokenizeLinePerDelimiter(string line, int offset)
         {
             var result = new List<SToken>();
             var linePointer = 0;
@@ -246,11 +363,14 @@ namespace ShaderIDE
             ComFont.StyleColor = Color.DarkGreen;
             StrFont.StyleFont = new Font(richTextBox1.Font, FontStyle.Bold);
             StrFont.StyleColor = Color.Violet;
+            TdoFont.StyleFont = new Font(richTextBox1.Font, FontStyle.Underline);
+            TdoFont.StyleColor = Color.DeepSkyBlue;
 
             Spans = new[]
-            {
+            {   new SSpan
+                {StartDelimiter = "//TODO", StopDelimiter = "\"", EscapeChar = '\n', Style = TdoFont},
                 new SSpan
-                {   StartDelimiter = "//", StopDelimiter = "\n", EscapeChar = '\n', Style = ComFont},
+                {StartDelimiter = "//", StopDelimiter = "\n", EscapeChar = '\n', Style = ComFont},
                 new SSpan
                 {StartDelimiter = "\"", StopDelimiter = "\"", EscapeChar = '\\', Style = StrFont}
             };
@@ -410,7 +530,7 @@ namespace ShaderIDE
                 var totalUpdated = 0;
                 DebugStopwatch.Restart();
 
-                TokenList = Parse_Lines(richTextBox1.Lines);
+                TokenList = TokenizeLines(richTextBox1.Lines);
                 _totalTokenize += DebugStopwatch.Elapsed.Ticks;//Debug
                 DebugStopwatch.Restart();//Debug
 

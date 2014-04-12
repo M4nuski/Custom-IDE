@@ -120,38 +120,4 @@
   <metadata name="colorDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
-  <data name="richTextBox1.Text" xml:space="preserve">
-    <value>uniform int light_qty;
-uniform int light_type;
-uniform vec4 light_ambient;
-uniform vec4 light_diffuse;
-uniform vec4 light_specular;
-uniform vec4 light_origin;
-uniform vec4 light_orientation;
-uniform float light_cutoff;
-uniform float light_attenuation;
-
-//out vec4 gl_Position;
-out vec4 var_color;
-out vec2 var_uv;
-
-void main()
-{
-	vec4 buf_specular, buf_normal;
-	float fact_diffuse, fact_specular;
-	
-	buf_normal = normalize(matrix_normal * vec4(in_normal, 0.0));	
-	fact_diffuse = max(dot(light_orientation, buf_normal), 0.0);
-	if (fact_diffuse &gt; 0.0) {
-		vec4 buf_halfvector = normalize((matrix_modelview * vec4(in_vertex, 0.0)) + light_orientation);
-		fact_specular = max(dot(buf_normal, buf_halfvector), 0.0);
-		buf_specular = material_specular * light_specular * pow(fact_specular, material_shininess);
-	} else { 
-		buf_specular = vec4(0.0, 0.0, 0.0, 0.0); 
-	}
-	var_color = clamp((light_ambient * material_ambient) + ((fact_diffuse * light_diffuse) * material_diffuse) + buf_specular, 0.0, 1.0);	
-	gl_Position = matrix_modelviewprojection * vec4(in_vertex, 1.0);
-	var_uv = in_uv;
-}</value>
-  </data>
 </root>
