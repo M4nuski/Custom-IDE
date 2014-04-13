@@ -4,35 +4,67 @@ using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
+using System.Xml.Serialization;
 
 namespace ShaderIDE
 {
+
+    #region Structs
+    public struct SFontColor
+    {
+        public Font StyleFont;
+        public Color StyleColor;
+
+        public SFontColor(Font styleFont, Color styleColor)
+        {
+            StyleFont = styleFont;
+            StyleColor = styleColor;
+        }
+        public static bool operator ==(SFontColor a, SFontColor b)
+        {
+            return (a.StyleColor == b.StyleColor) & (a.StyleFont.Equals(b.StyleFont));
+        }
+        public static bool operator !=(SFontColor a, SFontColor b)
+        {
+            return (a.StyleColor != b.StyleColor) | !(a.StyleFont.Equals(b.StyleFont));
+        }
+    }
+
+    public struct SDelimiter
+    {
+        public string Name;
+        public char[] Tokens;
+        public SFontColor Style;
+    }
+
+    public struct SWord
+    {
+        public string Name;
+        public string[] Words;
+        public SFontColor Style;
+    }
+
+    public struct SSpan
+    {
+        public string Name;
+        public string StartDelimiter;
+        public string StopDelimiter; //or EOL
+        public char EscapeChar;
+        public SFontColor Style;
+    }
+    #endregion
+
     public partial class Form1 : Form
     {
         #region Debug Fields
         private readonly Stopwatch _debugStopwatch = new Stopwatch();
         private Int64 _totalTokenize, _totalCheckChanges, _totalApplyColors;
         #endregion
-
-        #region Structs
-        public struct SFontColor
-        {
-            public Font StyleFont;
-            public Color StyleColor;
-
-            public static bool operator ==(SFontColor a, SFontColor b)
-            {
-                return (a.StyleColor == b.StyleColor) & (a.StyleFont.Equals(b.StyleFont));
-            }
-            public static bool operator !=(SFontColor a, SFontColor b)
-            {
-                return (a.StyleColor != b.StyleColor) | !(a.StyleFont.Equals(b.StyleFont));
-            }
-        }
 
         private struct SToken
         {
@@ -49,27 +81,6 @@ namespace ShaderIDE
                 return (a.Text != b.Text) | (a.Style != b.Style);
             }
         }
-
-        public struct SDelimiter
-        {
-            public char[] Tokens;
-            public SFontColor Style;
-        }
-
-        public struct SWord
-        {
-            public string[] Words;
-            public SFontColor Style;
-        }
-
-        public struct SSpan
-        {
-            public string StartDelimiter;
-            public string StopDelimiter; //or EOL
-            public char EscapeChar;
-            public SFontColor Style;
-        }
-        #endregion
 
         #region Lists
         private List<SToken> _tokenList, _lastTokenList;
@@ -259,66 +270,62 @@ namespace ShaderIDE
             _lastTokenList = new List<SToken>();
             _inParser = false;
 
-            DefaultTextFont.StyleColor = richTextBox1.ForeColor;
-            DefaultTextFont.StyleFont = richTextBox1.Font;
-
-            ValuesFont.StyleFont = new Font(richTextBox1.Font, FontStyle.Regular);
-            ValuesFont.StyleColor = Color.RoyalBlue;
+            DefaultTextFont = new SFontColor(richTextBox1.Font, richTextBox1.ForeColor);
+            ValuesFont = new SFontColor(new Font(richTextBox1.Font, FontStyle.Regular), Color.RoyalBlue);
 
             Delimiters = new[]
             {
                 new SDelimiter { //whitespaces and breaks
-                Tokens = new[] { '\t', '\r', '\n', ' ', ',', ';', '(', ')', '{', '}'},
-                Style = new SFontColor
-                {
-                    StyleColor = Color.Gray,
-                    StyleFont = new Font(richTextBox1.Font, FontStyle.Bold)
-                }},               
+                    Name = "Breaks",
+                    Tokens = new[] { '\t', '\r', '\n', ' ', ',', ';', '(', ')', '{', '}'},
+                    Style = new SFontColor
+                    {
+                        StyleColor = Color.Gray,
+                        StyleFont = new Font(richTextBox1.Font, FontStyle.Bold)
+                    }},               
                 new SDelimiter { //operators
-                Tokens = new[] { '/', '+', '-', '*', '=', '<', '>', '!' },
-                Style = new SFontColor
-                {
-                    StyleColor = Color.DarkTurquoise,
-                    StyleFont = new Font(richTextBox1.Font, FontStyle.Bold)
-                }}
+                    Name = "Operators",
+                    Tokens = new[] { '/', '+', '-', '*', '=', '<', '>', '!' },
+                    Style = new SFontColor
+                    {
+                        StyleColor = Color.DarkTurquoise,
+                        StyleFont = new Font(richTextBox1.Font, FontStyle.Bold)
+                    }}
             };
 
 
-            ResFont.StyleFont = new Font(richTextBox1.Font, FontStyle.Regular);
-            ResFont.StyleColor = Color.Orange;
-            TypFont.StyleFont = new Font(richTextBox1.Font, FontStyle.Regular);
-            TypFont.StyleColor = Color.Yellow;
-            FunFont.StyleFont = new Font(richTextBox1.Font, FontStyle.Bold);
-            FunFont.StyleColor = Color.Lime;
+            ResFont = new SFontColor(new Font(richTextBox1.Font, FontStyle.Regular), Color.Orange);
+            TypFont = new SFontColor(new Font(richTextBox1.Font, FontStyle.Regular), Color.Yellow);
+            FunFont = new SFontColor(new Font(richTextBox1.Font, FontStyle.Bold), Color.Lime);
 
             Words = new[]
             {
                 new SWord
-                {   Words = new [] {"#version", "uniform", "layout", "in", "out", "location", "void", "for", "else", "if", "main",
+                {   Name = "Reserved",
+                    Words = new [] {"#version", "uniform", "layout", "in", "out", "location", "void", "for", "else", "if", "main",
                     "smooth", "varying", "const", "flat​", "noperspective​"},
                     Style = ResFont},
                 new SWord
-                {   Words = new [] {"bool", "int", "float", "vec2", "vec3", "vec4", "mat3", "mat4"},
+                {   Name = "Types",
+                    Words = new [] {"bool", "int", "float", "vec2", "vec3", "vec4", "mat3", "mat4"},
                     Style = TypFont},
                 new SWord
-                {   Words = new []{"gl_Position", "min", "max", "dot", "normalize", "clamp", "mix"},
+                {   Name = "Functions",
+                    Words = new []{"gl_Position", "min", "max", "dot", "normalize", "clamp", "mix"},
                     Style = FunFont}
             };
 
-            ComFont.StyleFont = new Font(richTextBox1.Font, FontStyle.Italic);
-            ComFont.StyleColor = Color.Green;
-            StrFont.StyleFont = new Font(richTextBox1.Font, FontStyle.Bold);
-            StrFont.StyleColor = Color.Violet;
-            TdoFont.StyleFont = new Font(richTextBox1.Font, FontStyle.Underline);
-            TdoFont.StyleColor = Color.DeepSkyBlue;
+            ComFont = new SFontColor(new Font(richTextBox1.Font, FontStyle.Italic), Color.Green);
+            StrFont = new SFontColor(new Font(richTextBox1.Font, FontStyle.Bold), Color.Violet);
+            TdoFont = new SFontColor(new Font(richTextBox1.Font, FontStyle.Underline), Color.DeepSkyBlue);
 
             Spans = new[]
             {   new SSpan
-                {StartDelimiter = "//TODO", StopDelimiter = "\n", EscapeChar = '\n', Style = TdoFont},
+                {Name = "TODO Comment", StartDelimiter = "//TODO", StopDelimiter = "\n", EscapeChar = '\n', Style = TdoFont},
                 new SSpan
-                {StartDelimiter = "//", StopDelimiter = "\n", EscapeChar = '\n', Style = ComFont},
+                {Name = "Comment", StartDelimiter = "//", StopDelimiter = "\n", EscapeChar = '\n', Style = ComFont},
                 new SSpan
-                {StartDelimiter = "\"", StopDelimiter = "\"", EscapeChar = '\\', Style = StrFont}
+                {Name = "Inline String", StartDelimiter = "\"", StopDelimiter = "\"", EscapeChar = '\\', Style = StrFont}
             };
 
             CurrentLineColor = Color.FromArgb(255, 56, 56, 56);
@@ -331,8 +338,9 @@ namespace ShaderIDE
             _boxOriginPoint = new Point(richTextBox1.ClientSize) { Y = 1 };
         }
         #endregion
-
+        
         #region Font and Styles Selections
+        //TODO remake with dialogs
         private void button2_Click(object sender, EventArgs e)
         {
             colorDialog1.Color = DefaultTextFont.StyleColor;
@@ -344,10 +352,16 @@ namespace ShaderIDE
 
         private void button3_Click(object sender, EventArgs e)
         {
-            colorDialog1.Color = DelFont.StyleColor;
-            if (colorDialog1.ShowDialog() == DialogResult.OK)
+            try
             {
-                DelFont.StyleColor = colorDialog1.Color;
+                var writer = new XmlSerializer(_tokenList.GetType());
+                var file = new StreamWriter("Tokens.xml");
+                writer.Serialize(file, Words);
+                file.Close();
+            }
+            catch (Exception exp)
+            {
+                Debug.WriteLine(exp.Message);
             }
         }
 
