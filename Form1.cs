@@ -417,6 +417,17 @@ namespace ShaderIDE
             richEditBox_ReDraw(sender, e);
         }
 
+        private void richTextBox1_Click(object sender, EventArgs e)
+        {
+            if (!_inParser & (_tokenList != null))
+            {
+                _inParser = true;
+                var dummyArray = new bool[_tokenList.Count];
+                ReDraw(dummyArray);
+                _inParser = false;
+            }
+        }
+
         private bool[] CheckForChanges()
         {
             var result = new bool[_tokenList.Count];
@@ -483,21 +494,16 @@ namespace ShaderIDE
 
         private void GetSelectionFromLine(int lineNumber)
         {
-            var maxLines = richTextBox1.Lines.Count();
-            if (lineNumber < maxLines)
+            var maxLine = richTextBox1.Lines.Count()-1;
+            if (lineNumber < maxLine)
             {
                 _lineSelectionStart = richTextBox1.GetFirstCharIndexFromLine(lineNumber);
                 _lineSelectionLength = richTextBox1.GetFirstCharIndexFromLine(lineNumber + 1) - _lineSelectionStart;
             }
-            else if (lineNumber == maxLines)
+            else 
             {
-                _lineSelectionStart = richTextBox1.GetFirstCharIndexFromLine(lineNumber);
-                _lineSelectionLength = richTextBox1.TextLength - _lineSelectionStart;
-            }
-            else
-            {
-                _lineSelectionStart = 0;
-                _lineSelectionLength = 0;
+                _lineSelectionStart = richTextBox1.GetFirstCharIndexFromLine(maxLine);
+                _lineSelectionLength = richTextBox1.TextLength-1 - _lineSelectionStart;
             }
         }
 
@@ -573,10 +579,11 @@ namespace ShaderIDE
 
 
                 var rdn = new Random();//debug
-                ErrorList = new int[3];//debug
-                ErrorList[0] = rdn.Next(richTextBox1.Lines.Count());//debug
-                ErrorList[1] = rdn.Next(richTextBox1.Lines.Count());//debug
-                ErrorList[2] = rdn.Next(richTextBox1.Lines.Count());//debug
+                ErrorList = new int[25];//debug
+                for (var i = 0; i < ErrorList.Length; i++)
+                {
+                    ErrorList[i] = rdn.Next(richTextBox1.Lines.Count());
+                }
                 
                 _totalTokenize += _debugStopwatch.Elapsed.Ticks;//Debug
                 _debugStopwatch.Restart();//Debug
@@ -602,18 +609,6 @@ namespace ShaderIDE
             }
         }
         #endregion
-
-        private void richTextBox1_Click(object sender, EventArgs e)
-        {
-            if (!_inParser & (_tokenList != null))
-            {
-                _inParser = true;
-                var dummyArray = new bool[_tokenList.Count];
-                ReDraw(dummyArray);
-                _inParser = false;
-            }
-        }
-
 
     }//class
 }//namespace
