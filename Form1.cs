@@ -602,6 +602,18 @@ namespace ShaderIDE
             }
         }
         #endregion
-    }
 
-}
+        private void richTextBox1_Click(object sender, EventArgs e)
+        {
+            if (!_inParser & (_tokenList != null))
+            {
+                _inParser = true;
+                var dummyArray = new bool[_tokenList.Count];
+                ReDraw(dummyArray);
+                _inParser = false;
+            }
+        }
+
+
+    }//class
+}//namespace
