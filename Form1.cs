@@ -14,7 +14,7 @@ namespace ShaderIDE
     public partial class Form1 : Form
     {
         #region Debug Fields
-        public Stopwatch DebugStopwatch = new Stopwatch();
+        private readonly Stopwatch _debugStopwatch = new Stopwatch();
         private Int64 _totalTokenize, _totalCheckChanges, _totalApplyColors;
         #endregion
 
@@ -34,7 +34,7 @@ namespace ShaderIDE
             }
         }
 
-        public struct SToken
+        private struct SToken
         {
             public int Offset;
             public string Text;
@@ -72,15 +72,18 @@ namespace ShaderIDE
         #endregion
 
         #region Lists
-        public List<SToken> TokenList, LastTokenList;
+        private List<SToken> _tokenList, _lastTokenList;
         public SDelimiter[] Delimiters;
         public SWord[] Words;
         public SSpan[] Spans;
         #endregion
 
         #region Properties
-        public Point BoxOriginPoint; // RichEditBox client area point
-        public bool InParser;
+        private Point _boxOriginPoint; // RichEditBox client area point
+        public Color BackgroundColor, CurrentLineColor, ErrorLineColor;
+        public int[] ErrorList;
+        private bool _inParser;
+        private int _lineSelectionStart, _lineSelectionLength;
 
         public SFontColor
             DefaultTextFont,    //default fallback font style / richeditbox font.
@@ -91,14 +94,14 @@ namespace ShaderIDE
         #endregion
 
         #region Parsing / Tokens
-        public bool IsValue(string s)
+        private static bool IsValue(string s)
         {
             double doubleBuffer;
             var result = double.TryParse(s.Trim().Replace('.', ','), out doubleBuffer);
             return (result | (s.ToUpper() == "TRUE") | (s.ToUpper() == "FALSE"));
         }
 
-        public SFontColor GetDelimiterFont(char c)
+        private SFontColor GetDelimiterFont(char c)
         {
             foreach (var delimiterStruct in Delimiters)
             {
@@ -107,7 +110,7 @@ namespace ShaderIDE
             return DefaultTextFont;
         }
 
-        public SFontColor GetWordFont(string s)
+        private SFontColor GetWordFont(string s)
         {
             foreach (var wordStruct in Words)
             {
@@ -117,7 +120,7 @@ namespace ShaderIDE
             return DefaultTextFont;
         }
 
-        public List<SToken> TokenizeLines(string[] lines)
+        private List<SToken> TokenizeLines(string[] lines)
         {
             var textOffset = 0;
             var result = new List<SToken>();
@@ -133,7 +136,7 @@ namespace ShaderIDE
             return result;
         }
 
-        public List<SToken> TokenizeLinePerSpan(string line, int offset)
+        private List<SToken> TokenizeLinePerSpan(string line, int offset)
         {
             var result = new List<SToken>();
             var spanStartIndices = new int[Spans.Count()];
@@ -207,9 +210,9 @@ namespace ShaderIDE
                 }
             } // while (line.Length > 0)
             return result;
-        } 
+        }
 
-        public List<SToken> TokenizeLinePerDelimiter(string line, int offset)
+        private List<SToken> TokenizeLinePerDelimiter(string line, int offset)
         {
             var result = new List<SToken>();
             var linePointer = 0;
@@ -253,8 +256,8 @@ namespace ShaderIDE
         {
             InitializeComponent();
 
-            LastTokenList = new List<SToken>();
-            InParser = false;
+            _lastTokenList = new List<SToken>();
+            _inParser = false;
 
             DefaultTextFont.StyleColor = richTextBox1.ForeColor;
             DefaultTextFont.StyleFont = richTextBox1.Font;
@@ -303,7 +306,7 @@ namespace ShaderIDE
             };
 
             ComFont.StyleFont = new Font(richTextBox1.Font, FontStyle.Italic);
-            ComFont.StyleColor = Color.DarkGreen;
+            ComFont.StyleColor = Color.Green;
             StrFont.StyleFont = new Font(richTextBox1.Font, FontStyle.Bold);
             StrFont.StyleColor = Color.Violet;
             TdoFont.StyleFont = new Font(richTextBox1.Font, FontStyle.Underline);
@@ -317,11 +320,15 @@ namespace ShaderIDE
                 new SSpan
                 {StartDelimiter = "\"", StopDelimiter = "\"", EscapeChar = '\\', Style = StrFont}
             };
+
+            CurrentLineColor = Color.FromArgb(255, 56, 56, 56);
+            BackgroundColor = richTextBox1.BackColor;
+            ErrorLineColor = Color.DarkRed;
         }
 
         private void richTextBox1_Resize(object sender, EventArgs e)
         {
-            BoxOriginPoint = new Point(richTextBox1.ClientSize) { Y = 1 };
+            _boxOriginPoint = new Point(richTextBox1.ClientSize) { Y = 1 };
         }
         #endregion
 
@@ -391,61 +398,61 @@ namespace ShaderIDE
         #region Editor Update
         private void button1_Click(object sender, EventArgs e) // Force Parsing
         {
-            LastTokenList = new List<SToken>(); //Clear old list
-            InParser = false;
+            _lastTokenList = new List<SToken>(); //Clear old list
+            _inParser = false;
             richEditBox_ReDraw(sender, e);
         }
 
         private bool[] CheckForChanges()
         {
-            var result = new bool[TokenList.Count];
+            var result = new bool[_tokenList.Count];
 
-            if ((TokenList.Count > 0) & (LastTokenList.Count > 0))
+            if ((_tokenList.Count > 0) & (_lastTokenList.Count > 0))
             {
 
-                if (TokenList.Count >= LastTokenList.Count)
+                if (_tokenList.Count >= _lastTokenList.Count)
                 {
                     var firstMismatch = 0;
-                    var lastMismatch = TokenList.Count - 1;
-                    var tokenCountsDelta = TokenList.Count - LastTokenList.Count;
+                    var lastMismatch = _tokenList.Count - 1;
+                    var tokenCountsDelta = _tokenList.Count - _lastTokenList.Count;
 
-                    while ((TokenList[firstMismatch] == LastTokenList[firstMismatch]) & (firstMismatch < LastTokenList.Count - 1))
+                    while ((_tokenList[firstMismatch] == _lastTokenList[firstMismatch]) & (firstMismatch < _lastTokenList.Count - 1))
                     {
                         firstMismatch++;
                     }
-                    while ((TokenList[lastMismatch] == LastTokenList[lastMismatch - tokenCountsDelta]) & (lastMismatch > firstMismatch))
+                    while ((_tokenList[lastMismatch] == _lastTokenList[lastMismatch - tokenCountsDelta]) & (lastMismatch > firstMismatch))
                     {
                         lastMismatch--;
                     }
 
-                    for (var j = 0; j < TokenList.Count; j++)
+                    for (var j = 0; j < _tokenList.Count; j++)
                     {
                         result[j] = (j >= firstMismatch) & (j <= lastMismatch);
                     }
 
-                    Debug.WriteLine("New > Old - First: " + firstMismatch + " - Last: " + lastMismatch + " - Total: " + TokenList.Count);
+                    Debug.WriteLine("New > Old - First: " + firstMismatch + " - Last: " + lastMismatch + " - Total: " + _tokenList.Count);
                 }
                 else
                 {
                     var firstMismatch = 0;
-                    var lastMismatch = LastTokenList.Count - 1;
-                    var tokenCountsDelta = LastTokenList.Count - TokenList.Count;
+                    var lastMismatch = _lastTokenList.Count - 1;
+                    var tokenCountsDelta = _lastTokenList.Count - _tokenList.Count;
 
-                    while ((LastTokenList[firstMismatch] == TokenList[firstMismatch]) & (firstMismatch < TokenList.Count - 1))
+                    while ((_lastTokenList[firstMismatch] == _tokenList[firstMismatch]) & (firstMismatch < _tokenList.Count - 1))
                     {
                         firstMismatch++;
                     }
-                    while ((LastTokenList[lastMismatch] == TokenList[lastMismatch - tokenCountsDelta]) & (lastMismatch > firstMismatch))
+                    while ((_lastTokenList[lastMismatch] == _tokenList[lastMismatch - tokenCountsDelta]) & (lastMismatch > firstMismatch))
                     {
                         lastMismatch--;
                     }
 
-                    for (var j = 0; j < TokenList.Count; j++)
+                    for (var j = 0; j < _tokenList.Count; j++)
                     {
                         result[j] = (j >= firstMismatch) & (j <= lastMismatch);
                     }
 
-                    Debug.WriteLine("New < Old - First: " + firstMismatch + " - Last: " + lastMismatch + " - Total: " + TokenList.Count);
+                    Debug.WriteLine("New < Old - First: " + firstMismatch + " - Last: " + lastMismatch + " - Total: " + _tokenList.Count);
                 }
             }
             else
@@ -456,75 +463,123 @@ namespace ShaderIDE
                 }
             }
 
-            LastTokenList = new List<SToken>(TokenList);
+            _lastTokenList = new List<SToken>(_tokenList);
             return result;
+        }
+
+        private void GetSelectionFromLine(int lineNumber)
+        {
+            var maxLines = richTextBox1.Lines.Count();
+            if (lineNumber < maxLines)
+            {
+                _lineSelectionStart = richTextBox1.GetFirstCharIndexFromLine(lineNumber);
+                _lineSelectionLength = richTextBox1.GetFirstCharIndexFromLine(lineNumber + 1) - _lineSelectionStart;
+            }
+            else if (lineNumber == maxLines)
+            {
+                _lineSelectionStart = richTextBox1.GetFirstCharIndexFromLine(lineNumber);
+                _lineSelectionLength = richTextBox1.TextLength - _lineSelectionStart;
+            }
+            else
+            {
+                _lineSelectionStart = 0;
+                _lineSelectionLength = 0;
+            }
         }
 
         private int ReDraw(bool[] changedList)
         {
-            var totalReDrawn = 0;
+            var totalReDrawn = 0; //debug
 
-                SuspendUpdate.Suspend(richTextBox1);
-                richTextBox1.SuspendLayout();
+            //richTextBox1.SuspendLayout();
+            SuspendUpdate.Suspend(richTextBox1);
 
-                var carretPositionBuffer = richTextBox1.SelectionStart;
-                var carretLengthBuffer = richTextBox1.SelectionLength;
+            // Save current state
+            var carretPositionBuffer = richTextBox1.SelectionStart;
+            var carretLengthBuffer = richTextBox1.SelectionLength;
+            var boxOrigin = richTextBox1.GetCharIndexFromPosition(_boxOriginPoint);
 
-                var boxOrigin = richTextBox1.GetCharIndexFromPosition(BoxOriginPoint);
+            // Get Current Line informations
+            GetSelectionFromLine(richTextBox1.GetLineFromCharIndex(richTextBox1.GetFirstCharIndexOfCurrentLine()));
+            var currentLineIndex = _lineSelectionStart;
+            var currentLineLength = _lineSelectionLength;
+          
+            // Reset Background
+            richTextBox1.SelectAll();
+            richTextBox1.SelectionBackColor = BackgroundColor;
+            
+            // Update Colors
+            for (var i = 0; i < _tokenList.Count; i++)
+                if (changedList[i] | checkBox1.Checked)
+                {
+                    totalReDrawn++;//Debug
+                    richTextBox1.Select(_tokenList[i].Offset, _tokenList[i].Text.Length);
+                    richTextBox1.SelectionColor = _tokenList[i].Style.StyleColor;
+                    richTextBox1.SelectionFont = _tokenList[i].Style.StyleFont;
+                }
 
-                for (var i = 0; i < TokenList.Count; i++)
-                    if (changedList[i] | checkBox1.Checked)
-                    {
-                        totalReDrawn++;//Debug
-                        richTextBox1.SelectionStart = TokenList[i].Offset;
-                        richTextBox1.SelectionLength = TokenList[i].Text.Length;
-                        richTextBox1.SelectionColor = TokenList[i].Style.StyleColor;
-                        richTextBox1.SelectionFont = TokenList[i].Style.StyleFont;
-                    }
+            // Current line Color
+            richTextBox1.Select(currentLineIndex, currentLineLength);
+            richTextBox1.SelectionBackColor = CurrentLineColor;
 
-                richTextBox1.SelectionStart = boxOrigin;
-                richTextBox1.ScrollToCaret();
+            // Errors line Color
+            foreach (var eInt in ErrorList)
+            {
+                GetSelectionFromLine(eInt);
+                richTextBox1.Select(_lineSelectionStart, _lineSelectionLength);
+                richTextBox1.SelectionBackColor = ErrorLineColor;
+            }
 
-                richTextBox1.SelectionStart = carretPositionBuffer;
-                richTextBox1.SelectionLength = carretLengthBuffer;
+            // Reset View
+            richTextBox1.Select(boxOrigin, 0);
+            richTextBox1.ScrollToCaret();
 
-                richTextBox1.SelectionColor = DefaultTextFont.StyleColor;
-                richTextBox1.SelectionFont = DefaultTextFont.StyleFont;
+            // Reset Selections
+            richTextBox1.Select(carretPositionBuffer, carretLengthBuffer);
+            richTextBox1.SelectionColor = DefaultTextFont.StyleColor;
+            richTextBox1.SelectionFont = DefaultTextFont.StyleFont;
 
-                richTextBox1.ResumeLayout();
-                SuspendUpdate.Resume(richTextBox1);
+            //richTextBox1.ResumeLayout();
+            SuspendUpdate.Resume(richTextBox1);
             return totalReDrawn;
         }
 
         private void richEditBox_ReDraw(object sender, EventArgs e)
         {
-            if (!InParser)
+            if (!_inParser)
             {
-                InParser = true;
+                _inParser = true;
                 
                 _totalApplyColors = 0;//debug
                 _totalCheckChanges = 0;//debug
                 _totalTokenize = 0;//debug
-                DebugStopwatch.Restart();//debug
+                _debugStopwatch.Restart();//debug
 
-                TokenList = TokenizeLines(richTextBox1.Lines);
+                _tokenList = TokenizeLines(richTextBox1.Lines);
+
+
+                var rdn = new Random();//debug
+                ErrorList = new int[3];//debug
+                ErrorList[0] = rdn.Next(richTextBox1.Lines.Count());//debug
+                ErrorList[1] = rdn.Next(richTextBox1.Lines.Count());//debug
+                ErrorList[2] = rdn.Next(richTextBox1.Lines.Count());//debug
                 
-                _totalTokenize += DebugStopwatch.Elapsed.Ticks;//Debug
-                DebugStopwatch.Restart();//Debug
+                _totalTokenize += _debugStopwatch.Elapsed.Ticks;//Debug
+                _debugStopwatch.Restart();//Debug
 
                 var changedTokens = CheckForChanges();
                 
-                _totalCheckChanges += DebugStopwatch.Elapsed.Ticks;//Debug
-                DebugStopwatch.Restart();//Debug
+                _totalCheckChanges += _debugStopwatch.Elapsed.Ticks;//Debug
+                _debugStopwatch.Restart();//Debug
 
                 var totalUpdated = ReDraw(changedTokens);
 
-                InParser = false;
+                _inParser = false;
 
-                _totalApplyColors += DebugStopwatch.Elapsed.Ticks;//Debug
-                DebugStopwatch.Restart();//Debug
+                _totalApplyColors += _debugStopwatch.Elapsed.Ticks;//Debug
+                _debugStopwatch.Restart();//Debug
 
-                DebugStopwatch.Stop();//debug
+                _debugStopwatch.Stop();//debug
                 Debug.WriteLine("Tokenize: " + (1000 * _totalTokenize / (float)Stopwatch.Frequency).ToString("F6") + "ms");//debug
                 Debug.WriteLine("CheckChanges: " + (1000 * _totalCheckChanges / (float)Stopwatch.Frequency).ToString("F6") + "ms");//debug
                 Debug.WriteLine("ApplyColors: " + (1000 * _totalApplyColors / (float)Stopwatch.Frequency).ToString("F6") + "ms");//debug
