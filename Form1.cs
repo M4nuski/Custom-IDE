@@ -57,6 +57,22 @@ namespace ShaderIDE
         public char EscapeChar;
         public SFontColor Style;
     }
+
+    public struct SToken
+    {
+        public int Offset;
+        public string Text;
+        public SFontColor Style;
+
+        public static bool operator ==(SToken a, SToken b)
+        {
+            return (a.Text == b.Text) & (a.Style == b.Style);
+        }
+        public static bool operator !=(SToken a, SToken b)
+        {
+            return (a.Text != b.Text) | (a.Style != b.Style);
+        }
+    }
     #endregion
 
     public partial class Form1 : Form
@@ -66,24 +82,9 @@ namespace ShaderIDE
         private Int64 _totalTokenize, _totalCheckChanges, _totalApplyColors;
         #endregion
 
-        private struct SToken
-        {
-            public int Offset;
-            public string Text;
-            public SFontColor Style;
-
-            public static bool operator ==(SToken a, SToken b)
-            {
-                return (a.Text == b.Text) & (a.Style == b.Style);
-            }
-            public static bool operator !=(SToken a, SToken b)
-            {
-                return (a.Text != b.Text) | (a.Style != b.Style);
-            }
-        }
-
         #region Lists
-        private List<SToken> _tokenList, _lastTokenList;
+        public List<SToken> TokenList;
+        private List<SToken> _lastTokenList;
         public SDelimiter[] Delimiters;
         public SWord[] Words;
         public SSpan[] Spans;
@@ -98,10 +99,12 @@ namespace ShaderIDE
 
         public SFontColor
             DefaultTextFont,    //default fallback font style / richeditbox font.
-            ValuesFont,         //font values (int bool float etc)
+            ValuesFont,         //values font (int bool float etc)
             DelFont, OpeFont,   //delimiters fonts
             ResFont, TypFont, FunFont,  //words fonts
             ComFont, StrFont, TdoFont;   // spans fonts
+
+        private WordStyleDialog styleDialog_Words = new WordStyleDialog();
         #endregion
 
         #region Parsing / Tokens
@@ -354,7 +357,7 @@ namespace ShaderIDE
         {
             try
             {
-                var writer = new XmlSerializer(_tokenList.GetType());
+                var writer = new XmlSerializer(TokenList.GetType());
                 var file = new StreamWriter("Tokens.xml");
                 writer.Serialize(file, Words);
                 file.Close();
@@ -402,15 +405,15 @@ namespace ShaderIDE
         }
 
         private void richTextBox1_FontChanged(object sender, EventArgs e)
-        {
-            DefaultTextFont.StyleColor = richTextBox1.ForeColor;
-            DefaultTextFont.StyleFont = richTextBox1.Font;
+        {   
+            //TODO rebuild all fonts with DefaultTextFont as prototype.
+            DefaultTextFont = new SFontColor(richTextBox1.Font, richTextBox1.ForeColor);
             richEditBox_ReDraw(sender, e);
         }
         #endregion
 
         #region Editor Update
-        private void button1_Click(object sender, EventArgs e) // Force Parsing
+        private void force_Redraw(object sender, EventArgs e) // Force Parsing
         {
             _lastTokenList = new List<SToken>(); //Clear old list
             _inParser = false;
@@ -419,10 +422,10 @@ namespace ShaderIDE
 
         private void richTextBox1_Click(object sender, EventArgs e)
         {
-            if (!_inParser & (_tokenList != null))
+            if (!_inParser & (TokenList != null))
             {
                 _inParser = true;
-                var dummyArray = new bool[_tokenList.Count];
+                var dummyArray = new bool[TokenList.Count];
                 ReDraw(dummyArray);
                 _inParser = false;
             }
@@ -430,54 +433,54 @@ namespace ShaderIDE
 
         private bool[] CheckForChanges()
         {
-            var result = new bool[_tokenList.Count];
+            var result = new bool[TokenList.Count];
 
-            if ((_tokenList.Count > 0) & (_lastTokenList.Count > 0))
+            if ((TokenList.Count > 0) & (_lastTokenList.Count > 0))
             {
 
-                if (_tokenList.Count >= _lastTokenList.Count)
+                if (TokenList.Count >= _lastTokenList.Count)
                 {
                     var firstMismatch = 0;
-                    var lastMismatch = _tokenList.Count - 1;
-                    var tokenCountsDelta = _tokenList.Count - _lastTokenList.Count;
+                    var lastMismatch = TokenList.Count - 1;
+                    var tokenCountsDelta = TokenList.Count - _lastTokenList.Count;
 
-                    while ((_tokenList[firstMismatch] == _lastTokenList[firstMismatch]) & (firstMismatch < _lastTokenList.Count - 1))
+                    while ((TokenList[firstMismatch] == _lastTokenList[firstMismatch]) & (firstMismatch < _lastTokenList.Count - 1))
                     {
                         firstMismatch++;
                     }
-                    while ((_tokenList[lastMismatch] == _lastTokenList[lastMismatch - tokenCountsDelta]) & (lastMismatch > firstMismatch))
+                    while ((TokenList[lastMismatch] == _lastTokenList[lastMismatch - tokenCountsDelta]) & (lastMismatch > firstMismatch))
                     {
                         lastMismatch--;
                     }
 
-                    for (var j = 0; j < _tokenList.Count; j++)
+                    for (var j = 0; j < TokenList.Count; j++)
                     {
                         result[j] = (j >= firstMismatch) & (j <= lastMismatch);
                     }
 
-                    Debug.WriteLine("New > Old - First: " + firstMismatch + " - Last: " + lastMismatch + " - Total: " + _tokenList.Count);
+                    Debug.WriteLine("New > Old - First: " + firstMismatch + " - Last: " + lastMismatch + " - Total: " + TokenList.Count);
                 }
                 else
                 {
                     var firstMismatch = 0;
                     var lastMismatch = _lastTokenList.Count - 1;
-                    var tokenCountsDelta = _lastTokenList.Count - _tokenList.Count;
+                    var tokenCountsDelta = _lastTokenList.Count - TokenList.Count;
 
-                    while ((_lastTokenList[firstMismatch] == _tokenList[firstMismatch]) & (firstMismatch < _tokenList.Count - 1))
+                    while ((_lastTokenList[firstMismatch] == TokenList[firstMismatch]) & (firstMismatch < TokenList.Count - 1))
                     {
                         firstMismatch++;
                     }
-                    while ((_lastTokenList[lastMismatch] == _tokenList[lastMismatch - tokenCountsDelta]) & (lastMismatch > firstMismatch))
+                    while ((_lastTokenList[lastMismatch] == TokenList[lastMismatch - tokenCountsDelta]) & (lastMismatch > firstMismatch))
                     {
                         lastMismatch--;
                     }
 
-                    for (var j = 0; j < _tokenList.Count; j++)
+                    for (var j = 0; j < TokenList.Count; j++)
                     {
                         result[j] = (j >= firstMismatch) & (j <= lastMismatch);
                     }
 
-                    Debug.WriteLine("New < Old - First: " + firstMismatch + " - Last: " + lastMismatch + " - Total: " + _tokenList.Count);
+                    Debug.WriteLine("New < Old - First: " + firstMismatch + " - Last: " + lastMismatch + " - Total: " + TokenList.Count);
                 }
             }
             else
@@ -488,7 +491,7 @@ namespace ShaderIDE
                 }
             }
 
-            _lastTokenList = new List<SToken>(_tokenList);
+            _lastTokenList = new List<SToken>(TokenList);
             return result;
         }
 
@@ -529,13 +532,13 @@ namespace ShaderIDE
             richTextBox1.SelectionBackColor = BackgroundColor;
             
             // Update Colors
-            for (var i = 0; i < _tokenList.Count; i++)
-                if (changedList[i] | checkBox1.Checked)
+            for (var i = 0; i < TokenList.Count; i++)
+                if (changedList[i])
                 {
                     totalReDrawn++;//Debug
-                    richTextBox1.Select(_tokenList[i].Offset, _tokenList[i].Text.Length);
-                    richTextBox1.SelectionColor = _tokenList[i].Style.StyleColor;
-                    richTextBox1.SelectionFont = _tokenList[i].Style.StyleFont;
+                    richTextBox1.Select(TokenList[i].Offset, TokenList[i].Text.Length);
+                    richTextBox1.SelectionColor = TokenList[i].Style.StyleColor;
+                    richTextBox1.SelectionFont = TokenList[i].Style.StyleFont;
                 }
 
             // Current line Color
@@ -575,7 +578,7 @@ namespace ShaderIDE
                 _totalTokenize = 0;//debug
                 _debugStopwatch.Restart();//debug
 
-                _tokenList = TokenizeLines(richTextBox1.Lines);
+                TokenList = TokenizeLines(richTextBox1.Lines);
 
 
                 var rdn = new Random();//debug
@@ -609,6 +612,72 @@ namespace ShaderIDE
             }
         }
         #endregion
+
+        #region Menu Strip Color and Style Settings
+        private void styleToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            fontDialog1.Font = richTextBox1.Font;
+            if (fontDialog1.ShowDialog() == DialogResult.OK)
+            {
+                richTextBox1.Font = fontDialog1.Font;
+                //TODO update all other token's font
+                force_Redraw(sender, e);
+            }
+        }
+
+        private void textToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            colorDialog1.Color = richTextBox1.ForeColor;
+            if (colorDialog1.ShowDialog() == DialogResult.OK)
+            {
+                richTextBox1.ForeColor = colorDialog1.Color;
+                DefaultTextFont.StyleColor = colorDialog1.Color;
+                force_Redraw(sender, e);
+            }
+        }
+
+        private void backgroundToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            colorDialog1.Color = richTextBox1.BackColor;
+            if (colorDialog1.ShowDialog() == DialogResult.OK)
+            {
+                richTextBox1.BackColor = colorDialog1.Color;
+                BackgroundColor = colorDialog1.Color;
+                force_Redraw(sender, e);
+            }
+        }
+
+        private void currentBackgroundToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            colorDialog1.Color = CurrentLineColor;
+            if (colorDialog1.ShowDialog() == DialogResult.OK)
+            {
+                CurrentLineColor = colorDialog1.Color;
+                force_Redraw(sender, e);
+            }
+        }
+
+        private void errorBackgroundToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            colorDialog1.Color = ErrorLineColor;
+            if (colorDialog1.ShowDialog() == DialogResult.OK)
+            {
+                ErrorLineColor = colorDialog1.Color;
+                force_Redraw(sender, e);
+            }
+        }
+
+        private void numbersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            styleDialog_Words.PrevireBackColor = BackgroundColor;
+            styleDialog_Words.DialogResultWord.Style = ValuesFont;
+            if (styleDialog_Words.ShowDialog() == DialogResult.OK)
+            {
+                ValuesFont = styleDialog_Words.DialogResultWord.Style;
+                force_Redraw(sender, e);
+            }
+        }
+#endregion 
 
     }//class
 }//namespace
