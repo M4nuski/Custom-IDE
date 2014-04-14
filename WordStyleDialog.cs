@@ -22,7 +22,8 @@ namespace ShaderIDE
 
         public DialogResult ShowDialog(SWord wordsToUpdate, Color backGroundColor)
         { // Polymorphed to include default display
-            //fill form with current data
+
+          // Fill form with current data
             textBox2.Text = wordsToUpdate.Name;
             textBox1.Lines = wordsToUpdate.Words;
 

@@ -9,7 +9,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
-using System.Xml.Serialization;
 
 namespace ShaderIDE
 {
@@ -153,13 +152,13 @@ namespace ShaderIDE
         private List<SToken> TokenizeLinePerSpan(string line, int offset)
         {
             var result = new List<SToken>();
-            var spanStartIndices = new int[Spans.Count()];
+            var spanStartIndices = new int[Spans.Length];
             var lineOffset = 0;
 
             while (line.Length > 0)
             {
                 // Get list of indexOf for each span StartDelimiters
-                for (var j = 0; j < Spans.Count(); j++)
+                for (var j = 0; j < Spans.Length; j++)
                 {
                     spanStartIndices[j] = line.IndexOf(Spans[j].StartDelimiter, StringComparison.Ordinal);
                 } 
@@ -342,76 +341,6 @@ namespace ShaderIDE
         }
         #endregion
         
-        #region Font and Styles Selections
-        //TODO remake with dialogs
-        private void button2_Click(object sender, EventArgs e)
-        {
-            colorDialog1.Color = DefaultTextFont.StyleColor;
-            if (colorDialog1.ShowDialog() == DialogResult.OK)
-            {
-                richTextBox1.ForeColor = colorDialog1.Color;
-            }
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                var writer = new XmlSerializer(TokenList.GetType());
-                var file = new StreamWriter("Tokens.xml");
-                writer.Serialize(file, Words);
-                file.Close();
-            }
-            catch (Exception exp)
-            {
-                Debug.WriteLine(exp.Message);
-            }
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            colorDialog1.Color = FunFont.StyleColor;
-            if (colorDialog1.ShowDialog() == DialogResult.OK)
-            {
-                FunFont.StyleColor = colorDialog1.Color;
-            }
-        }
-
-        private void button5_Click(object sender, EventArgs e)
-        {
-            colorDialog1.Color = ResFont.StyleColor;
-            if (colorDialog1.ShowDialog() == DialogResult.OK)
-            {
-                ResFont.StyleColor = colorDialog1.Color;
-            }
-        }
-
-        private void button6_Click(object sender, EventArgs e)
-        {
-            colorDialog1.Color = ValuesFont.StyleColor;
-            if (colorDialog1.ShowDialog() == DialogResult.OK)
-            {
-                ValuesFont.StyleColor = colorDialog1.Color;
-            }
-        }
-
-        private void button7_Click(object sender, EventArgs e)
-        {
-            colorDialog1.Color = TypFont.StyleColor;
-            if (colorDialog1.ShowDialog() == DialogResult.OK)
-            {
-                TypFont.StyleColor = colorDialog1.Color;
-            }
-        }
-
-        private void richTextBox1_FontChanged(object sender, EventArgs e)
-        {   
-            //TODO rebuild all fonts with DefaultTextFont as prototype.
-            DefaultTextFont = new SFontColor(richTextBox1.Font, richTextBox1.ForeColor);
-            richEditBox_ReDraw(sender, e);
-        }
-        #endregion
-
         #region Editor Update
         private void force_Redraw(object sender, EventArgs e) // Force Parsing
         {
@@ -497,7 +426,7 @@ namespace ShaderIDE
 
         private void GetSelectionFromLine(int lineNumber)
         {
-            var maxLine = richTextBox1.Lines.Count()-1;
+            var maxLine = richTextBox1.Lines.Length - 1;
             if (lineNumber < maxLine)
             {
                 _lineSelectionStart = richTextBox1.GetFirstCharIndexFromLine(lineNumber);
@@ -585,7 +514,7 @@ namespace ShaderIDE
                 ErrorList = new int[25];//debug
                 for (var i = 0; i < ErrorList.Length; i++)
                 {
-                    ErrorList[i] = rdn.Next(richTextBox1.Lines.Count());
+                    ErrorList[i] = rdn.Next(richTextBox1.Lines.Length);
                 }
                 
                 _totalTokenize += _debugStopwatch.Elapsed.Ticks;//Debug
@@ -607,7 +536,7 @@ namespace ShaderIDE
                 Debug.WriteLine("Tokenize: " + (1000 * _totalTokenize / (float)Stopwatch.Frequency).ToString("F6") + "ms");//debug
                 Debug.WriteLine("CheckChanges: " + (1000 * _totalCheckChanges / (float)Stopwatch.Frequency).ToString("F6") + "ms");//debug
                 Debug.WriteLine("ApplyColors: " + (1000 * _totalApplyColors / (float)Stopwatch.Frequency).ToString("F6") + "ms");//debug
-                Debug.WriteLine("TokenUpdated: " + totalUpdated + " / " + changedTokens.Count());//debug
+                Debug.WriteLine("TokenUpdated: " + totalUpdated + " / " + changedTokens.Length);//debug
 
             }
         }
@@ -620,7 +549,26 @@ namespace ShaderIDE
             if (fontDialog1.ShowDialog() == DialogResult.OK)
             {
                 richTextBox1.Font = fontDialog1.Font;
-                //TODO update all other token's font
+
+                //Update all tokens to use this new font.
+                for (var i = 0; i < Delimiters.Length; i++)
+                {
+                    var backupStyle = Delimiters[i].Style.StyleFont.Style;
+                    Delimiters[i].Style.StyleFont = new Font(richTextBox1.Font, backupStyle);
+                }
+
+                for (var i = 0; i < Words.Length; i++)
+                {
+                    var backupStyle = Words[i].Style.StyleFont.Style;
+                    Words[i].Style.StyleFont = new Font(richTextBox1.Font, backupStyle);
+                }
+
+                for (var i = 0; i < Spans.Length; i++)
+                {
+                    var backupStyle = Spans[i].Style.StyleFont.Style;
+                    Spans[i].Style.StyleFont = new Font(richTextBox1.Font, backupStyle);
+                }
+
                 force_Redraw(sender, e);
             }
         }
@@ -638,7 +586,7 @@ namespace ShaderIDE
 
         private void backgroundToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            colorDialog1.Color = richTextBox1.BackColor;
+            colorDialog1.Color = BackgroundColor;
             if (colorDialog1.ShowDialog() == DialogResult.OK)
             {
                 richTextBox1.BackColor = colorDialog1.Color;
@@ -677,7 +625,17 @@ namespace ShaderIDE
                 force_Redraw(sender, e);
             }
         }
-#endregion 
 
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //TODO with a better system than XMLSerializer
+        }
+
+        private void loadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //TODO with a better system than XMLSerializer
+        }
+
+        #endregion 
     }//class
 }//namespace
