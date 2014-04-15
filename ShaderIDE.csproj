@@ -53,6 +53,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringSafeRemove.cs" />
+    <Compile Include="ThemeStructs.cs" />
     <Compile Include="WordStyleDialog.cs">
       <SubType>Form</SubType>
     </Compile>

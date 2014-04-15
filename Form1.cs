@@ -13,68 +13,7 @@ using System.Windows.Forms.VisualStyles;
 namespace ShaderIDE
 {
 
-    #region Structs
-    public struct SFontColor
-    {
-        public Font StyleFont;
-        public Color StyleColor;
-
-        public SFontColor(Font styleFont, Color styleColor)
-        {
-            StyleFont = styleFont;
-            StyleColor = styleColor;
-        }
-        public static bool operator ==(SFontColor a, SFontColor b)
-        {
-            return (a.StyleColor == b.StyleColor) & (a.StyleFont.Equals(b.StyleFont));
-        }
-        public static bool operator !=(SFontColor a, SFontColor b)
-        {
-            return (a.StyleColor != b.StyleColor) | !(a.StyleFont.Equals(b.StyleFont));
-        }
-    }
-
-    public struct SDelimiter
-    {
-        public string Name;
-        public char[] Tokens;
-        public SFontColor Style;
-    }
-
-    public struct SWord
-    {
-        public string Name;
-        public string[] Words;
-        public SFontColor Style;
-    }
-
-    public struct SSpan
-    {
-        public string Name;
-        public string StartDelimiter;
-        public string StopDelimiter; //or EOL
-        public char EscapeChar;
-        public SFontColor Style;
-    }
-
-    public struct SToken
-    {
-        public int Offset;
-        public string Text;
-        public SFontColor Style;
-
-        public static bool operator ==(SToken a, SToken b)
-        {
-            return (a.Text == b.Text) & (a.Style == b.Style);
-        }
-        public static bool operator !=(SToken a, SToken b)
-        {
-            return (a.Text != b.Text) | (a.Style != b.Style);
-        }
-    }
-    #endregion
-
-    public partial class Form1 : Form
+   public partial class Form1 : Form
     {
         #region Debug Fields
         private readonly Stopwatch _debugStopwatch = new Stopwatch();
@@ -84,12 +23,12 @@ namespace ShaderIDE
         #region Lists
         public List<SToken> TokenList;
         private List<SToken> _lastTokenList;
-        public SDelimiter[] Delimiters;
-        public SWord[] Words;
-        public SSpan[] Spans;
         #endregion
 
         #region Properties
+
+       public STheme Theme;
+
         private Point _boxOriginPoint; // RichEditBox client area point
         public Color BackgroundColor, CurrentLineColor, ErrorLineColor;
         public int[] ErrorList;
@@ -116,7 +55,7 @@ namespace ShaderIDE
 
         private SFontColor GetDelimiterFont(char c)
         {
-            foreach (var delimiterStruct in Delimiters)
+            foreach (var delimiterStruct in Theme.Delimiters)
             {
                 if (delimiterStruct.Tokens.Contains(c)) return delimiterStruct.Style;
             }
@@ -125,7 +64,7 @@ namespace ShaderIDE
 
         private SFontColor GetWordFont(string s)
         {
-            foreach (var wordStruct in Words)
+            foreach (var wordStruct in Theme.Words)
             {
                 if (wordStruct.Words.Contains(s)) return wordStruct.Style;
             }
@@ -140,7 +79,7 @@ namespace ShaderIDE
 
             foreach (var line in lines)
             {
-                result.AddRange(Spans.Any(currentSpan => line.Contains(currentSpan.StartDelimiter))
+                result.AddRange(Theme.Spans.Any(currentSpan => line.Contains(currentSpan.StartDelimiter))
                     ? TokenizeLinePerSpan(line, textOffset)
                     : TokenizeLinePerDelimiter(line, textOffset));
 
@@ -152,15 +91,15 @@ namespace ShaderIDE
         private List<SToken> TokenizeLinePerSpan(string line, int offset)
         {
             var result = new List<SToken>();
-            var spanStartIndices = new int[Spans.Length];
+            var spanStartIndices = new int[Theme.Spans.Length];
             var lineOffset = 0;
 
             while (line.Length > 0)
             {
                 // Get list of indexOf for each span StartDelimiters
-                for (var j = 0; j < Spans.Length; j++)
+                for (var j = 0; j < Theme.Spans.Length; j++)
                 {
-                    spanStartIndices[j] = line.IndexOf(Spans[j].StartDelimiter, StringComparison.Ordinal);
+                    spanStartIndices[j] = line.IndexOf(Theme.Spans[j].StartDelimiter, StringComparison.Ordinal);
                 } 
                 // Find the first one on the line
                 var firstSpanStartIndex = line.Length;
@@ -187,20 +126,20 @@ namespace ShaderIDE
                     }
 
                     // Find end of current Span
-                    var spanEndIndex = line.IndexOf(Spans[firstSpanType].StopDelimiter, Spans[firstSpanType].StartDelimiter.Length, StringComparison.Ordinal);
+                    var spanEndIndex = line.IndexOf(Theme.Spans[firstSpanType].StopDelimiter, Theme.Spans[firstSpanType].StartDelimiter.Length, StringComparison.Ordinal);
                     if (spanEndIndex == -1) spanEndIndex = line.Length;
 
                     // Skip Escape Char
-                    while ((spanEndIndex < line.Length) & (line[spanEndIndex - 1] == Spans[firstSpanType].EscapeChar))
+                    while ((spanEndIndex < line.Length) & (line[spanEndIndex - 1] == Theme.Spans[firstSpanType].EscapeChar))
                     {
-                        spanEndIndex = line.IndexOf(Spans[firstSpanType].StopDelimiter, spanEndIndex + 1, StringComparison.Ordinal);
+                        spanEndIndex = line.IndexOf(Theme.Spans[firstSpanType].StopDelimiter, spanEndIndex + 1, StringComparison.Ordinal);
                         if (spanEndIndex == -1) spanEndIndex = line.Length;
                     }
 
                     // Include Stop Delimiter
                     if (spanEndIndex < line.Length)
                     {
-                        spanEndIndex += Spans[firstSpanType].StopDelimiter.Length;
+                        spanEndIndex += Theme.Spans[firstSpanType].StopDelimiter.Length;
                         if (spanEndIndex > line.Length) spanEndIndex = line.Length;
                     }
 
@@ -209,7 +148,7 @@ namespace ShaderIDE
                     {
                         Offset = offset + lineOffset,
                         Text = line.SafeRemove(spanEndIndex),
-                        Style = Spans[firstSpanType].Style
+                        Style = Theme.Spans[firstSpanType].Style
                     });
 
                     // Increase Line Pointer to next char
@@ -231,7 +170,7 @@ namespace ShaderIDE
             var linePointer = 0;
             for (var i = 0; i < line.Length; i++)
             {
-                if (Delimiters.Any(delimiterStuct => delimiterStuct.Tokens.Contains(line[i])))
+                if (Theme.Delimiters.Any(delimiterStuct => delimiterStuct.Tokens.Contains(line[i])))
                 {
                     if (linePointer != i)
                     {
@@ -275,7 +214,8 @@ namespace ShaderIDE
             DefaultTextFont = new SFontColor(richTextBox1.Font, richTextBox1.ForeColor);
             ValuesFont = new SFontColor(new Font(richTextBox1.Font, FontStyle.Regular), Color.RoyalBlue);
 
-            Delimiters = new[]
+            Theme.Name = "GLSL Test Theme";
+            Theme.Delimiters = new[]
             {
                 new SDelimiter { //whitespaces and breaks
                     Name = "Breaks",
@@ -300,7 +240,7 @@ namespace ShaderIDE
             TypFont = new SFontColor(new Font(richTextBox1.Font, FontStyle.Regular), Color.Yellow);
             FunFont = new SFontColor(new Font(richTextBox1.Font, FontStyle.Bold), Color.Lime);
 
-            Words = new[]
+            Theme.Words = new[]
             {
                 new SWord
                 {   Name = "Reserved",
@@ -321,7 +261,7 @@ namespace ShaderIDE
             StrFont = new SFontColor(new Font(richTextBox1.Font, FontStyle.Bold), Color.Violet);
             TdoFont = new SFontColor(new Font(richTextBox1.Font, FontStyle.Underline), Color.DeepSkyBlue);
 
-            Spans = new[]
+            Theme.Spans = new[]
             {   new SSpan
                 {Name = "TODO Comment", StartDelimiter = "//TODO", StopDelimiter = "\n", EscapeChar = '\n', Style = TdoFont},
                 new SSpan
@@ -551,22 +491,22 @@ namespace ShaderIDE
                 richTextBox1.Font = fontDialog1.Font;
 
                 //Update all tokens to use this new font.
-                for (var i = 0; i < Delimiters.Length; i++)
+                for (var i = 0; i < Theme.Delimiters.Length; i++)
                 {
-                    var backupStyle = Delimiters[i].Style.StyleFont.Style;
-                    Delimiters[i].Style.StyleFont = new Font(richTextBox1.Font, backupStyle);
+                    var backupStyle = Theme.Delimiters[i].Style.StyleFont.Style;
+                    Theme.Delimiters[i].Style.StyleFont = new Font(richTextBox1.Font, backupStyle);
                 }
 
-                for (var i = 0; i < Words.Length; i++)
+                for (var i = 0; i < Theme.Words.Length; i++)
                 {
-                    var backupStyle = Words[i].Style.StyleFont.Style;
-                    Words[i].Style.StyleFont = new Font(richTextBox1.Font, backupStyle);
+                    var backupStyle = Theme.Words[i].Style.StyleFont.Style;
+                    Theme.Words[i].Style.StyleFont = new Font(richTextBox1.Font, backupStyle);
                 }
 
-                for (var i = 0; i < Spans.Length; i++)
+                for (var i = 0; i < Theme.Spans.Length; i++)
                 {
-                    var backupStyle = Spans[i].Style.StyleFont.Style;
-                    Spans[i].Style.StyleFont = new Font(richTextBox1.Font, backupStyle);
+                    var backupStyle = Theme.Spans[i].Style.StyleFont.Style;
+                    Theme.Spans[i].Style.StyleFont = new Font(richTextBox1.Font, backupStyle);
                 }
 
                 force_Redraw(sender, e);
@@ -628,12 +568,12 @@ namespace ShaderIDE
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //TODO with a better system than XMLSerializer
+            ThemeStructs.SaveTheme(Theme, "Test.txt");
         }
 
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //TODO with a better system than XMLSerializer
+            Theme = ThemeStructs.LoadTheme("Test.txt");
         }
 
         #endregion 
