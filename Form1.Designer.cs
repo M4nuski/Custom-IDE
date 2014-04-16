@@ -70,10 +70,11 @@
             this.richTextBox1.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.richTextBox1.ForeColor = System.Drawing.Color.White;
             this.richTextBox1.HideSelection = false;
-            this.richTextBox1.Location = new System.Drawing.Point(0, 84);
+            this.richTextBox1.Location = new System.Drawing.Point(1, 28);
+            this.richTextBox1.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
-            this.richTextBox1.Size = new System.Drawing.Size(1196, 759);
+            this.richTextBox1.Size = new System.Drawing.Size(1196, 812);
             this.richTextBox1.TabIndex = 12;
             this.richTextBox1.TabStop = false;
             this.richTextBox1.Text = resources.GetString("richTextBox1.Text");
@@ -107,14 +108,14 @@
             // loadToolStripMenuItem
             // 
             this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
-            this.loadToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(124, 24);
             this.loadToolStripMenuItem.Text = "Load...";
             this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(124, 24);
             this.saveToolStripMenuItem.Text = "Save...";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
@@ -124,7 +125,7 @@
             this.styleToolStripMenuItem1,
             this.colorsToolStripMenuItem1});
             this.styleToolStripMenuItem.Name = "styleToolStripMenuItem";
-            this.styleToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
+            this.styleToolStripMenuItem.Size = new System.Drawing.Size(124, 24);
             this.styleToolStripMenuItem.Text = "Font";
             // 
             // styleToolStripMenuItem1
@@ -181,7 +182,7 @@
             this.spansToolStripMenuItem1,
             this.numbersToolStripMenuItem});
             this.tokensToolStripMenuItem1.Name = "tokensToolStripMenuItem1";
-            this.tokensToolStripMenuItem1.Size = new System.Drawing.Size(152, 24);
+            this.tokensToolStripMenuItem1.Size = new System.Drawing.Size(124, 24);
             this.tokensToolStripMenuItem1.Text = "Tokens";
             // 
             // delimitersToolStripMenuItem1
@@ -269,7 +270,7 @@
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Custom IDE / GLSL Shader";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);

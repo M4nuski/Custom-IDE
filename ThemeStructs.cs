@@ -11,88 +11,99 @@ using System.IO;
 namespace ShaderIDE
 {
     #region Structs
-    public struct SFontColor
+    public struct FontAndColorStruct
     {
         public Font StyleFont;
         public Color StyleColor;
 
-        public SFontColor(Font styleFont, Color styleColor)
+        public FontAndColorStruct(Font font, Color color)
         {
-            StyleFont = styleFont;
-            StyleColor = styleColor;
+            StyleFont = font;
+            StyleColor = color;
         }
-        public static bool operator ==(SFontColor a, SFontColor b)
+        public static bool operator ==(FontAndColorStruct a, FontAndColorStruct b)
         {
             return (a.StyleColor == b.StyleColor) & (a.StyleFont.Equals(b.StyleFont));
         }
-        public static bool operator !=(SFontColor a, SFontColor b)
+        public static bool operator !=(FontAndColorStruct a, FontAndColorStruct b)
         {
             return (a.StyleColor != b.StyleColor) | !(a.StyleFont.Equals(b.StyleFont));
         }
     }
 
-    public struct SDelimiter
+    public struct ThemeStruct // Main struct
     {
         public string Name;
-        public char[] Tokens;
-        public SFontColor Style;
+        public DelimiterStruct[] Delimiters;
+        public WordStruct[] Words;
+        public SpanStruct[] Spans;
+        public FontAndColorStruct TextStyle, ValueStyle;
+        public Color BackgroundColor, CurrentLineColor, ErrorLineColor;
     }
 
-    public struct SWord
+    public struct DelimiterStruct
     {
         public string Name;
-        public string[] Words;
-        public SFontColor Style;
+        public char[] Keychars;
+        public FontAndColorStruct Style;
     }
 
-    public struct SSpan
+    public struct WordStruct
     {
         public string Name;
-        public string StartDelimiter;
-        public string StopDelimiter; //or EOL
+        public string[] Keywords;
+        public FontAndColorStruct Style;
+    }
+
+    public struct SpanStruct
+    {
+        public string Name;
+        public string StartKeyword;
+        public string StopKeyword; //or EOL
         public char EscapeChar;
-        public SFontColor Style;
+        public FontAndColorStruct Style;
     }
 
-    public struct SToken
+    public struct TokenStruct
     {
         public int Offset;
         public string Text;
-        public SFontColor Style;
+        public FontAndColorStruct Style;
 
-        public static bool operator ==(SToken a, SToken b)
+        public static bool operator ==(TokenStruct a, TokenStruct b)
         {
             return (a.Text == b.Text) & (a.Style == b.Style);
         }
-        public static bool operator !=(SToken a, SToken b)
+        public static bool operator !=(TokenStruct a, TokenStruct b)
         {
             return (a.Text != b.Text) | (a.Style != b.Style);
         }
-
-    }
-
-    public struct STheme // Main struct
-    {
-        public string Name;
-        public SDelimiter[] Delimiters;
-        public SWord[] Words;
-        public SSpan[] Spans;
     }
     #endregion
-
-
-
-
 
     static class ThemeStructs
     {
         #region Helpers Methods
-        static private void WriteStyle(SFontColor style, BinaryWriter writer)
+
+        static private void WriteColor(Color color, BinaryWriter writer)
         {
-            writer.Write(style.StyleColor.A.ToString(CultureInfo.InvariantCulture));
-            writer.Write(style.StyleColor.R.ToString(CultureInfo.InvariantCulture));
-            writer.Write(style.StyleColor.G.ToString(CultureInfo.InvariantCulture));
-            writer.Write(style.StyleColor.B.ToString(CultureInfo.InvariantCulture));
+            writer.Write(color.A.ToString(CultureInfo.InvariantCulture));
+            writer.Write(color.R.ToString(CultureInfo.InvariantCulture));
+            writer.Write(color.G.ToString(CultureInfo.InvariantCulture));
+            writer.Write(color.B.ToString(CultureInfo.InvariantCulture));
+        }
+
+        static private Color ReadColor(BinaryReader reader)
+        {
+            return Color.FromArgb(  Convert.ToInt32(reader.ReadString()),
+                                    Convert.ToInt32(reader.ReadString()),
+                                    Convert.ToInt32(reader.ReadString()),
+                                    Convert.ToInt32(reader.ReadString())    );
+        }
+
+        static private void WriteStyle(FontAndColorStruct style, BinaryWriter writer)
+        {
+            WriteColor(style.StyleColor, writer);
             writer.Write(style.StyleFont.FontFamily.Name);
             writer.Write(style.StyleFont.Size.ToString(CultureInfo.InvariantCulture));
             writer.Write(style.StyleFont.Bold.ToString());
@@ -101,14 +112,11 @@ namespace ShaderIDE
             writer.Write(style.StyleFont.Underline.ToString());
         }
 
-        static private SFontColor ReadStyle(BinaryReader reader)
+        static private FontAndColorStruct ReadStyle(BinaryReader reader)
         {
-            var style = new SFontColor
+            var style = new FontAndColorStruct
             {
-                StyleColor = Color.FromArgb(Convert.ToInt32(reader.ReadString()),
-                    Convert.ToInt32(reader.ReadString()),
-                    Convert.ToInt32(reader.ReadString()),
-                    Convert.ToInt32(reader.ReadString()))
+                StyleColor = ReadColor(reader)
             };
 
             var fontName = reader.ReadString();
@@ -125,7 +133,7 @@ namespace ShaderIDE
         }
         #endregion
 
-        static public void SaveTheme(STheme theme, string filename)
+        static public void SaveTheme(ThemeStruct theme, string filename)
         {
             var fileStream = File.Create(filename);
             var writer = new BinaryWriter(fileStream);
@@ -139,10 +147,10 @@ namespace ShaderIDE
             for (var i = 0; i < theme.Delimiters.Length; i++)
             {
                 writer.Write(theme.Delimiters[i].Name);
-                writer.Write(theme.Delimiters[i].Tokens.Length.ToString(CultureInfo.InvariantCulture));
-                for (var j = 0; j < theme.Delimiters[i].Tokens.Length; j++)
+                writer.Write(theme.Delimiters[i].Keychars.Length.ToString(CultureInfo.InvariantCulture));
+                for (var j = 0; j < theme.Delimiters[i].Keychars.Length; j++)
                 {
-                    writer.Write(Convert.ToInt32(theme.Delimiters[i].Tokens[j]).ToString(CultureInfo.InvariantCulture));
+                    writer.Write(Convert.ToInt32(theme.Delimiters[i].Keychars[j]).ToString(CultureInfo.InvariantCulture));
                 }
                 WriteStyle(theme.Delimiters[i].Style, writer);
             }
@@ -152,10 +160,10 @@ namespace ShaderIDE
             for (var i = 0; i < theme.Words.Length; i++)
             {
                 writer.Write(theme.Words[i].Name);
-                writer.Write(theme.Words[i].Words.Length.ToString(CultureInfo.InvariantCulture));
-                for (var j = 0; j < theme.Words[i].Words.Length; j++)
+                writer.Write(theme.Words[i].Keywords.Length.ToString(CultureInfo.InvariantCulture));
+                for (var j = 0; j < theme.Words[i].Keywords.Length; j++)
                 {
-                    writer.Write(theme.Words[i].Words[j]);
+                    writer.Write(theme.Words[i].Keywords[j]);
                 }
                 WriteStyle(theme.Words[i].Style, writer);
             }
@@ -165,18 +173,30 @@ namespace ShaderIDE
             for (var i = 0; i < theme.Spans.Length; i++)
             {
                 writer.Write(theme.Spans[i].Name);
-                writer.Write(theme.Spans[i].StartDelimiter);
-                writer.Write(theme.Spans[i].StopDelimiter);
+                writer.Write(theme.Spans[i].StartKeyword);
+                writer.Write(theme.Spans[i].StopKeyword);
                 writer.Write(Convert.ToByte(theme.Spans[i].EscapeChar).ToString(CultureInfo.InvariantCulture));
                 WriteStyle(theme.Spans[i].Style, writer);
             }
 
+            writer.Write("TextStyle");
+            WriteStyle(theme.TextStyle, writer);
+            writer.Write("ValueStyle");
+            WriteStyle(theme.ValueStyle, writer);
+            writer.Write("BackgroundColor");
+            WriteColor(theme.BackgroundColor, writer);
+            writer.Write("CurrentLineColor");
+            WriteColor(theme.CurrentLineColor, writer);
+            writer.Write("ErrorLineColor");
+            WriteColor(theme.ErrorLineColor, writer);
+            writer.Write("CustomIDEEndOfTheme");
+            fileStream.Flush();
             fileStream.Dispose();
         }
 
-        public static STheme LoadTheme(string filename)
+        public static ThemeStruct LoadTheme(string filename)
         {
-            var theme = new STheme();
+            var theme = new ThemeStruct();
             var fileStream = File.OpenRead(filename);
             var reader = new BinaryReader(fileStream);
             if (reader.ReadString() == "CustomIDETheme") //File header
@@ -185,40 +205,40 @@ namespace ShaderIDE
 
                 if (reader.ReadString() == "Delimiters")
                 {
-                    theme.Delimiters = new SDelimiter[Convert.ToInt32(reader.ReadString())];
+                    theme.Delimiters = new DelimiterStruct[Convert.ToInt32(reader.ReadString())];
                     for (var i = 0; i < theme.Delimiters.Length; i++)
                     {
                         theme.Delimiters[i].Name = reader.ReadString();
-                        theme.Delimiters[i].Tokens = new char[Convert.ToInt32(reader.ReadString())];
-                        for (var j = 0; j < theme.Delimiters[i].Tokens.Length; j++)
+                        theme.Delimiters[i].Keychars = new char[Convert.ToInt32(reader.ReadString())];
+                        for (var j = 0; j < theme.Delimiters[i].Keychars.Length; j++)
                         {
-                            theme.Delimiters[i].Tokens[j] = Convert.ToChar(Convert.ToInt32(reader.ReadString()));
+                            theme.Delimiters[i].Keychars[j] = Convert.ToChar(Convert.ToInt32(reader.ReadString()));
                         }
                         theme.Delimiters[i].Style = ReadStyle(reader);
                     }
                 }
                 if (reader.ReadString() == "Words")
                 {
-                    theme.Words = new SWord[Convert.ToInt32(reader.ReadString())];
+                    theme.Words = new WordStruct[Convert.ToInt32(reader.ReadString())];
                     for (var i = 0; i < theme.Words.Length; i++)
                     {
                         theme.Words[i].Name = reader.ReadString();
-                        theme.Words[i].Words = new string[Convert.ToInt32(reader.ReadString())];
-                        for (var j = 0; j < theme.Words[i].Words.Length; j++)
+                        theme.Words[i].Keywords = new string[Convert.ToInt32(reader.ReadString())];
+                        for (var j = 0; j < theme.Words[i].Keywords.Length; j++)
                         {
-                            theme.Words[i].Words[j] = reader.ReadString();
+                            theme.Words[i].Keywords[j] = reader.ReadString();
                         }
                         theme.Words[i].Style = ReadStyle(reader);
                     }
                 }
                 if (reader.ReadString() == "Spans")
                 {
-                    theme.Spans = new SSpan[Convert.ToInt32(reader.ReadString())];
+                    theme.Spans = new SpanStruct[Convert.ToInt32(reader.ReadString())];
                     for (var i = 0; i < theme.Spans.Length; i++)
                     {
                         theme.Spans[i].Name = reader.ReadString();
-                        theme.Spans[i].StartDelimiter = reader.ReadString();
-                        theme.Spans[i].StopDelimiter = reader.ReadString();
+                        theme.Spans[i].StartKeyword = reader.ReadString();
+                        theme.Spans[i].StopKeyword = reader.ReadString();
                         theme.Spans[i].EscapeChar = Convert.ToChar(Convert.ToInt32(reader.ReadString()));
                         theme.Spans[i].Style = ReadStyle(reader);
                     }
@@ -226,7 +246,13 @@ namespace ShaderIDE
 
                 
             }
-            
+
+            if (reader.ReadString() == "TextStyle") theme.TextStyle = ReadStyle(reader);
+            if (reader.ReadString() == "ValueStyle") theme.ValueStyle = ReadStyle(reader);
+            if (reader.ReadString() == "BackgroundColor") theme.BackgroundColor = ReadColor(reader);
+            if (reader.ReadString() == "CurrentLineColor") theme.CurrentLineColor = ReadColor(reader);
+            if (reader.ReadString() == "ErrorLineColor") theme.ErrorLineColor = ReadColor(reader);
+            //if (reader.ReadString() == "CustomIDEEndOfTheme") 
             fileStream.Dispose();
             return theme;
         }

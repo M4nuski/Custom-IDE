@@ -21,26 +21,19 @@ namespace ShaderIDE
         #endregion
 
         #region Lists
-        public List<SToken> TokenList;
-        private List<SToken> _lastTokenList;
+        public List<TokenStruct> TokenList;
+        private List<TokenStruct> _lastTokenList;
         #endregion
 
         #region Properties
 
-       public STheme Theme;
+       public ThemeStruct Theme;
 
         private Point _boxOriginPoint; // RichEditBox client area point
-        public Color BackgroundColor, CurrentLineColor, ErrorLineColor;
+     //   public Color BackgroundColor, CurrentLineColor, ErrorLineColor;
         public int[] ErrorList;
         private bool _inParser;
         private int _lineSelectionStart, _lineSelectionLength;
-
-        public SFontColor
-            DefaultTextFont,    //default fallback font style / richeditbox font.
-            ValuesFont,         //values font (int bool float etc)
-            DelFont, OpeFont,   //delimiters fonts
-            ResFont, TypFont, FunFont,  //words fonts
-            ComFont, StrFont, TdoFont;   // spans fonts
 
         private WordStyleDialog styleDialog_Words = new WordStyleDialog();
         #endregion
@@ -53,33 +46,33 @@ namespace ShaderIDE
             return (result | (s.ToUpper() == "TRUE") | (s.ToUpper() == "FALSE"));
         }
 
-        private SFontColor GetDelimiterFont(char c)
+        private FontAndColorStruct GetDelimiterFont(char c)
         {
             foreach (var delimiterStruct in Theme.Delimiters)
             {
-                if (delimiterStruct.Tokens.Contains(c)) return delimiterStruct.Style;
+                if (delimiterStruct.Keychars.Contains(c)) return delimiterStruct.Style;
             }
-            return DefaultTextFont;
+            return Theme.TextStyle;
         }
 
-        private SFontColor GetWordFont(string s)
+        private FontAndColorStruct GetWordFont(string s)
         {
             foreach (var wordStruct in Theme.Words)
             {
-                if (wordStruct.Words.Contains(s)) return wordStruct.Style;
+                if (wordStruct.Keywords.Contains(s)) return wordStruct.Style;
             }
-            if (IsValue(s)) return ValuesFont;
-            return DefaultTextFont;
+            if (IsValue(s)) return Theme.ValueStyle;
+            return Theme.TextStyle;
         }
 
-        private List<SToken> TokenizeLines(string[] lines)
+        private List<TokenStruct> TokenizeLines(string[] lines)
         {
             var textOffset = 0;
-            var result = new List<SToken>();
+            var result = new List<TokenStruct>();
 
             foreach (var line in lines)
             {
-                result.AddRange(Theme.Spans.Any(currentSpan => line.Contains(currentSpan.StartDelimiter))
+                result.AddRange(Theme.Spans.Any(currentSpan => line.Contains(currentSpan.StartKeyword))
                     ? TokenizeLinePerSpan(line, textOffset)
                     : TokenizeLinePerDelimiter(line, textOffset));
 
@@ -88,9 +81,9 @@ namespace ShaderIDE
             return result;
         }
 
-        private List<SToken> TokenizeLinePerSpan(string line, int offset)
+        private List<TokenStruct> TokenizeLinePerSpan(string line, int offset)
         {
-            var result = new List<SToken>();
+            var result = new List<TokenStruct>();
             var spanStartIndices = new int[Theme.Spans.Length];
             var lineOffset = 0;
 
@@ -99,7 +92,7 @@ namespace ShaderIDE
                 // Get list of indexOf for each span StartDelimiters
                 for (var j = 0; j < Theme.Spans.Length; j++)
                 {
-                    spanStartIndices[j] = line.IndexOf(Theme.Spans[j].StartDelimiter, StringComparison.Ordinal);
+                    spanStartIndices[j] = line.IndexOf(Theme.Spans[j].StartKeyword, StringComparison.Ordinal);
                 } 
                 // Find the first one on the line
                 var firstSpanStartIndex = line.Length;
@@ -126,25 +119,25 @@ namespace ShaderIDE
                     }
 
                     // Find end of current Span
-                    var spanEndIndex = line.IndexOf(Theme.Spans[firstSpanType].StopDelimiter, Theme.Spans[firstSpanType].StartDelimiter.Length, StringComparison.Ordinal);
+                    var spanEndIndex = line.IndexOf(Theme.Spans[firstSpanType].StopKeyword, Theme.Spans[firstSpanType].StartKeyword.Length, StringComparison.Ordinal);
                     if (spanEndIndex == -1) spanEndIndex = line.Length;
 
                     // Skip Escape Char
                     while ((spanEndIndex < line.Length) & (line[spanEndIndex - 1] == Theme.Spans[firstSpanType].EscapeChar))
                     {
-                        spanEndIndex = line.IndexOf(Theme.Spans[firstSpanType].StopDelimiter, spanEndIndex + 1, StringComparison.Ordinal);
+                        spanEndIndex = line.IndexOf(Theme.Spans[firstSpanType].StopKeyword, spanEndIndex + 1, StringComparison.Ordinal);
                         if (spanEndIndex == -1) spanEndIndex = line.Length;
                     }
 
                     // Include Stop Delimiter
                     if (spanEndIndex < line.Length)
                     {
-                        spanEndIndex += Theme.Spans[firstSpanType].StopDelimiter.Length;
+                        spanEndIndex += Theme.Spans[firstSpanType].StopKeyword.Length;
                         if (spanEndIndex > line.Length) spanEndIndex = line.Length;
                     }
 
                     // Create Token for current Span
-                    result.Add(new SToken
+                    result.Add(new TokenStruct
                     {
                         Offset = offset + lineOffset,
                         Text = line.SafeRemove(spanEndIndex),
@@ -164,18 +157,18 @@ namespace ShaderIDE
             return result;
         }
 
-        private List<SToken> TokenizeLinePerDelimiter(string line, int offset)
+        private List<TokenStruct> TokenizeLinePerDelimiter(string line, int offset)
         {
-            var result = new List<SToken>();
+            var result = new List<TokenStruct>();
             var linePointer = 0;
             for (var i = 0; i < line.Length; i++)
             {
-                if (Theme.Delimiters.Any(delimiterStuct => delimiterStuct.Tokens.Contains(line[i])))
+                if (Theme.Delimiters.Any(delimiterStuct => delimiterStuct.Keychars.Contains(line[i])))
                 {
                     if (linePointer != i)
                     {
                         var currentText = line.Substring(linePointer, i - linePointer);
-                        result.Add(new SToken
+                        result.Add(new TokenStruct
                         {
                             Offset = linePointer + offset,
                             Text = currentText,
@@ -183,7 +176,7 @@ namespace ShaderIDE
                         });
                     }
 
-                    result.Add(new SToken
+                    result.Add(new TokenStruct
                     {
                         Offset = i + offset,
                         Text = line[i].ToString(CultureInfo.InvariantCulture),
@@ -193,7 +186,7 @@ namespace ShaderIDE
                 }
 
             }
-            if (linePointer < line.Length) result.Add(new SToken
+            if (linePointer < line.Length) result.Add(new TokenStruct
             {
                 Offset = linePointer + offset,
                 Text = line.Substring(linePointer, line.Length - linePointer),
@@ -208,27 +201,27 @@ namespace ShaderIDE
         {
             InitializeComponent();
 
-            _lastTokenList = new List<SToken>();
+            _lastTokenList = new List<TokenStruct>();
             _inParser = false;
 
-            DefaultTextFont = new SFontColor(richTextBox1.Font, richTextBox1.ForeColor);
-            ValuesFont = new SFontColor(new Font(richTextBox1.Font, FontStyle.Regular), Color.RoyalBlue);
+            Theme.TextStyle = new FontAndColorStruct(richTextBox1.Font, richTextBox1.ForeColor);
+            Theme.ValueStyle = new FontAndColorStruct(new Font(richTextBox1.Font, FontStyle.Regular), Color.RoyalBlue);
 
             Theme.Name = "GLSL Test Theme";
             Theme.Delimiters = new[]
             {
-                new SDelimiter { //whitespaces and breaks
+                new DelimiterStruct { //whitespaces and breaks
                     Name = "Breaks",
-                    Tokens = new[] { '\t', '\r', '\n', ' ', ',', ';', '(', ')', '{', '}'},
-                    Style = new SFontColor
+                    Keychars = new[] { '\t', '\r', '\n', ' ', ',', ';', '(', ')', '{', '}'},
+                    Style = new FontAndColorStruct
                     {
                         StyleColor = Color.Gray,
                         StyleFont = new Font(richTextBox1.Font, FontStyle.Bold)
                     }},               
-                new SDelimiter { //operators
+                new DelimiterStruct { //operators
                     Name = "Operators",
-                    Tokens = new[] { '/', '+', '-', '*', '=', '<', '>', '!' },
-                    Style = new SFontColor
+                    Keychars = new[] { '/', '+', '-', '*', '=', '<', '>', '!' },
+                    Style = new FontAndColorStruct
                     {
                         StyleColor = Color.DarkTurquoise,
                         StyleFont = new Font(richTextBox1.Font, FontStyle.Bold)
@@ -236,43 +229,43 @@ namespace ShaderIDE
             };
 
 
-            ResFont = new SFontColor(new Font(richTextBox1.Font, FontStyle.Regular), Color.Orange);
-            TypFont = new SFontColor(new Font(richTextBox1.Font, FontStyle.Regular), Color.Yellow);
-            FunFont = new SFontColor(new Font(richTextBox1.Font, FontStyle.Bold), Color.Lime);
+            var resFontAndColor = new FontAndColorStruct(new Font(richTextBox1.Font, FontStyle.Regular), Color.Orange);
+            var typFontAndColor = new FontAndColorStruct(new Font(richTextBox1.Font, FontStyle.Regular), Color.Yellow);
+            var funFontAndColor = new FontAndColorStruct(new Font(richTextBox1.Font, FontStyle.Bold), Color.Lime);
 
             Theme.Words = new[]
             {
-                new SWord
+                new WordStruct
                 {   Name = "Reserved",
-                    Words = new [] {"#version", "uniform", "layout", "in", "out", "location", "void", "for", "else", "if", "main",
+                    Keywords = new [] {"#version", "uniform", "layout", "in", "out", "location", "void", "for", "else", "if", "main",
                     "smooth", "varying", "const", "flat​", "noperspective​"},
-                    Style = ResFont},
-                new SWord
+                    Style = resFontAndColor},
+                new WordStruct
                 {   Name = "Types",
-                    Words = new [] {"bool", "int", "float", "vec2", "vec3", "vec4", "mat3", "mat4"},
-                    Style = TypFont},
-                new SWord
+                    Keywords = new [] {"bool", "int", "float", "vec2", "vec3", "vec4", "mat3", "mat4"},
+                    Style = typFontAndColor},
+                new WordStruct
                 {   Name = "Functions",
-                    Words = new []{"gl_Position", "min", "max", "dot", "normalize", "clamp", "mix"},
-                    Style = FunFont}
+                    Keywords = new []{"gl_Position", "min", "max", "dot", "normalize", "clamp", "mix"},
+                    Style = funFontAndColor}
             };
 
-            ComFont = new SFontColor(new Font(richTextBox1.Font, FontStyle.Italic), Color.Green);
-            StrFont = new SFontColor(new Font(richTextBox1.Font, FontStyle.Bold), Color.Violet);
-            TdoFont = new SFontColor(new Font(richTextBox1.Font, FontStyle.Underline), Color.DeepSkyBlue);
+            var comFontAndColor = new FontAndColorStruct(new Font(richTextBox1.Font, FontStyle.Italic), Color.Green);
+            var strFontAndColor = new FontAndColorStruct(new Font(richTextBox1.Font, FontStyle.Bold), Color.Violet);
+            var tdoFontAndColor = new FontAndColorStruct(new Font(richTextBox1.Font, FontStyle.Underline), Color.DeepSkyBlue);
 
             Theme.Spans = new[]
-            {   new SSpan
-                {Name = "TODO Comment", StartDelimiter = "//TODO", StopDelimiter = "\n", EscapeChar = '\n', Style = TdoFont},
-                new SSpan
-                {Name = "Comment", StartDelimiter = "//", StopDelimiter = "\n", EscapeChar = '\n', Style = ComFont},
-                new SSpan
-                {Name = "Inline String", StartDelimiter = "\"", StopDelimiter = "\"", EscapeChar = '\\', Style = StrFont}
+            {   new SpanStruct
+                {Name = "TODO Comment", StartKeyword = "//TODO", StopKeyword = "\n", EscapeChar = '\n', Style = tdoFontAndColor},
+                new SpanStruct
+                {Name = "Comment", StartKeyword = "//", StopKeyword = "\n", EscapeChar = '\n', Style = comFontAndColor},
+                new SpanStruct
+                {Name = "Inline String", StartKeyword = "\"", StopKeyword = "\"", EscapeChar = '\\', Style = strFontAndColor}
             };
 
-            CurrentLineColor = Color.FromArgb(255, 56, 56, 56);
-            BackgroundColor = richTextBox1.BackColor;
-            ErrorLineColor = Color.DarkRed;
+            Theme.CurrentLineColor = Color.FromArgb(255, 56, 56, 56);
+            Theme.BackgroundColor = richTextBox1.BackColor;
+            Theme.ErrorLineColor = Color.DarkRed;
         }
 
         private void richTextBox1_Resize(object sender, EventArgs e)
@@ -284,7 +277,7 @@ namespace ShaderIDE
         #region Editor Update
         private void force_Redraw(object sender, EventArgs e) // Force Parsing
         {
-            _lastTokenList = new List<SToken>(); //Clear old list
+            _lastTokenList = new List<TokenStruct>(); //Clear old list
             _inParser = false;
             richEditBox_ReDraw(sender, e);
         }
@@ -360,7 +353,7 @@ namespace ShaderIDE
                 }
             }
 
-            _lastTokenList = new List<SToken>(TokenList);
+            _lastTokenList = new List<TokenStruct>(TokenList);
             return result;
         }
 
@@ -398,7 +391,7 @@ namespace ShaderIDE
           
             // Reset Background
             richTextBox1.SelectAll();
-            richTextBox1.SelectionBackColor = BackgroundColor;
+            richTextBox1.SelectionBackColor = Theme.BackgroundColor;
             
             // Update Colors
             for (var i = 0; i < TokenList.Count; i++)
@@ -412,14 +405,14 @@ namespace ShaderIDE
 
             // Current line Color
             richTextBox1.Select(currentLineIndex, currentLineLength);
-            richTextBox1.SelectionBackColor = CurrentLineColor;
+            richTextBox1.SelectionBackColor = Theme.CurrentLineColor;
 
             // Errors line Color
             foreach (var eInt in ErrorList)
             {
                 GetSelectionFromLine(eInt);
                 richTextBox1.Select(_lineSelectionStart, _lineSelectionLength);
-                richTextBox1.SelectionBackColor = ErrorLineColor;
+                richTextBox1.SelectionBackColor = Theme.ErrorLineColor;
             }
 
             // Reset View
@@ -428,8 +421,8 @@ namespace ShaderIDE
 
             // Reset Selections
             richTextBox1.Select(carretPositionBuffer, carretLengthBuffer);
-            richTextBox1.SelectionColor = DefaultTextFont.StyleColor;
-            richTextBox1.SelectionFont = DefaultTextFont.StyleFont;
+            richTextBox1.SelectionColor = Theme.TextStyle.StyleColor;
+            richTextBox1.SelectionFont = Theme.TextStyle.StyleFont;
 
             //richTextBox1.ResumeLayout();
             SuspendUpdate.Resume(richTextBox1);
@@ -519,49 +512,49 @@ namespace ShaderIDE
             if (colorDialog1.ShowDialog() == DialogResult.OK)
             {
                 richTextBox1.ForeColor = colorDialog1.Color;
-                DefaultTextFont.StyleColor = colorDialog1.Color;
+                Theme.TextStyle.StyleColor = colorDialog1.Color;
                 force_Redraw(sender, e);
             }
         }
 
         private void backgroundToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            colorDialog1.Color = BackgroundColor;
+            colorDialog1.Color = Theme.BackgroundColor;
             if (colorDialog1.ShowDialog() == DialogResult.OK)
             {
                 richTextBox1.BackColor = colorDialog1.Color;
-                BackgroundColor = colorDialog1.Color;
+                Theme.BackgroundColor = colorDialog1.Color;
                 force_Redraw(sender, e);
             }
         }
 
         private void currentBackgroundToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            colorDialog1.Color = CurrentLineColor;
+            colorDialog1.Color = Theme.CurrentLineColor;
             if (colorDialog1.ShowDialog() == DialogResult.OK)
             {
-                CurrentLineColor = colorDialog1.Color;
+                Theme.CurrentLineColor = colorDialog1.Color;
                 force_Redraw(sender, e);
             }
         }
 
         private void errorBackgroundToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            colorDialog1.Color = ErrorLineColor;
+            colorDialog1.Color = Theme.ErrorLineColor;
             if (colorDialog1.ShowDialog() == DialogResult.OK)
             {
-                ErrorLineColor = colorDialog1.Color;
+                Theme.ErrorLineColor = colorDialog1.Color;
                 force_Redraw(sender, e);
             }
         }
 
         private void numbersToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            styleDialog_Words.PrevireBackColor = BackgroundColor;
-            styleDialog_Words.DialogResultWord.Style = ValuesFont;
+            styleDialog_Words.PrevireBackColor = Theme.BackgroundColor;
+            styleDialog_Words.DialogResultWordStruct.Style = Theme.ValueStyle;
             if (styleDialog_Words.ShowDialog() == DialogResult.OK)
             {
-                ValuesFont = styleDialog_Words.DialogResultWord.Style;
+                Theme.ValueStyle = styleDialog_Words.DialogResultWordStruct.Style;
                 force_Redraw(sender, e);
             }
         }

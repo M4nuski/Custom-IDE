@@ -12,7 +12,7 @@ namespace ShaderIDE
 {
     public partial class WordStyleDialog : Form
     {
-        public SWord DialogResultWord;
+        public WordStruct DialogResultWordStruct;
         public Color PrevireBackColor;
 
         public WordStyleDialog()
@@ -20,22 +20,22 @@ namespace ShaderIDE
             InitializeComponent();
         }
 
-        public DialogResult ShowDialog(SWord wordsToUpdate, Color backGroundColor)
+        public DialogResult ShowDialog(WordStruct wordsStructToUpdate, Color backGroundColor)
         { // Polymorphed to include default display
 
           // Fill form with current data
-            textBox2.Text = wordsToUpdate.Name;
-            textBox1.Lines = wordsToUpdate.Words;
+            textBox2.Text = wordsStructToUpdate.Name;
+            textBox1.Lines = wordsStructToUpdate.Keywords;
 
-            colorDialog1.Color = wordsToUpdate.Style.StyleColor;
+            colorDialog1.Color = wordsStructToUpdate.Style.StyleColor;
 
             PrevireBackColor = backGroundColor;
             Update_Preview();
 
-            checkBox1.Checked = wordsToUpdate.Style.StyleFont.Bold;
-            checkBox2.Checked = wordsToUpdate.Style.StyleFont.Italic;
-            checkBox3.Checked = wordsToUpdate.Style.StyleFont.Strikeout;
-            checkBox4.Checked = wordsToUpdate.Style.StyleFont.Underline;
+            checkBox1.Checked = wordsStructToUpdate.Style.StyleFont.Bold;
+            checkBox2.Checked = wordsStructToUpdate.Style.StyleFont.Italic;
+            checkBox3.Checked = wordsStructToUpdate.Style.StyleFont.Strikeout;
+            checkBox4.Checked = wordsStructToUpdate.Style.StyleFont.Underline;
 
             return ShowDialog();
         }
@@ -54,12 +54,12 @@ namespace ShaderIDE
                 //fill properties with current form data
                 if (button.DialogResult == DialogResult.OK)
                 {
-                    DialogResultWord.Name = textBox2.Text;
-                    DialogResultWord.Words = textBox1.Lines;
+                    DialogResultWordStruct.Name = textBox2.Text;
+                    DialogResultWordStruct.Keywords = textBox1.Lines;
 
-                    DialogResultWord.Style.StyleColor = colorDialog1.Color;
+                    DialogResultWordStruct.Style.StyleColor = colorDialog1.Color;
 
-                    DialogResultWord.Style.StyleFont = new Font(DialogResultWord.Style.StyleFont, BoxesToStyle());
+                    DialogResultWordStruct.Style.StyleFont = new Font(DialogResultWordStruct.Style.StyleFont, BoxesToStyle());
                 }
 
                 DialogResult = button.DialogResult;
@@ -78,24 +78,24 @@ namespace ShaderIDE
 
         private void Update_Preview()
         {
-            label1.Font = DialogResultWord.Style.StyleFont;
-            label1.ForeColor = DialogResultWord.Style.StyleColor;
+            label1.Font = DialogResultWordStruct.Style.StyleFont;
+            label1.ForeColor = DialogResultWordStruct.Style.StyleColor;
             label1.BackColor = PrevireBackColor;
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            colorDialog1.Color = DialogResultWord.Style.StyleColor;
+            colorDialog1.Color = DialogResultWordStruct.Style.StyleColor;
             if (colorDialog1.ShowDialog() == DialogResult.OK)
             {
-                DialogResultWord.Style.StyleColor = colorDialog1.Color;
+                DialogResultWordStruct.Style.StyleColor = colorDialog1.Color;
                 Update_Preview();
             }
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            DialogResultWord.Style.StyleFont = new Font(DialogResultWord.Style.StyleFont, BoxesToStyle());
+            DialogResultWordStruct.Style.StyleFont = new Font(DialogResultWordStruct.Style.StyleFont, BoxesToStyle());
             Update_Preview();
         }
     }
