@@ -30,7 +30,7 @@ namespace ShaderIDE
        public ThemeStruct Theme;
 
         private Point _boxOriginPoint; // RichEditBox client area point
-     //   public Color BackgroundColor, CurrentLineColor, ErrorLineColor;
+
         public int[] ErrorList;
         private bool _inParser;
         private int _lineSelectionStart, _lineSelectionLength;
@@ -266,6 +266,8 @@ namespace ShaderIDE
             Theme.CurrentLineColor = Color.FromArgb(255, 56, 56, 56);
             Theme.BackgroundColor = richTextBox1.BackColor;
             Theme.ErrorLineColor = Color.DarkRed;
+
+            PopulateMenu();
         }
 
         private void richTextBox1_Resize(object sender, EventArgs e)
@@ -390,6 +392,7 @@ namespace ShaderIDE
             var currentLineLength = _lineSelectionLength;
           
             // Reset Background
+            richTextBox1.BackColor = Theme.BackgroundColor;
             richTextBox1.SelectAll();
             richTextBox1.SelectionBackColor = Theme.BackgroundColor;
             
@@ -476,7 +479,7 @@ namespace ShaderIDE
         #endregion
 
         #region Menu Strip Color and Style Settings
-        private void styleToolStripMenuItem1_Click(object sender, EventArgs e)
+        private void MenuItem_FontClick(object sender, EventArgs e)
         {
             fontDialog1.Font = richTextBox1.Font;
             if (fontDialog1.ShowDialog() == DialogResult.OK)
@@ -506,69 +509,96 @@ namespace ShaderIDE
             }
         }
 
-        private void textToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            colorDialog1.Color = richTextBox1.ForeColor;
-            if (colorDialog1.ShowDialog() == DialogResult.OK)
-            {
-                richTextBox1.ForeColor = colorDialog1.Color;
-                Theme.TextStyle.StyleColor = colorDialog1.Color;
-                force_Redraw(sender, e);
-            }
-        }
 
-        private void backgroundToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            colorDialog1.Color = Theme.BackgroundColor;
-            if (colorDialog1.ShowDialog() == DialogResult.OK)
-            {
-                richTextBox1.BackColor = colorDialog1.Color;
-                Theme.BackgroundColor = colorDialog1.Color;
-                force_Redraw(sender, e);
-            }
-        }
 
-        private void currentBackgroundToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            colorDialog1.Color = Theme.CurrentLineColor;
-            if (colorDialog1.ShowDialog() == DialogResult.OK)
-            {
-                Theme.CurrentLineColor = colorDialog1.Color;
-                force_Redraw(sender, e);
-            }
-        }
-
-        private void errorBackgroundToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            colorDialog1.Color = Theme.ErrorLineColor;
-            if (colorDialog1.ShowDialog() == DialogResult.OK)
-            {
-                Theme.ErrorLineColor = colorDialog1.Color;
-                force_Redraw(sender, e);
-            }
-        }
-
-        private void numbersToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            styleDialog_Words.PrevireBackColor = Theme.BackgroundColor;
-            styleDialog_Words.DialogResultWordStruct.Style = Theme.ValueStyle;
-            if (styleDialog_Words.ShowDialog() == DialogResult.OK)
-            {
-                Theme.ValueStyle = styleDialog_Words.DialogResultWordStruct.Style;
-                force_Redraw(sender, e);
-            }
-        }
-
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        private void MenuItem_SaveClick(object sender, EventArgs e)
         {
             ThemeStructs.SaveTheme(Theme, "Test.txt");
         }
 
-        private void loadToolStripMenuItem_Click(object sender, EventArgs e)
+        private void MenuItem_LoadClick(object sender, EventArgs e)
         {
             Theme = ThemeStructs.LoadTheme("Test.txt");
+            PopulateMenu();
         }
 
-        #endregion 
+       private void PopulateMenu()
+       {
+           while (delimitersToolStripMenuItem1.DropDownItems.Count > 2) delimitersToolStripMenuItem1.DropDownItems.RemoveAt(2);
+           for (var i = 0; i < Theme.Delimiters.Length; i++)
+           {
+               var currentItem = delimitersToolStripMenuItem1.DropDownItems.Add(new ToolStripButton(
+                   Theme.Delimiters[i].Name));
+               delimitersToolStripMenuItem1.DropDownItems[currentItem].Name = "D" + i.ToString(CultureInfo.InvariantCulture);
+               delimitersToolStripMenuItem1.DropDownItems[currentItem].Click += MenuItem_TokensClick;
+           }
+
+           while (wordsToolStripMenuItem1.DropDownItems.Count > 2) wordsToolStripMenuItem1.DropDownItems.RemoveAt(2);
+           for (var i = 0; i < Theme.Words.Length; i++)
+           {
+               var currentItem = wordsToolStripMenuItem1.DropDownItems.Add(new ToolStripButton(
+                   Theme.Words[i].Name));
+               wordsToolStripMenuItem1.DropDownItems[currentItem].Name = "W" + i.ToString(CultureInfo.InvariantCulture);
+               wordsToolStripMenuItem1.DropDownItems[currentItem].Click += MenuItem_TokensClick;
+           }
+
+           while (spansToolStripMenuItem1.DropDownItems.Count > 2) spansToolStripMenuItem1.DropDownItems.RemoveAt(2);
+           for (var i = 0; i < Theme.Spans.Length; i++)
+           {
+               var currentItem = spansToolStripMenuItem1.DropDownItems.Add(new ToolStripButton(
+                   Theme.Spans[i].Name));
+               spansToolStripMenuItem1.DropDownItems[currentItem].Name = "S" + i.ToString(CultureInfo.InvariantCulture);
+               spansToolStripMenuItem1.DropDownItems[currentItem].Click += MenuItem_TokensClick;
+           }
+       }
+
+       private void MenuItem_TokensClick(object sender, EventArgs e)
+       {
+           var sendeMenu = sender as ToolStripItem;
+           if (sendeMenu != null)
+           {
+               Text = sendeMenu.Name;
+
+               //Check which on is called, spawn the dialog, if OK add to theme
+               if (sendeMenu.Name == "V0")
+               {
+                   styleDialog_Words.PreviewBackColor = Theme.BackgroundColor;
+                   styleDialog_Words.DialogResultWordStruct.Style = Theme.ValueStyle;
+                   if (styleDialog_Words.ShowDialog() == DialogResult.OK)
+                   {
+                       Theme.ValueStyle = styleDialog_Words.DialogResultWordStruct.Style;
+                   }
+               }
+               force_Redraw(sender, e);
+           }
+           else Text = @"Null";
+       }
+
+       #endregion
+
+       private Color GetColorDialogResult(Color initialColor)
+       {
+           colorDialog1.Color = initialColor;
+           return colorDialog1.ShowDialog() == DialogResult.OK ? colorDialog1.Color : initialColor;
+       }
+
+       private void MenuItem_ColorsClick(object sender, EventArgs e)
+       {
+           var senderObject = sender as ToolStripItem;
+           if (senderObject != null)
+           {
+               if (senderObject.Tag.ToString() == "TXT_COLOR") Theme.TextStyle.StyleColor = GetColorDialogResult(Theme.TextStyle.StyleColor);
+               if (senderObject.Tag.ToString() == "BG_COLOR") Theme.BackgroundColor = GetColorDialogResult(Theme.BackgroundColor);
+               if (senderObject.Tag.ToString() == "LINE_COLOR") Theme.CurrentLineColor = GetColorDialogResult(Theme.CurrentLineColor);
+               if (senderObject.Tag.ToString() == "ERROR_COLOR") Theme.ErrorLineColor = GetColorDialogResult(Theme.ErrorLineColor);
+               force_Redraw(sender, e);
+           }
+
+       }
+
+       private void MenuItem_Tokens_NewClick(object sender, EventArgs e)
+       {
+           //
+       }
     }//class
 }//namespace

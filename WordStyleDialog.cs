@@ -13,7 +13,7 @@ namespace ShaderIDE
     public partial class WordStyleDialog : Form
     {
         public WordStruct DialogResultWordStruct;
-        public Color PrevireBackColor;
+        public Color PreviewBackColor;
 
         public WordStyleDialog()
         {
@@ -29,7 +29,7 @@ namespace ShaderIDE
 
             colorDialog1.Color = wordsStructToUpdate.Style.StyleColor;
 
-            PrevireBackColor = backGroundColor;
+            PreviewBackColor = backGroundColor;
             Update_Preview();
 
             checkBox1.Checked = wordsStructToUpdate.Style.StyleFont.Bold;
@@ -80,7 +80,7 @@ namespace ShaderIDE
         {
             label1.Font = DialogResultWordStruct.Style.StyleFont;
             label1.ForeColor = DialogResultWordStruct.Style.StyleColor;
-            label1.BackColor = PrevireBackColor;
+            label1.BackColor = PreviewBackColor;
         }
 
         private void button1_Click(object sender, EventArgs e)

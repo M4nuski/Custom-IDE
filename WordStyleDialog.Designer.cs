@@ -106,6 +106,11 @@
             this.checkBox3.Text = "Strikeout";
             this.checkBox3.UseVisualStyleBackColor = true;
             // 
+            // colorDialog1
+            // 
+            this.colorDialog1.AnyColor = true;
+            this.colorDialog1.FullOpen = true;
+            // 
             // checkBox4
             // 
             this.checkBox4.AutoSize = true;
