@@ -42,11 +42,10 @@ namespace ShaderIDE
                 if (button.DialogResult == DialogResult.OK)
                 {
                     DialogOutput.Name = textBox2.Text;
-                    textBox2.ReadOnly = (DialogOutput.Name != "<new>");
 
                     DialogOutput.StartKeyword = textBox1.Text;
                     DialogOutput.StopKeyword = textBox3.Text;
-                    DialogOutput.EscapeChar = textBox4.Text[0];
+                    DialogOutput.EscapeChar = (textBox4.Text == "") ? '\n' : textBox4.Text[0];
 
                     DialogOutput.Style.StyleColor = colorDialog1.Color;
 
@@ -78,10 +77,12 @@ namespace ShaderIDE
         private void Update_All()
         {
             textBox2.Text = DialogOutput.Name;
+            textBox2.ReadOnly = (DialogOutput.Name != "<new>");
 
             textBox1.Text = DialogOutput.StartKeyword;
             textBox3.Text = DialogOutput.StopKeyword;
-            textBox4.Text = new string(DialogOutput.EscapeChar, 1);
+
+            textBox4.Text = (DialogOutput.EscapeChar == '\n') ? "" : new string(DialogOutput.EscapeChar, 1);
 
             textBox1.Select(0, 0);
 

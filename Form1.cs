@@ -608,6 +608,14 @@ namespace ShaderIDE
            return colorDialog1.ShowDialog() == DialogResult.OK ? colorDialog1.Color : initialColor;
        }
 
+       private static T[] AppendArray<T>(T[] inputArray, T newElement)
+       {
+           var newArray = new T[inputArray.Length + 1];
+           inputArray.CopyTo(newArray, 0);
+           newArray[newArray.Length - 1] = newElement;
+           return newArray;
+       }
+
        private void MenuItem_ColorsClick(object sender, EventArgs e)
        {
            var senderObject = sender as ToolStripItem;
@@ -627,33 +635,23 @@ namespace ShaderIDE
            var senderObject = sender as ToolStripItem;
            if (senderObject != null)
            {
-               if (senderObject.Tag.ToString() == "DEL_NEW")
-                   if (_styleDialogDelimiters.ShowDialog(new DelimiterStruct(Theme.TextStyle.StyleFont), Theme.BackgroundColor) ==
-                       DialogResult.OK)
-                   {
-                       var newArray = new DelimiterStruct[Theme.Delimiters.Length + 1];
-                       Theme.Delimiters.CopyTo(newArray, 0);
-                       newArray[newArray.Length - 1] = _styleDialogDelimiters.DialogOutput;
-                       Theme.Delimiters = newArray;
-                   }
+               if (senderObject.Tag.ToString() == "DEL_NEW") 
+                   if (_styleDialogDelimiters.ShowDialog(
+                        new DelimiterStruct(Theme.TextStyle.StyleFont), 
+                        Theme.BackgroundColor) == DialogResult.OK)
+                   Theme.Delimiters = AppendArray(Theme.Delimiters, _styleDialogDelimiters.DialogOutput);
 
-               if (senderObject.Tag.ToString() == "WORD_NEW") if (_styleDialogWords.ShowDialog(new WordStruct(Theme.TextStyle.StyleFont), Theme.BackgroundColor) ==
-                        DialogResult.OK)
-                   {
-                       var newArray = new WordStruct[Theme.Words.Length + 1];
-                       Theme.Words.CopyTo(newArray, 0);
-                       newArray[newArray.Length - 1] = _styleDialogWords.DialogOutput;
-                       Theme.Words = newArray;
-                   }
+               if (senderObject.Tag.ToString() == "WORD_NEW")
+                   if (_styleDialogWords.ShowDialog(
+                        new WordStruct(Theme.TextStyle.StyleFont),
+                        Theme.BackgroundColor) == DialogResult.OK)
+                   Theme.Words = AppendArray(Theme.Words, _styleDialogWords.DialogOutput);
 
-               if (senderObject.Tag.ToString() == "SPAN_NEW") if (_styleDialogSpans.ShowDialog(new SpanStruct(Theme.TextStyle.StyleFont), Theme.BackgroundColor) ==
-                        DialogResult.OK)
-                   {
-                       var newArray = new SpanStruct[Theme.Words.Length + 1];
-                       Theme.Spans.CopyTo(newArray, 0);
-                       newArray[newArray.Length - 1] = _styleDialogSpans.DialogOutput;
-                       Theme.Spans = newArray;
-                   }
+               if (senderObject.Tag.ToString() == "SPAN_NEW") 
+                   if (_styleDialogSpans.ShowDialog(
+                        new SpanStruct(Theme.TextStyle.StyleFont),
+                        Theme.BackgroundColor) == DialogResult.OK)
+                   Theme.Spans = AppendArray(Theme.Spans, _styleDialogSpans.DialogOutput);
 
                PopulateMenu();
                force_Redraw(sender, e);
