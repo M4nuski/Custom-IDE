@@ -270,6 +270,7 @@ namespace ShaderIDE
             Theme.ErrorLineColor = Color.DarkRed;
 
             PopulateMenu();
+            force_Redraw(this, new EventArgs());
         }
 
         private void richTextBox1_Resize(object sender, EventArgs e)
@@ -618,12 +619,46 @@ namespace ShaderIDE
                if (senderObject.Tag.ToString() == "ERROR_COLOR") Theme.ErrorLineColor = GetColorDialogResult(Theme.ErrorLineColor);
                force_Redraw(sender, e);
            }
-
+           else Text = @"Null Reference in ColorClick";
        }
 
        private void MenuItem_Tokens_NewClick(object sender, EventArgs e)
        {
-           //
+           var senderObject = sender as ToolStripItem;
+           if (senderObject != null)
+           {
+               if (senderObject.Tag.ToString() == "DEL_NEW")
+                   if (_styleDialogDelimiters.ShowDialog(new DelimiterStruct(Theme.TextStyle.StyleFont), Theme.BackgroundColor) ==
+                       DialogResult.OK)
+                   {
+                       var newArray = new DelimiterStruct[Theme.Delimiters.Length + 1];
+                       Theme.Delimiters.CopyTo(newArray, 0);
+                       newArray[newArray.Length - 1] = _styleDialogDelimiters.DialogOutput;
+                       Theme.Delimiters = newArray;
+                   }
+
+               if (senderObject.Tag.ToString() == "WORD_NEW") if (_styleDialogWords.ShowDialog(new WordStruct(Theme.TextStyle.StyleFont), Theme.BackgroundColor) ==
+                        DialogResult.OK)
+                   {
+                       var newArray = new WordStruct[Theme.Words.Length + 1];
+                       Theme.Words.CopyTo(newArray, 0);
+                       newArray[newArray.Length - 1] = _styleDialogWords.DialogOutput;
+                       Theme.Words = newArray;
+                   }
+
+               if (senderObject.Tag.ToString() == "SPAN_NEW") if (_styleDialogSpans.ShowDialog(new SpanStruct(Theme.TextStyle.StyleFont), Theme.BackgroundColor) ==
+                        DialogResult.OK)
+                   {
+                       var newArray = new SpanStruct[Theme.Words.Length + 1];
+                       Theme.Spans.CopyTo(newArray, 0);
+                       newArray[newArray.Length - 1] = _styleDialogSpans.DialogOutput;
+                       Theme.Spans = newArray;
+                   }
+
+               PopulateMenu();
+               force_Redraw(sender, e);
+           }
+           else Text = @"Null Reference in NewTokensClick";
        }
     }//class
 }//namespace

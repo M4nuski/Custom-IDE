@@ -80,6 +80,8 @@ namespace ShaderIDE
         private void Update_All()
         {
             textBox2.Text = DialogOutput.Name;
+            textBox2.ReadOnly = (DialogOutput.Name != "<new>");
+
             textBox1.Lines = DialogOutput.Keywords;
             textBox1.Select(0, 0);
 

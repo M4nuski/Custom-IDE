@@ -46,6 +46,13 @@ namespace ShaderIDE
         public string Name;
         public char[] Keychars;
         public FontAndColorStruct Style;
+
+        public DelimiterStruct(Font prototypeFont)
+        {
+            Name = "<new>";
+            Keychars = new char[] {};
+            Style = new FontAndColorStruct {StyleFont = prototypeFont};
+        }
     }
 
     public struct WordStruct
@@ -53,6 +60,13 @@ namespace ShaderIDE
         public string Name;
         public string[] Keywords;
         public FontAndColorStruct Style;
+
+        public WordStruct(Font prototypeFont)
+        {
+            Name = "<new>";
+            Keywords = new string[] { };
+            Style = new FontAndColorStruct {StyleFont = prototypeFont};
+        }
     }
 
     public struct SpanStruct
@@ -62,6 +76,15 @@ namespace ShaderIDE
         public string StopKeyword; //or EOL
         public char EscapeChar;
         public FontAndColorStruct Style;
+
+        public SpanStruct(Font prototypeFont)
+        {
+            Name = "<new>";
+            StartKeyword = "";
+            StopKeyword = "";
+            EscapeChar = '\n';
+            Style = new FontAndColorStruct {StyleFont = prototypeFont};
+        }
     }
 
     public struct TokenStruct

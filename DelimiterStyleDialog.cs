@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -70,6 +71,8 @@ namespace ShaderIDE
         private void Update_All()
         {
             textBox2.Text = DialogOutput.Name;
+            textBox2.ReadOnly = (DialogOutput.Name != "<new>");
+
             textBox1.Text = new string(DialogOutput.Keychars);
             textBox1.Select(0, 0);
             

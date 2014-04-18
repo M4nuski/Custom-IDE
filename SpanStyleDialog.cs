@@ -42,6 +42,7 @@ namespace ShaderIDE
                 if (button.DialogResult == DialogResult.OK)
                 {
                     DialogOutput.Name = textBox2.Text;
+                    textBox2.ReadOnly = (DialogOutput.Name != "<new>");
 
                     DialogOutput.StartKeyword = textBox1.Text;
                     DialogOutput.StopKeyword = textBox3.Text;
