@@ -82,7 +82,7 @@
             this.checkBox1.TabIndex = 3;
             this.checkBox1.Text = "Bold";
             this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBoxs_CheckedChanged);
             // 
             // checkBox2
             // 
@@ -94,6 +94,7 @@
             this.checkBox2.TabIndex = 4;
             this.checkBox2.Text = "Italic";
             this.checkBox2.UseVisualStyleBackColor = true;
+            this.checkBox2.CheckedChanged += new System.EventHandler(this.checkBoxs_CheckedChanged);
             // 
             // checkBox3
             // 
@@ -105,6 +106,7 @@
             this.checkBox3.TabIndex = 5;
             this.checkBox3.Text = "Strikeout";
             this.checkBox3.UseVisualStyleBackColor = true;
+            this.checkBox3.CheckedChanged += new System.EventHandler(this.checkBoxs_CheckedChanged);
             // 
             // colorDialog1
             // 
@@ -121,7 +123,7 @@
             this.checkBox4.TabIndex = 6;
             this.checkBox4.Text = "Underline";
             this.checkBox4.UseVisualStyleBackColor = true;
-            this.checkBox4.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            this.checkBox4.CheckedChanged += new System.EventHandler(this.checkBoxs_CheckedChanged);
             // 
             // label2
             // 
@@ -165,7 +167,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(273, 255);
+            this.ClientSize = new System.Drawing.Size(270, 255);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);

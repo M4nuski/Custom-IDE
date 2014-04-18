@@ -12,8 +12,8 @@ namespace ShaderIDE
 {
     public partial class WordStyleDialog : Form
     {
-        public WordStruct DialogResultWordStruct;
-        public Color PreviewBackColor;
+        public WordStruct DialogResultWordStruct; //Output Struct
+        private Color _previewBackColor;
 
         public WordStyleDialog()
         {
@@ -21,28 +21,28 @@ namespace ShaderIDE
         }
 
         public DialogResult ShowDialog(WordStruct wordsStructToUpdate, Color backGroundColor)
-        { // Polymorphed to include default display
+        { // Polymorphed to include actual style
+            DialogResultWordStruct = wordsStructToUpdate;
+            _previewBackColor = backGroundColor;
 
-          // Fill form with current data
-            textBox2.Text = wordsStructToUpdate.Name;
-            textBox1.Lines = wordsStructToUpdate.Keywords;
-
-            colorDialog1.Color = wordsStructToUpdate.Style.StyleColor;
-
-            PreviewBackColor = backGroundColor;
-            Update_Preview();
-
-            checkBox1.Checked = wordsStructToUpdate.Style.StyleFont.Bold;
-            checkBox2.Checked = wordsStructToUpdate.Style.StyleFont.Italic;
-            checkBox3.Checked = wordsStructToUpdate.Style.StyleFont.Strikeout;
-            checkBox4.Checked = wordsStructToUpdate.Style.StyleFont.Underline;
-
+            Update_All();
             return ShowDialog();
         }
 
+        public DialogResult ShowDialog(FontAndColorStruct styleToUpdate, Color backGroundColor)
+        { // Polymorphed to inject style
+            _previewBackColor = backGroundColor;
+            DialogResultWordStruct.Name = "<none>";
+            DialogResultWordStruct.Keywords = new [] {"<none>"}; 
+            DialogResultWordStruct.Style = styleToUpdate;
+
+            Update_All();
+            return base.ShowDialog();
+        }
+
         public new DialogResult ShowDialog()
-        { // Polymorphed to inject preview label update
-            Update_Preview();
+        { // Polymorphed to inject content update
+            Update_All();
             return base.ShowDialog();
         }
 
@@ -59,7 +59,7 @@ namespace ShaderIDE
 
                     DialogResultWordStruct.Style.StyleColor = colorDialog1.Color;
 
-                    DialogResultWordStruct.Style.StyleFont = new Font(DialogResultWordStruct.Style.StyleFont, BoxesToStyle());
+                    DialogResultWordStruct.Style.StyleFont = new Font(label1.Font, BoxesToStyle());
                 }
 
                 DialogResult = button.DialogResult;
@@ -79,8 +79,24 @@ namespace ShaderIDE
         private void Update_Preview()
         {
             label1.Font = DialogResultWordStruct.Style.StyleFont;
-            label1.ForeColor = DialogResultWordStruct.Style.StyleColor;
-            label1.BackColor = PreviewBackColor;
+            label1.ForeColor = colorDialog1.Color;
+            label1.BackColor = _previewBackColor;
+            label1.Refresh();
+        }
+
+        private void Update_All()
+        {
+            textBox2.Text = DialogResultWordStruct.Name;
+            textBox1.Lines = DialogResultWordStruct.Keywords;
+            textBox1.Select(0, 0);
+
+            colorDialog1.Color = DialogResultWordStruct.Style.StyleColor;
+            checkBox1.Checked = DialogResultWordStruct.Style.StyleFont.Bold;
+            checkBox2.Checked = DialogResultWordStruct.Style.StyleFont.Italic;
+            checkBox3.Checked = DialogResultWordStruct.Style.StyleFont.Strikeout;
+            checkBox4.Checked = DialogResultWordStruct.Style.StyleFont.Underline; 
+  
+            Update_Preview();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -93,9 +109,10 @@ namespace ShaderIDE
             }
         }
 
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        private void checkBoxs_CheckedChanged(object sender, EventArgs e)
         {
-            DialogResultWordStruct.Style.StyleFont = new Font(DialogResultWordStruct.Style.StyleFont, BoxesToStyle());
+            var oldFont = label1.Font; 
+            DialogResultWordStruct.Style.StyleFont = new Font(oldFont, BoxesToStyle());
             Update_Preview();
         }
     }

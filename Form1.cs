@@ -520,6 +520,7 @@ namespace ShaderIDE
         {
             Theme = ThemeStructs.LoadTheme("Test.txt");
             PopulateMenu();
+            force_Redraw(sender, e);
         }
 
        private void PopulateMenu()
@@ -557,21 +558,43 @@ namespace ShaderIDE
            var sendeMenu = sender as ToolStripItem;
            if (sendeMenu != null)
            {
-               Text = sendeMenu.Name;
-
                //Check which on is called, spawn the dialog, if OK add to theme
-               if (sendeMenu.Name == "V0")
+               int currentIndex;
+               if (int.TryParse(sendeMenu.Name.Substring(1), out currentIndex))
                {
-                   styleDialog_Words.PreviewBackColor = Theme.BackgroundColor;
-                   styleDialog_Words.DialogResultWordStruct.Style = Theme.ValueStyle;
-                   if (styleDialog_Words.ShowDialog() == DialogResult.OK)
+                   if (sendeMenu.Name[0] == 'V')
+                       if (styleDialog_Words.ShowDialog(Theme.ValueStyle, Theme.BackgroundColor) == DialogResult.OK)
+                       {
+                           Theme.ValueStyle = styleDialog_Words.DialogResultWordStruct.Style;
+                       }
+
+                /*   if (sendeMenu.Name[0] == 'D')
                    {
-                       Theme.ValueStyle = styleDialog_Words.DialogResultWordStruct.Style;
-                   }
-               }
+                       styleDialog_Words.DialogResultWordStruct = Theme.Words[currentIndex];
+                       if (styleDialog_Words.ShowDialog() == DialogResult.OK)
+                       {
+                           Theme.ValueStyle = styleDialog_Words.DialogResultWordStruct.Style;
+                       }
+                   }*/
+                   if (sendeMenu.Name[0] == 'W')
+                       if (styleDialog_Words.ShowDialog(Theme.Words[currentIndex], Theme.BackgroundColor) == DialogResult.OK)
+                       {
+                           Theme.Words[currentIndex] = styleDialog_Words.DialogResultWordStruct;
+                       }
+
+                /*   if (sendeMenu.Name[0] == 'S')
+                   {
+                       styleDialog_Words.DialogResultWordStruct = Theme.Words[currentIndex];
+                       if (styleDialog_Words.ShowDialog() == DialogResult.OK)
+                       {
+                           Theme.ValueStyle = styleDialog_Words.DialogResultWordStruct.Style;
+                       }
+                   }*/
+
+               } //tryparse
                force_Redraw(sender, e);
-           }
-           else Text = @"Null";
+           }//not null
+           else Text = @"Null Reference in TokensClick";
        }
 
        #endregion
