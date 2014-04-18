@@ -87,7 +87,7 @@ namespace ShaderIDE
     }
     #endregion
 
-    static class ThemeStructs
+    static class ThemeHelper
     {
         #region Helpers Methods
 

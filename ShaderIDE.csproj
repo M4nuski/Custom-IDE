@@ -65,7 +65,7 @@
       <DependentUpon>SpanStyleDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="StringSafeRemove.cs" />
-    <Compile Include="ThemeStructs.cs" />
+    <Compile Include="ThemeHelper.cs" />
     <Compile Include="WordStyleDialog.cs">
       <SubType>Form</SubType>
     </Compile>

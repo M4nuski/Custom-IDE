@@ -311,11 +311,11 @@ namespace ShaderIDE
                     var lastMismatch = TokenList.Count - 1;
                     var tokenCountsDelta = TokenList.Count - _lastTokenList.Count;
 
-                    while (ThemeStructs.TokenEqual(TokenList[firstMismatch], _lastTokenList[firstMismatch]) & (firstMismatch < _lastTokenList.Count - 1))
+                    while (ThemeHelper.TokenEqual(TokenList[firstMismatch], _lastTokenList[firstMismatch]) & (firstMismatch < _lastTokenList.Count - 1))
                     {
                         firstMismatch++;
                     }
-                    while (ThemeStructs.TokenEqual(TokenList[lastMismatch], _lastTokenList[lastMismatch - tokenCountsDelta]) & (lastMismatch > firstMismatch))
+                    while (ThemeHelper.TokenEqual(TokenList[lastMismatch], _lastTokenList[lastMismatch - tokenCountsDelta]) & (lastMismatch > firstMismatch))
                     {
                         lastMismatch--;
                     }
@@ -333,11 +333,11 @@ namespace ShaderIDE
                     var lastMismatch = _lastTokenList.Count - 1;
                     var tokenCountsDelta = _lastTokenList.Count - TokenList.Count;
 
-                    while (ThemeStructs.TokenEqual(_lastTokenList[firstMismatch], TokenList[firstMismatch]) & (firstMismatch < TokenList.Count - 1))
+                    while (ThemeHelper.TokenEqual(_lastTokenList[firstMismatch], TokenList[firstMismatch]) & (firstMismatch < TokenList.Count - 1))
                     {
                         firstMismatch++;
                     }
-                    while (ThemeStructs.TokenEqual(_lastTokenList[lastMismatch], TokenList[lastMismatch - tokenCountsDelta]) & (lastMismatch > firstMismatch))
+                    while (ThemeHelper.TokenEqual(_lastTokenList[lastMismatch], TokenList[lastMismatch - tokenCountsDelta]) & (lastMismatch > firstMismatch))
                     {
                         lastMismatch--;
                     }
@@ -517,12 +517,12 @@ namespace ShaderIDE
 
         private void MenuItem_SaveClick(object sender, EventArgs e)
         {
-            ThemeStructs.SaveTheme(Theme, "Test.txt");
+            ThemeHelper.SaveTheme(Theme, "Test.txt");
         }
 
         private void MenuItem_LoadClick(object sender, EventArgs e)
         {
-            Theme = ThemeStructs.LoadTheme("Test.txt");
+            Theme = ThemeHelper.LoadTheme("Test.txt");
             PopulateMenu();
             force_Redraw(sender, e);
         }
