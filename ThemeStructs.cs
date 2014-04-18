@@ -21,14 +21,6 @@ namespace ShaderIDE
             StyleFont = font;
             StyleColor = color;
         }
-        public static bool operator ==(FontAndColorStruct a, FontAndColorStruct b)
-        {
-            return (a.StyleColor == b.StyleColor) & (a.StyleFont.Equals(b.StyleFont));
-        }
-        public static bool operator !=(FontAndColorStruct a, FontAndColorStruct b)
-        {
-            return (a.StyleColor != b.StyleColor) | !(a.StyleFont.Equals(b.StyleFont));
-        }
     }
 
     public struct ThemeStruct // Main struct
@@ -92,21 +84,22 @@ namespace ShaderIDE
         public int Offset;
         public string Text;
         public FontAndColorStruct Style;
-
-        public static bool operator ==(TokenStruct a, TokenStruct b)
-        {
-            return (a.Text == b.Text) & (a.Style == b.Style);
-        }
-        public static bool operator !=(TokenStruct a, TokenStruct b)
-        {
-            return (a.Text != b.Text) | (a.Style != b.Style);
-        }
     }
     #endregion
 
     static class ThemeStructs
     {
         #region Helpers Methods
+
+        static public bool StyleEqual(FontAndColorStruct a, FontAndColorStruct b)
+        {
+            return  (a.StyleColor == b.StyleColor) & (a.StyleFont.Equals(b.StyleFont));
+        }
+
+        static public bool TokenEqual(TokenStruct a, TokenStruct b)
+        {
+            return (a.Text == b.Text) & (StyleEqual(a.Style, b.Style));
+        }
 
         static private void WriteColor(Color color, BinaryWriter writer)
         {

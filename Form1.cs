@@ -311,11 +311,11 @@ namespace ShaderIDE
                     var lastMismatch = TokenList.Count - 1;
                     var tokenCountsDelta = TokenList.Count - _lastTokenList.Count;
 
-                    while ((TokenList[firstMismatch] == _lastTokenList[firstMismatch]) & (firstMismatch < _lastTokenList.Count - 1))
+                    while (ThemeStructs.TokenEqual(TokenList[firstMismatch], _lastTokenList[firstMismatch]) & (firstMismatch < _lastTokenList.Count - 1))
                     {
                         firstMismatch++;
                     }
-                    while ((TokenList[lastMismatch] == _lastTokenList[lastMismatch - tokenCountsDelta]) & (lastMismatch > firstMismatch))
+                    while (ThemeStructs.TokenEqual(TokenList[lastMismatch], _lastTokenList[lastMismatch - tokenCountsDelta]) & (lastMismatch > firstMismatch))
                     {
                         lastMismatch--;
                     }
@@ -333,11 +333,11 @@ namespace ShaderIDE
                     var lastMismatch = _lastTokenList.Count - 1;
                     var tokenCountsDelta = _lastTokenList.Count - TokenList.Count;
 
-                    while ((_lastTokenList[firstMismatch] == TokenList[firstMismatch]) & (firstMismatch < TokenList.Count - 1))
+                    while (ThemeStructs.TokenEqual(_lastTokenList[firstMismatch], TokenList[firstMismatch]) & (firstMismatch < TokenList.Count - 1))
                     {
                         firstMismatch++;
                     }
-                    while ((_lastTokenList[lastMismatch] == TokenList[lastMismatch - tokenCountsDelta]) & (lastMismatch > firstMismatch))
+                    while (ThemeStructs.TokenEqual(_lastTokenList[lastMismatch], TokenList[lastMismatch - tokenCountsDelta]) & (lastMismatch > firstMismatch))
                     {
                         lastMismatch--;
                     }
