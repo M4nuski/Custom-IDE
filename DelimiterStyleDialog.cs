@@ -4,18 +4,18 @@ using System.Windows.Forms;
 
 namespace ShaderIDE
 {
-    public partial class WordStyleDialog : Form
+    public partial class DelimiterStyleDialog : Form
     {
-        public WordStruct DialogOutput;
+        public DelimiterStruct DialogOutput;
         private Color _previewBackColor;
         private bool _updatingCheckboxes;
 
-        public WordStyleDialog()
+        public DelimiterStyleDialog()
         {
             InitializeComponent();
         }
 
-        public DialogResult ShowDialog(WordStruct structToUpdate, Color backGroundColor)
+        public DialogResult ShowDialog(DelimiterStruct structToUpdate, Color backGroundColor)
         {
             _previewBackColor = backGroundColor;
             DialogOutput = structToUpdate;
@@ -23,18 +23,8 @@ namespace ShaderIDE
             return ShowDialog();
         }
 
-        public DialogResult ShowDialog(FontAndColorStruct styleToUpdate, Color backGroundColor)
-        {
-            _previewBackColor = backGroundColor;
-            DialogOutput.Name = "<none>";
-            DialogOutput.Keywords = new [] {"<none>"}; 
-            DialogOutput.Style = styleToUpdate;
-
-            return ShowDialog();
-        }
-
         public new DialogResult ShowDialog()
-        { // Polymorphed to inject current style update
+        { // Polymorphed to include actual style
             Update_All();
             return base.ShowDialog();
         }
@@ -48,7 +38,7 @@ namespace ShaderIDE
                 if (button.DialogResult == DialogResult.OK)
                 {
                     DialogOutput.Name = textBox2.Text;
-                    DialogOutput.Keywords = textBox1.Lines;
+                    DialogOutput.Keychars = textBox1.Text.ToCharArray();
 
                     DialogOutput.Style.StyleColor = colorDialog1.Color;
 
@@ -80,9 +70,9 @@ namespace ShaderIDE
         private void Update_All()
         {
             textBox2.Text = DialogOutput.Name;
-            textBox1.Lines = DialogOutput.Keywords;
+            textBox1.Text = new string(DialogOutput.Keychars);
             textBox1.Select(0, 0);
-
+            
             colorDialog1.Color = DialogOutput.Style.StyleColor;
             Update_Preview();
 
@@ -105,7 +95,7 @@ namespace ShaderIDE
             }
         }
 
-        private void checkBoxes_CheckedChanged(object sender, EventArgs e)
+        private void checkBoxs_CheckedChanged(object sender, EventArgs e)
         {
             if (!_updatingCheckboxes)
             {

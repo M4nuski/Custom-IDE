@@ -1,21 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
 using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ShaderIDE
 {
-    public partial class WordStyleDialog : Form
+    public partial class SpanStyleDialog : Form
     {
-        public WordStruct DialogOutput;
+        public SpanStruct DialogOutput;
         private Color _previewBackColor;
         private bool _updatingCheckboxes;
-
-        public WordStyleDialog()
+        public SpanStyleDialog()
         {
             InitializeComponent();
         }
-
-        public DialogResult ShowDialog(WordStruct structToUpdate, Color backGroundColor)
+        public DialogResult ShowDialog(SpanStruct structToUpdate, Color backGroundColor)
         {
             _previewBackColor = backGroundColor;
             DialogOutput = structToUpdate;
@@ -23,23 +27,13 @@ namespace ShaderIDE
             return ShowDialog();
         }
 
-        public DialogResult ShowDialog(FontAndColorStruct styleToUpdate, Color backGroundColor)
-        {
-            _previewBackColor = backGroundColor;
-            DialogOutput.Name = "<none>";
-            DialogOutput.Keywords = new [] {"<none>"}; 
-            DialogOutput.Style = styleToUpdate;
-
-            return ShowDialog();
-        }
-
         public new DialogResult ShowDialog()
-        { // Polymorphed to inject current style update
+        { // Polymorphed to include actual style
             Update_All();
             return base.ShowDialog();
         }
 
-        private void close_Dialog(object sender, EventArgs e) 
+        private void close_Dialog(object sender, EventArgs e)
         {
             var button = sender as Button;
             if (button != null)
@@ -48,7 +42,10 @@ namespace ShaderIDE
                 if (button.DialogResult == DialogResult.OK)
                 {
                     DialogOutput.Name = textBox2.Text;
-                    DialogOutput.Keywords = textBox1.Lines;
+
+                    DialogOutput.StartKeyword = textBox1.Text;
+                    DialogOutput.StopKeyword = textBox3.Text;
+                    DialogOutput.EscapeChar = textBox4.Text[0];
 
                     DialogOutput.Style.StyleColor = colorDialog1.Color;
 
@@ -80,7 +77,11 @@ namespace ShaderIDE
         private void Update_All()
         {
             textBox2.Text = DialogOutput.Name;
-            textBox1.Lines = DialogOutput.Keywords;
+
+            textBox1.Text = DialogOutput.StartKeyword;
+            textBox3.Text = DialogOutput.StopKeyword;
+            textBox4.Text = new string(DialogOutput.EscapeChar, 1);
+
             textBox1.Select(0, 0);
 
             colorDialog1.Color = DialogOutput.Style.StyleColor;

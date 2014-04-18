@@ -35,7 +35,9 @@ namespace ShaderIDE
         private bool _inParser;
         private int _lineSelectionStart, _lineSelectionLength;
 
-        private WordStyleDialog styleDialog_Words = new WordStyleDialog();
+        private readonly WordStyleDialog _styleDialogWords = new WordStyleDialog();
+        private readonly DelimiterStyleDialog _styleDialogDelimiters = new DelimiterStyleDialog();
+        private readonly SpanStyleDialog _styleDialogSpans = new SpanStyleDialog();
         #endregion
 
         #region Parsing / Tokens
@@ -212,7 +214,7 @@ namespace ShaderIDE
             {
                 new DelimiterStruct { //whitespaces and breaks
                     Name = "Breaks",
-                    Keychars = new[] { '\t', '\r', '\n', ' ', ',', ';', '(', ')', '{', '}'},
+                    Keychars = new[] {' ', ',', ';', '(', ')', '{', '}'},
                     Style = new FontAndColorStruct
                     {
                         StyleColor = Color.Gray,
@@ -481,9 +483,10 @@ namespace ShaderIDE
         #region Menu Strip Color and Style Settings
         private void MenuItem_FontClick(object sender, EventArgs e)
         {
-            fontDialog1.Font = richTextBox1.Font;
+            fontDialog1.Font = Theme.TextStyle.StyleFont;
             if (fontDialog1.ShowDialog() == DialogResult.OK)
             {
+                Theme.TextStyle.StyleFont = fontDialog1.Font;
                 richTextBox1.Font = fontDialog1.Font;
 
                 //Update all tokens to use this new font.
@@ -563,33 +566,32 @@ namespace ShaderIDE
                if (int.TryParse(sendeMenu.Name.Substring(1), out currentIndex))
                {
                    if (sendeMenu.Name[0] == 'V')
-                       if (styleDialog_Words.ShowDialog(Theme.ValueStyle, Theme.BackgroundColor) == DialogResult.OK)
+                       if (_styleDialogWords.ShowDialog(Theme.ValueStyle, Theme.BackgroundColor) == DialogResult.OK)
                        {
-                           Theme.ValueStyle = styleDialog_Words.DialogResultWordStruct.Style;
+                           var microsoftsWeirdMarshalingWariningEliminator =
+                               _styleDialogWords.DialogOutput;
+                           Theme.ValueStyle = microsoftsWeirdMarshalingWariningEliminator.Style;
                        }
-
-                /*   if (sendeMenu.Name[0] == 'D')
+                   if (sendeMenu.Name[0] == 'D')
                    {
-                       styleDialog_Words.DialogResultWordStruct = Theme.Words[currentIndex];
-                       if (styleDialog_Words.ShowDialog() == DialogResult.OK)
+                    if (_styleDialogDelimiters.ShowDialog(Theme.Delimiters[currentIndex], Theme.BackgroundColor) == DialogResult.OK)
                        {
-                           Theme.ValueStyle = styleDialog_Words.DialogResultWordStruct.Style;
+                           Theme.Delimiters[currentIndex] = _styleDialogDelimiters.DialogOutput;
                        }
-                   }*/
+                   }
                    if (sendeMenu.Name[0] == 'W')
-                       if (styleDialog_Words.ShowDialog(Theme.Words[currentIndex], Theme.BackgroundColor) == DialogResult.OK)
+                       if (_styleDialogWords.ShowDialog(Theme.Words[currentIndex], Theme.BackgroundColor) == DialogResult.OK)
                        {
-                           Theme.Words[currentIndex] = styleDialog_Words.DialogResultWordStruct;
+                           Theme.Words[currentIndex] = _styleDialogWords.DialogOutput;
                        }
 
-                /*   if (sendeMenu.Name[0] == 'S')
+                   if (sendeMenu.Name[0] == 'S')
                    {
-                       styleDialog_Words.DialogResultWordStruct = Theme.Words[currentIndex];
-                       if (styleDialog_Words.ShowDialog() == DialogResult.OK)
+                       if (_styleDialogSpans.ShowDialog(Theme.Spans[currentIndex], Theme.BackgroundColor) == DialogResult.OK)
                        {
-                           Theme.ValueStyle = styleDialog_Words.DialogResultWordStruct.Style;
+                           Theme.Spans[currentIndex] = _styleDialogSpans.DialogOutput;
                        }
-                   }*/
+                   }
 
                } //tryparse
                force_Redraw(sender, e);
