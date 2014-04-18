@@ -71,7 +71,7 @@ namespace ShaderIDE
         private void Update_All()
         {
             textBox2.Text = DialogOutput.Name;
-            textBox2.ReadOnly = (DialogOutput.Name != "<new>");
+            //textBox2.ReadOnly = (DialogOutput.Name != "<new>");
 
             textBox1.Text = new string(DialogOutput.Keychars);
             textBox1.Select(0, 0);

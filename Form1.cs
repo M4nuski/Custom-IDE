@@ -527,34 +527,52 @@ namespace ShaderIDE
             force_Redraw(sender, e);
         }
 
+       private void SetToLargest(ToolStripItemCollection stripCollection)
+       {
+           var largestWidth = 0;
+           for (var i = 0; i < stripCollection.Count; i++)
+           {
+               var currentWidth =
+                   TextRenderer.MeasureText(stripCollection[i].Text, MenuStrip_TopTheme.Font).Width;
+               largestWidth = (currentWidth > largestWidth) ? currentWidth : largestWidth;
+           }
+           for (var i = 0; i < stripCollection.Count; i++)
+           {
+               stripCollection[i].Width = largestWidth;
+           }
+       }
+
        private void PopulateMenu()
        {
-           while (delimitersToolStripMenuItem1.DropDownItems.Count > 2) delimitersToolStripMenuItem1.DropDownItems.RemoveAt(2);
+           while (MenuStrip_TokensDelimiter.DropDownItems.Count > 2) MenuStrip_TokensDelimiter.DropDownItems.RemoveAt(2);
            for (var i = 0; i < Theme.Delimiters.Length; i++)
            {
-               var currentItem = delimitersToolStripMenuItem1.DropDownItems.Add(new ToolStripButton(
+               var currentItem = MenuStrip_TokensDelimiter.DropDownItems.Add(new ToolStripButton(
                    Theme.Delimiters[i].Name));
-               delimitersToolStripMenuItem1.DropDownItems[currentItem].Name = "D" + i.ToString(CultureInfo.InvariantCulture);
-               delimitersToolStripMenuItem1.DropDownItems[currentItem].Click += MenuItem_TokensClick;
+               MenuStrip_TokensDelimiter.DropDownItems[currentItem].Name = "D" + i.ToString(CultureInfo.InvariantCulture);
+               MenuStrip_TokensDelimiter.DropDownItems[currentItem].Click += MenuItem_TokensClick;
            }
+           SetToLargest(MenuStrip_TokensDelimiter.DropDownItems);
 
-           while (wordsToolStripMenuItem1.DropDownItems.Count > 2) wordsToolStripMenuItem1.DropDownItems.RemoveAt(2);
+           while (MenuStrip_TokensWords.DropDownItems.Count > 2) MenuStrip_TokensWords.DropDownItems.RemoveAt(2);
            for (var i = 0; i < Theme.Words.Length; i++)
            {
-               var currentItem = wordsToolStripMenuItem1.DropDownItems.Add(new ToolStripButton(
+               var currentItem = MenuStrip_TokensWords.DropDownItems.Add(new ToolStripButton(
                    Theme.Words[i].Name));
-               wordsToolStripMenuItem1.DropDownItems[currentItem].Name = "W" + i.ToString(CultureInfo.InvariantCulture);
-               wordsToolStripMenuItem1.DropDownItems[currentItem].Click += MenuItem_TokensClick;
+               MenuStrip_TokensWords.DropDownItems[currentItem].Name = "W" + i.ToString(CultureInfo.InvariantCulture);
+               MenuStrip_TokensWords.DropDownItems[currentItem].Click += MenuItem_TokensClick;
            }
+           SetToLargest(MenuStrip_TokensWords.DropDownItems);
 
-           while (spansToolStripMenuItem1.DropDownItems.Count > 2) spansToolStripMenuItem1.DropDownItems.RemoveAt(2);
+           while (MenuStrip_TokensSpans.DropDownItems.Count > 2) MenuStrip_TokensSpans.DropDownItems.RemoveAt(2);
            for (var i = 0; i < Theme.Spans.Length; i++)
            {
-               var currentItem = spansToolStripMenuItem1.DropDownItems.Add(new ToolStripButton(
+               var currentItem = MenuStrip_TokensSpans.DropDownItems.Add(new ToolStripButton(
                    Theme.Spans[i].Name));
-               spansToolStripMenuItem1.DropDownItems[currentItem].Name = "S" + i.ToString(CultureInfo.InvariantCulture);
-               spansToolStripMenuItem1.DropDownItems[currentItem].Click += MenuItem_TokensClick;
+               MenuStrip_TokensSpans.DropDownItems[currentItem].Name = "S" + i.ToString(CultureInfo.InvariantCulture);
+               MenuStrip_TokensSpans.DropDownItems[currentItem].Click += MenuItem_TokensClick;
            }
+           SetToLargest(MenuStrip_TokensSpans.DropDownItems);
        }
 
        private void MenuItem_TokensClick(object sender, EventArgs e)
@@ -569,8 +587,7 @@ namespace ShaderIDE
                    if (sendeMenu.Name[0] == 'V')
                        if (_styleDialogWords.ShowDialog(Theme.ValueStyle, Theme.BackgroundColor) == DialogResult.OK)
                        {
-                           var microsoftsWeirdMarshalingWariningEliminator =
-                               _styleDialogWords.DialogOutput;
+                           var microsoftsWeirdMarshalingWariningEliminator =_styleDialogWords.DialogOutput;
                            Theme.ValueStyle = microsoftsWeirdMarshalingWariningEliminator.Style;
                        }
                    if (sendeMenu.Name[0] == 'D')
@@ -578,12 +595,16 @@ namespace ShaderIDE
                     if (_styleDialogDelimiters.ShowDialog(Theme.Delimiters[currentIndex], Theme.BackgroundColor) == DialogResult.OK)
                        {
                            Theme.Delimiters[currentIndex] = _styleDialogDelimiters.DialogOutput;
+                           MenuStrip_TokensDelimiter.DropDownItems[currentIndex + 2].Text = Theme.Delimiters[currentIndex].Name;
+                           SetToLargest(MenuStrip_TokensDelimiter.DropDownItems);
                        }
                    }
                    if (sendeMenu.Name[0] == 'W')
                        if (_styleDialogWords.ShowDialog(Theme.Words[currentIndex], Theme.BackgroundColor) == DialogResult.OK)
                        {
                            Theme.Words[currentIndex] = _styleDialogWords.DialogOutput;
+                           MenuStrip_TokensWords.DropDownItems[currentIndex + 2].Text = Theme.Words[currentIndex].Name;
+                           SetToLargest(MenuStrip_TokensWords.DropDownItems);
                        }
 
                    if (sendeMenu.Name[0] == 'S')
@@ -591,6 +612,8 @@ namespace ShaderIDE
                        if (_styleDialogSpans.ShowDialog(Theme.Spans[currentIndex], Theme.BackgroundColor) == DialogResult.OK)
                        {
                            Theme.Spans[currentIndex] = _styleDialogSpans.DialogOutput;
+                           MenuStrip_TokensSpans.DropDownItems[currentIndex + 2].Text = Theme.Spans[currentIndex].Name;
+                           SetToLargest(MenuStrip_TokensSpans.DropDownItems);
                        }
                    }
 
