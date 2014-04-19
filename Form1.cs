@@ -267,7 +267,6 @@ namespace ShaderIDE
 
             Theme.CurrentLineColor = Color.FromArgb(255, 56, 56, 56);
             Theme.BackgroundColor = richTextBox1.BackColor;
-            Theme.ErrorLineColor = Color.DarkRed;
 
             PopulateMenu();
             force_Redraw(this, new EventArgs());
@@ -413,13 +412,15 @@ namespace ShaderIDE
             richTextBox1.Select(currentLineIndex, currentLineLength);
             richTextBox1.SelectionBackColor = Theme.CurrentLineColor;
 
+            //TODO highlights struct list and handlers
             // Errors line Color
+            /*
             foreach (var eInt in ErrorList)
             {
                 GetSelectionFromLine(eInt);
                 richTextBox1.Select(_lineSelectionStart, _lineSelectionLength);
                 richTextBox1.SelectionBackColor = Theme.ErrorLineColor;
-            }
+            }*/
 
             // Reset View
             richTextBox1.Select(boxOrigin, 0);
@@ -517,12 +518,12 @@ namespace ShaderIDE
 
         private void MenuItem_SaveClick(object sender, EventArgs e)
         {
-            ThemeHelper.SaveTheme(Theme, "Test.txt");
+            ThemeHelper.SaveTheme(Theme, "Test.thm");
         }
 
         private void MenuItem_LoadClick(object sender, EventArgs e)
         {
-            Theme = ThemeHelper.LoadTheme("Test.txt");
+            Theme = ThemeHelper.LoadTheme(Theme, "Test.thm");
             PopulateMenu();
             force_Redraw(sender, e);
         }
@@ -647,7 +648,6 @@ namespace ShaderIDE
                if (senderObject.Tag.ToString() == "TXT_COLOR") Theme.TextStyle.StyleColor = GetColorDialogResult(Theme.TextStyle.StyleColor);
                if (senderObject.Tag.ToString() == "BG_COLOR") Theme.BackgroundColor = GetColorDialogResult(Theme.BackgroundColor);
                if (senderObject.Tag.ToString() == "LINE_COLOR") Theme.CurrentLineColor = GetColorDialogResult(Theme.CurrentLineColor);
-               if (senderObject.Tag.ToString() == "ERROR_COLOR") Theme.ErrorLineColor = GetColorDialogResult(Theme.ErrorLineColor);
                force_Redraw(sender, e);
            }
            else Text = @"Null Reference in ColorClick";

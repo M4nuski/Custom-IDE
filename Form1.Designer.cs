@@ -40,7 +40,6 @@
             this.MenuStrip_ColorsText = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuStrip_ColorsBackground = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuStrip_ColorsCurrentline = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuStrip_ColorsError = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuStrip_ThemeTokens = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuStrip_TokensDelimiter = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuStrip_NewDelimiter = new System.Windows.Forms.ToolStripMenuItem();
@@ -141,8 +140,7 @@
             this.MenuStrip_ThemeColors.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MenuStrip_ColorsText,
             this.MenuStrip_ColorsBackground,
-            this.MenuStrip_ColorsCurrentline,
-            this.MenuStrip_ColorsError});
+            this.MenuStrip_ColorsCurrentline});
             this.MenuStrip_ThemeColors.Name = "MenuStrip_ThemeColors";
             this.MenuStrip_ThemeColors.Size = new System.Drawing.Size(152, 24);
             this.MenuStrip_ThemeColors.Text = "Colors";
@@ -170,14 +168,6 @@
             this.MenuStrip_ColorsCurrentline.Tag = "LINE_COLOR";
             this.MenuStrip_ColorsCurrentline.Text = "Current Line Background";
             this.MenuStrip_ColorsCurrentline.Click += new System.EventHandler(this.MenuItem_ColorsClick);
-            // 
-            // MenuStrip_ColorsError
-            // 
-            this.MenuStrip_ColorsError.Name = "MenuStrip_ColorsError";
-            this.MenuStrip_ColorsError.Size = new System.Drawing.Size(240, 24);
-            this.MenuStrip_ColorsError.Tag = "ERROR_COLOR";
-            this.MenuStrip_ColorsError.Text = "Error Background";
-            this.MenuStrip_ColorsError.Click += new System.EventHandler(this.MenuItem_ColorsClick);
             // 
             // MenuStrip_ThemeTokens
             // 
@@ -321,7 +311,6 @@
         private System.Windows.Forms.ToolStripMenuItem MenuStrip_ColorsText;
         private System.Windows.Forms.ToolStripMenuItem MenuStrip_ColorsBackground;
         private System.Windows.Forms.ToolStripMenuItem MenuStrip_ColorsCurrentline;
-        private System.Windows.Forms.ToolStripMenuItem MenuStrip_ColorsError;
     }
 }
 

@@ -4,11 +4,10 @@ C# Framework for building custom IDE.
 * Text Editor with keyword colors.
 * Current Line Highlighting.
 * Error Highlighting.
-* Basic Loading and Saving of Theme and Editor Font
+* Loading and Saving of Theme and Editor Font
 
 Current work-in-progress
 --------
-* Saving and loading of Themes (Add flexibility, Hierarchy, Error Reporting)
 * Default Theme
 * More flexible (Flexiber?) highlights handling to add warning and hints of different colors 
 

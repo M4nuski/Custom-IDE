@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Windows.Forms;
 
 namespace ShaderIDE
 {
@@ -30,7 +31,7 @@ namespace ShaderIDE
         public WordStruct[] Words;
         public SpanStruct[] Spans;
         public FontAndColorStruct TextStyle, ValueStyle;
-        public Color BackgroundColor, CurrentLineColor, ErrorLineColor;
+        public Color BackgroundColor, CurrentLineColor;
     }
 
     public struct DelimiterStruct
@@ -79,6 +80,12 @@ namespace ShaderIDE
         }
     }
 
+    public struct HighlightStruct
+    {
+        public Color LineColor;
+        public List<int> Lines;
+    }
+
     public struct TokenStruct
     {
         public int Offset;
@@ -90,7 +97,6 @@ namespace ShaderIDE
     static class ThemeHelper
     {
         #region Helpers Methods
-
         static public bool StyleEqual(FontAndColorStruct a, FontAndColorStruct b)
         {
             return  (a.StyleColor == b.StyleColor) & (a.StyleFont.Equals(b.StyleFont));
@@ -103,29 +109,29 @@ namespace ShaderIDE
 
         static private void WriteColor(Color color, BinaryWriter writer)
         {
-            writer.Write(color.A.ToString(CultureInfo.InvariantCulture));
-            writer.Write(color.R.ToString(CultureInfo.InvariantCulture));
-            writer.Write(color.G.ToString(CultureInfo.InvariantCulture));
-            writer.Write(color.B.ToString(CultureInfo.InvariantCulture));
+            writer.Write(color.A);
+            writer.Write(color.R);
+            writer.Write(color.G);
+            writer.Write(color.B);
         }
 
         static private Color ReadColor(BinaryReader reader)
         {
-            return Color.FromArgb(  Convert.ToInt32(reader.ReadString()),
-                                    Convert.ToInt32(reader.ReadString()),
-                                    Convert.ToInt32(reader.ReadString()),
-                                    Convert.ToInt32(reader.ReadString())    );
+            return Color.FromArgb(  reader.ReadByte(),
+                                    reader.ReadByte(),
+                                    reader.ReadByte(),
+                                    reader.ReadByte());
         }
 
         static private void WriteStyle(FontAndColorStruct style, BinaryWriter writer)
         {
             WriteColor(style.StyleColor, writer);
             writer.Write(style.StyleFont.FontFamily.Name);
-            writer.Write(style.StyleFont.Size.ToString(CultureInfo.InvariantCulture));
-            writer.Write(style.StyleFont.Bold.ToString());
-            writer.Write(style.StyleFont.Italic.ToString());
-            writer.Write(style.StyleFont.Strikeout.ToString());
-            writer.Write(style.StyleFont.Underline.ToString());
+            writer.Write(style.StyleFont.Size);
+            writer.Write(style.StyleFont.Bold);
+            writer.Write(style.StyleFont.Italic);
+            writer.Write(style.StyleFont.Strikeout);
+            writer.Write(style.StyleFont.Underline);
         }
 
         static private FontAndColorStruct ReadStyle(BinaryReader reader)
@@ -136,13 +142,13 @@ namespace ShaderIDE
             };
 
             var fontName = reader.ReadString();
-            var fontEmSize = Convert.ToSingle(reader.ReadString());
+            var fontEmSize = reader.ReadSingle();
 
             var styleBuffer = FontStyle.Regular;
-            if (Convert.ToBoolean(reader.ReadString())) styleBuffer = styleBuffer | FontStyle.Bold;
-            if (Convert.ToBoolean(reader.ReadString())) styleBuffer = styleBuffer | FontStyle.Italic;
-            if (Convert.ToBoolean(reader.ReadString())) styleBuffer = styleBuffer | FontStyle.Strikeout;
-            if (Convert.ToBoolean(reader.ReadString())) styleBuffer = styleBuffer | FontStyle.Underline;
+            if (reader.ReadBoolean()) styleBuffer = styleBuffer | FontStyle.Bold;
+            if (reader.ReadBoolean()) styleBuffer = styleBuffer | FontStyle.Italic;
+            if (reader.ReadBoolean()) styleBuffer = styleBuffer | FontStyle.Strikeout;
+            if (reader.ReadBoolean()) styleBuffer = styleBuffer | FontStyle.Underline;
 
             style.StyleFont = new Font(fontName, fontEmSize, styleBuffer);
             return style;
@@ -155,43 +161,42 @@ namespace ShaderIDE
             var writer = new BinaryWriter(fileStream);
             
             writer.Write("CustomIDETheme"); //File header
-
             writer.Write(theme.Name);
            
             writer.Write("Delimiters");
-            writer.Write(theme.Delimiters.Length.ToString(CultureInfo.InvariantCulture));
+            writer.Write(theme.Delimiters.Length);
             for (var i = 0; i < theme.Delimiters.Length; i++)
             {
                 writer.Write(theme.Delimiters[i].Name);
-                writer.Write(theme.Delimiters[i].Keychars.Length.ToString(CultureInfo.InvariantCulture));
-                for (var j = 0; j < theme.Delimiters[i].Keychars.Length; j++)
+                writer.Write(theme.Delimiters[i].Keychars.Length);
+                foreach (var t in theme.Delimiters[i].Keychars)
                 {
-                    writer.Write(Convert.ToInt32(theme.Delimiters[i].Keychars[j]).ToString(CultureInfo.InvariantCulture));
+                    writer.Write(Convert.ToInt32(t));
                 }
                 WriteStyle(theme.Delimiters[i].Style, writer);
             }
 
             writer.Write("Words");
-            writer.Write(theme.Words.Length.ToString(CultureInfo.InvariantCulture));
+            writer.Write(theme.Words.Length);
             for (var i = 0; i < theme.Words.Length; i++)
             {
                 writer.Write(theme.Words[i].Name);
-                writer.Write(theme.Words[i].Keywords.Length.ToString(CultureInfo.InvariantCulture));
-                for (var j = 0; j < theme.Words[i].Keywords.Length; j++)
+                writer.Write(theme.Words[i].Keywords.Length);
+                foreach (var t in theme.Words[i].Keywords)
                 {
-                    writer.Write(theme.Words[i].Keywords[j]);
+                    writer.Write(t);
                 }
                 WriteStyle(theme.Words[i].Style, writer);
             }
 
             writer.Write("Spans");
-            writer.Write(theme.Spans.Length.ToString(CultureInfo.InvariantCulture));
+            writer.Write(theme.Spans.Length);
             for (var i = 0; i < theme.Spans.Length; i++)
             {
                 writer.Write(theme.Spans[i].Name);
                 writer.Write(theme.Spans[i].StartKeyword);
                 writer.Write(theme.Spans[i].StopKeyword);
-                writer.Write(Convert.ToByte(theme.Spans[i].EscapeChar).ToString(CultureInfo.InvariantCulture));
+                writer.Write(Convert.ToInt32(theme.Spans[i].EscapeChar));
                 WriteStyle(theme.Spans[i].Style, writer);
             }
 
@@ -203,73 +208,93 @@ namespace ShaderIDE
             WriteColor(theme.BackgroundColor, writer);
             writer.Write("CurrentLineColor");
             WriteColor(theme.CurrentLineColor, writer);
-            writer.Write("ErrorLineColor");
-            WriteColor(theme.ErrorLineColor, writer);
+
             writer.Write("CustomIDEEndOfTheme");
             fileStream.Flush();
             fileStream.Dispose();
         }
 
-        public static ThemeStruct LoadTheme(string filename)
+        public static ThemeStruct LoadTheme(ThemeStruct originalTheme, string filename)
         {
             var theme = new ThemeStruct();
-            var fileStream = File.OpenRead(filename);
-            var reader = new BinaryReader(fileStream);
-            if (reader.ReadString() == "CustomIDETheme") //File header
+            var follower = "Init";
+            try
             {
-                theme.Name = reader.ReadString();
+                var fileStream = File.OpenRead(filename);
+                var reader = new BinaryReader(fileStream);
+                if (reader.ReadString() == "CustomIDETheme") //File header
+                {
+                    follower = "Name";
+                    theme.Name = reader.ReadString();
 
-                if (reader.ReadString() == "Delimiters")
-                {
-                    theme.Delimiters = new DelimiterStruct[Convert.ToInt32(reader.ReadString())];
-                    for (var i = 0; i < theme.Delimiters.Length; i++)
+                    follower = "Delimiters";
+                    if (reader.ReadString() == "Delimiters")
                     {
-                        theme.Delimiters[i].Name = reader.ReadString();
-                        theme.Delimiters[i].Keychars = new char[Convert.ToInt32(reader.ReadString())];
-                        for (var j = 0; j < theme.Delimiters[i].Keychars.Length; j++)
+                        theme.Delimiters = new DelimiterStruct[reader.ReadInt32()];
+                        for (var i = 0; i < theme.Delimiters.Length; i++)
                         {
-                            theme.Delimiters[i].Keychars[j] = Convert.ToChar(Convert.ToInt32(reader.ReadString()));
+                            theme.Delimiters[i].Name = reader.ReadString();
+                            theme.Delimiters[i].Keychars = new char[reader.ReadInt32()];
+                            for (var j = 0; j < theme.Delimiters[i].Keychars.Length; j++)
+                            {
+                                theme.Delimiters[i].Keychars[j] = Convert.ToChar(reader.ReadInt32());
+                            }
+                            theme.Delimiters[i].Style = ReadStyle(reader);
                         }
-                        theme.Delimiters[i].Style = ReadStyle(reader);
-                    }
-                }
-                if (reader.ReadString() == "Words")
-                {
-                    theme.Words = new WordStruct[Convert.ToInt32(reader.ReadString())];
-                    for (var i = 0; i < theme.Words.Length; i++)
-                    {
-                        theme.Words[i].Name = reader.ReadString();
-                        theme.Words[i].Keywords = new string[Convert.ToInt32(reader.ReadString())];
-                        for (var j = 0; j < theme.Words[i].Keywords.Length; j++)
-                        {
-                            theme.Words[i].Keywords[j] = reader.ReadString();
-                        }
-                        theme.Words[i].Style = ReadStyle(reader);
-                    }
-                }
-                if (reader.ReadString() == "Spans")
-                {
-                    theme.Spans = new SpanStruct[Convert.ToInt32(reader.ReadString())];
-                    for (var i = 0; i < theme.Spans.Length; i++)
-                    {
-                        theme.Spans[i].Name = reader.ReadString();
-                        theme.Spans[i].StartKeyword = reader.ReadString();
-                        theme.Spans[i].StopKeyword = reader.ReadString();
-                        theme.Spans[i].EscapeChar = Convert.ToChar(Convert.ToInt32(reader.ReadString()));
-                        theme.Spans[i].Style = ReadStyle(reader);
-                    }
-                }
+                    } 
+                    else throw new Exception("File Structure Error.");
 
-                
+                    follower = "Words";
+                    if (reader.ReadString() == "Words")
+                    {
+                        theme.Words = new WordStruct[reader.ReadInt32()];
+                        for (var i = 0; i < theme.Words.Length; i++)
+                        {
+                            theme.Words[i].Name = reader.ReadString();
+                            theme.Words[i].Keywords = new string[reader.ReadInt32()];
+                            for (var j = 0; j < theme.Words[i].Keywords.Length; j++)
+                            {
+                                theme.Words[i].Keywords[j] = reader.ReadString();
+                            }
+                            theme.Words[i].Style = ReadStyle(reader);
+                        }
+                    }
+                    else throw new Exception("File Structure Error.");
+
+                    follower = "Spans";
+                    if (reader.ReadString() == "Spans")
+                    {
+                        theme.Spans = new SpanStruct[reader.ReadInt32()];
+                        for (var i = 0; i < theme.Spans.Length; i++)
+                        {
+                            theme.Spans[i].Name = reader.ReadString();
+                            theme.Spans[i].StartKeyword = reader.ReadString();
+                            theme.Spans[i].StopKeyword = reader.ReadString();
+                            theme.Spans[i].EscapeChar = Convert.ToChar(reader.ReadInt32());
+                            theme.Spans[i].Style = ReadStyle(reader);
+                        }
+                    }
+                    else throw new Exception("File Structure Error.");
+
+                    follower = "TextStyle";
+                    if (reader.ReadString() == "TextStyle") theme.TextStyle = ReadStyle(reader); else throw new Exception("File Structure Error.");
+                    follower = "ValueStyle";
+                    if (reader.ReadString() == "ValueStyle") theme.ValueStyle = ReadStyle(reader); else throw new Exception("File Structure Error.");
+                    follower = "BackgroundColor";
+                    if (reader.ReadString() == "BackgroundColor") theme.BackgroundColor = ReadColor(reader); else throw new Exception("File Structure Error.");
+                    follower = "CurrentLineColor";
+                    if (reader.ReadString() == "CurrentLineColor") theme.CurrentLineColor = ReadColor(reader); else throw new Exception("File Structure Error.");
+                } else throw new Exception("Bad file header.");
+
+                follower = "CustomIDEEndOfTheme";
+                if (reader.ReadString() != "CustomIDEEndOfTheme") throw new Exception("Bad file footer.");
+                fileStream.Dispose();
             }
-
-            if (reader.ReadString() == "TextStyle") theme.TextStyle = ReadStyle(reader);
-            if (reader.ReadString() == "ValueStyle") theme.ValueStyle = ReadStyle(reader);
-            if (reader.ReadString() == "BackgroundColor") theme.BackgroundColor = ReadColor(reader);
-            if (reader.ReadString() == "CurrentLineColor") theme.CurrentLineColor = ReadColor(reader);
-            if (reader.ReadString() == "ErrorLineColor") theme.ErrorLineColor = ReadColor(reader);
-            //if (reader.ReadString() == "CustomIDEEndOfTheme") 
-            fileStream.Dispose();
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, @"Error Loading Theme at " + follower, MessageBoxButtons.OK);
+                return originalTheme;
+            }
             return theme;
         }
     }
