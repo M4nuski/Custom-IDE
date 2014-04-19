@@ -23,6 +23,7 @@ namespace ShaderIDE
         #region Lists
         public List<TokenStruct> TokenList;
         private List<TokenStruct> _lastTokenList;
+        private List<HighlightStruct> _highlights;
         #endregion
 
         #region Properties
@@ -268,6 +269,8 @@ namespace ShaderIDE
             Theme.CurrentLineColor = Color.FromArgb(255, 56, 56, 56);
             Theme.BackgroundColor = richTextBox1.BackColor;
 
+            _highlights = new List<HighlightStruct>();
+
             PopulateMenu();
             force_Redraw(this, new EventArgs());
         }
@@ -408,19 +411,17 @@ namespace ShaderIDE
                     richTextBox1.SelectionFont = TokenList[i].Style.StyleFont;
                 }
 
+            // Line highlights Color
+            foreach (var currentHighlight in _highlights)
+            {
+                GetSelectionFromLine(currentHighlight.LineNumber);
+                richTextBox1.Select(_lineSelectionStart, _lineSelectionLength);
+                richTextBox1.SelectionBackColor = currentHighlight.LineColor;
+            }
+
             // Current line Color
             richTextBox1.Select(currentLineIndex, currentLineLength);
             richTextBox1.SelectionBackColor = Theme.CurrentLineColor;
-
-            //TODO highlights struct list and handlers
-            // Errors line Color
-            /*
-            foreach (var eInt in ErrorList)
-            {
-                GetSelectionFromLine(eInt);
-                richTextBox1.Select(_lineSelectionStart, _lineSelectionLength);
-                richTextBox1.SelectionBackColor = Theme.ErrorLineColor;
-            }*/
 
             // Reset View
             richTextBox1.Select(boxOrigin, 0);
@@ -449,14 +450,6 @@ namespace ShaderIDE
 
                 TokenList = TokenizeLines(richTextBox1.Lines);
 
-
-                var rdn = new Random();//debug
-                ErrorList = new int[25];//debug
-                for (var i = 0; i < ErrorList.Length; i++)
-                {
-                    ErrorList[i] = rdn.Next(richTextBox1.Lines.Length);
-                }
-                
                 _totalTokenize += _debugStopwatch.Elapsed.Ticks;//Debug
                 _debugStopwatch.Restart();//Debug
 

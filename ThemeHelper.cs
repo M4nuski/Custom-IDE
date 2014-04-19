@@ -82,8 +82,22 @@ namespace ShaderIDE
 
     public struct HighlightStruct
     {
+        public int LineNumber;
+        public string LineHint;
         public Color LineColor;
-        public List<int> Lines;
+
+        public HighlightStruct(int lineNumber, string lineHint, Color lineColor)
+        {
+            LineNumber = lineNumber;
+            LineColor = lineColor;
+            LineHint = lineHint;
+        }
+        public HighlightStruct(int lineNumber, Color lineColor)
+        {
+            LineNumber = lineNumber;
+            LineColor = lineColor;
+            LineHint = "";
+        }
     }
 
     public struct TokenStruct
