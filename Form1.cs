@@ -28,9 +28,13 @@ namespace ShaderIDE
 
         #region Properties
 
-       public ThemeStruct Theme;
+        public ThemeStruct Theme;
 
         private Point _boxOriginPoint; // RichEditBox client area point
+
+       private Point _lastMousePos, _currentMousePos;
+       private int _hoverCount;
+       private bool _hoverHintShowing;
 
         public int[] ErrorList;
         private bool _inParser;
@@ -270,6 +274,10 @@ namespace ShaderIDE
             Theme.BackgroundColor = richTextBox1.BackColor;
 
             _highlights = new List<HighlightStruct>();
+            _highlights.Add(new HighlightStruct(1, "Hint: don't talk too much in comments", Color.MidnightBlue));
+            _highlights.Add(new HighlightStruct(8, "Warning: blah blah blah2", Color.Goldenrod));
+            _highlights.Add(new HighlightStruct(38, "Warning: Color.GoldenRod is kinda weird", Color.Goldenrod));
+            _highlights.Add(new HighlightStruct(8, "ERROR: blah blah blah", Color.DarkRed));
 
             PopulateMenu();
             force_Redraw(this, new EventArgs());
@@ -673,6 +681,44 @@ namespace ShaderIDE
                force_Redraw(sender, e);
            }
            else Text = @"Null Reference in NewTokensClick";
+       }
+
+       private void hoverTimer_Tick(object sender, EventArgs e)
+       {
+           if (_currentMousePos == _lastMousePos)
+           {
+               _hoverCount++;
+               if ((_hoverCount > 5) & (toolTip1.Active))
+               {
+                   var hoverLine = richTextBox1.GetLineFromCharIndex(richTextBox1.GetCharIndexFromPosition(_currentMousePos));
+                   var hoverHint = _highlights.Where(hlLine => hlLine.LineNumber == hoverLine).Aggregate("", (current, hlLine) => current + (hlLine.LineHint + "\n"));
+                   if (hoverHint != "")
+                   {
+                       var hintLocationWithOffset = _currentMousePos;
+                       hintLocationWithOffset.Offset(new Point(0, 20));
+                       toolTip1.Show(hoverHint, richTextBox1, hintLocationWithOffset);
+                     //  _hoverHintShowing = true;
+                   }
+                   _hoverCount = 0;
+               }
+           }
+           else
+           {
+               _lastMousePos = _currentMousePos;
+           }
+
+       }
+
+       private void richTextBox1_MouseMove(object sender, MouseEventArgs e)
+       {
+           _currentMousePos = e.Location;
+           if (_currentMousePos != _lastMousePos)
+           {
+               toolTip1.Hide(richTextBox1);
+          //     _hoverHintShowing = false;
+               _hoverCount = 0;
+
+           }
        }
     }//class
 }//namespace
