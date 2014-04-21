@@ -23,7 +23,7 @@ namespace ShaderIDE
         #region Lists
         public List<TokenStruct> TokenList;
         private List<TokenStruct> _lastTokenList;
-        private List<HighlightStruct> _highlights;
+        private List<HighlightStruct> _highlights = new List<HighlightStruct>();
         #endregion
 
         #region Properties
@@ -211,73 +211,12 @@ namespace ShaderIDE
             _lastTokenList = new List<TokenStruct>();
             _inParser = false;
 
-            Theme.TextStyle = new FontAndColorStruct(richTextBox1.Font, richTextBox1.ForeColor);
-            Theme.ValueStyle = new FontAndColorStruct(new Font(richTextBox1.Font, FontStyle.Regular), Color.RoyalBlue);
+            Theme = ThemeHelper.DefaultGLSLDarkTheme(richTextBox1.Font);
 
-            Theme.Name = "GLSL Test Theme";
-            Theme.Delimiters = new[]
-            {
-                new DelimiterStruct { //whitespaces and breaks
-                    Name = "Breaks",
-                    Keychars = new[] {' ', ',', ';', '(', ')', '{', '}'},
-                    Style = new FontAndColorStruct
-                    {
-                        StyleColor = Color.Gray,
-                        StyleFont = new Font(richTextBox1.Font, FontStyle.Bold)
-                    }},               
-                new DelimiterStruct { //operators
-                    Name = "Operators",
-                    Keychars = new[] { '/', '+', '-', '*', '=', '<', '>', '!' },
-                    Style = new FontAndColorStruct
-                    {
-                        StyleColor = Color.DarkTurquoise,
-                        StyleFont = new Font(richTextBox1.Font, FontStyle.Bold)
-                    }}
-            };
-
-
-            var resFontAndColor = new FontAndColorStruct(new Font(richTextBox1.Font, FontStyle.Regular), Color.Orange);
-            var typFontAndColor = new FontAndColorStruct(new Font(richTextBox1.Font, FontStyle.Regular), Color.Yellow);
-            var funFontAndColor = new FontAndColorStruct(new Font(richTextBox1.Font, FontStyle.Bold), Color.Lime);
-
-            Theme.Words = new[]
-            {
-                new WordStruct
-                {   Name = "Reserved",
-                    Keywords = new [] {"#version", "uniform", "layout", "in", "out", "location", "void", "for", "else", "if", "main",
-                    "smooth", "varying", "const", "flat​", "noperspective​"},
-                    Style = resFontAndColor},
-                new WordStruct
-                {   Name = "Types",
-                    Keywords = new [] {"bool", "int", "float", "vec2", "vec3", "vec4", "mat3", "mat4"},
-                    Style = typFontAndColor},
-                new WordStruct
-                {   Name = "Functions",
-                    Keywords = new []{"gl_Position", "min", "max", "dot", "normalize", "clamp", "mix"},
-                    Style = funFontAndColor}
-            };
-
-            var comFontAndColor = new FontAndColorStruct(new Font(richTextBox1.Font, FontStyle.Italic), Color.Green);
-            var strFontAndColor = new FontAndColorStruct(new Font(richTextBox1.Font, FontStyle.Bold), Color.Violet);
-            var tdoFontAndColor = new FontAndColorStruct(new Font(richTextBox1.Font, FontStyle.Underline), Color.DeepSkyBlue);
-
-            Theme.Spans = new[]
-            {   new SpanStruct
-                {Name = "TODO Comment", StartKeyword = "//TODO", StopKeyword = "\n", EscapeChar = '\n', Style = tdoFontAndColor},
-                new SpanStruct
-                {Name = "Comment", StartKeyword = "//", StopKeyword = "\n", EscapeChar = '\n', Style = comFontAndColor},
-                new SpanStruct
-                {Name = "Inline String", StartKeyword = "\"", StopKeyword = "\"", EscapeChar = '\\', Style = strFontAndColor}
-            };
-
-            Theme.CurrentLineColor = Color.FromArgb(255, 56, 56, 56);
-            Theme.BackgroundColor = richTextBox1.BackColor;
-
-            _highlights = new List<HighlightStruct>();
-            _highlights.Add(new HighlightStruct(1, "Hint: don't talk too much in comments", Color.MidnightBlue));
-            _highlights.Add(new HighlightStruct(8, "Warning: blah blah blah2", Color.Goldenrod));
-            _highlights.Add(new HighlightStruct(38, "Warning: Color.GoldenRod is kinda weird", Color.Goldenrod));
-            _highlights.Add(new HighlightStruct(8, "ERROR: blah blah blah", Color.DarkRed));
+            _highlights.Add(new HighlightStruct(1, "Hint: don't talk too much in comments", Color.MidnightBlue)); //debug
+            _highlights.Add(new HighlightStruct(8, "Warning: blah blah blah2", Color.Goldenrod)); //debug
+            _highlights.Add(new HighlightStruct(38, "Warning: Color.GoldenRod is kinda weird", Color.Goldenrod)); //debug
+            _highlights.Add(new HighlightStruct(8, "ERROR: blah blah blah", Color.DarkRed)); //debug
 
             PopulateMenu();
             force_Redraw(this, new EventArgs());

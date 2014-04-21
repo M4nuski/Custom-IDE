@@ -311,5 +311,80 @@ namespace ShaderIDE
             }
             return theme;
         }
+
+        public static ThemeStruct DefaultGLSLDarkTheme(Font prototypeFont)
+        {
+            return new ThemeStruct
+            {
+                Name = "Default GLSL Dark",
+                BackgroundColor = Color.FromArgb(255, 64, 64, 64),
+                CurrentLineColor = Color.FromArgb(255, 56, 56, 56),
+                TextStyle = new FontAndColorStruct(prototypeFont, Color.White),
+                ValueStyle = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Regular), Color.RoyalBlue),
+
+
+                Delimiters = new[]{
+                new DelimiterStruct { //whitespaces and breaks
+                    Name = "Breaks",
+                    Keychars = new[] {' ', ',', ';', '(', ')', '{', '}'},
+                    Style = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Bold), Color.Gray)
+                },               
+                new DelimiterStruct { //operators
+                    Name = "Operators",
+                    Keychars = new[] { '/', '+', '-', '*', '=', '<', '>', '!' },
+                    Style = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Bold), Color.DarkTurquoise)
+                }},
+
+                Words = new[]{
+                new WordStruct
+                {
+                    Name = "Reserved",
+                    Keywords = new[] {"#version", "uniform", "layout", "in", "out", "location", "void", "for", "else", "if", "main",
+                    "smooth", "varying", "const", "flat​", "noperspective​"},
+                    Style = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Regular), Color.Orange)
+                },
+                new WordStruct
+                {
+                    Name = "Types",
+                    Keywords = new[] { "bool", "int", "float", "vec2", "vec3", "vec4", "mat3", "mat4" },
+                    Style = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Regular), Color.Yellow)
+                },
+                new WordStruct
+                {
+                    Name = "Functions",
+                    Keywords = new[] { "gl_Position", "min", "max", "dot", "normalize", "clamp", "mix" },
+                    Style = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Bold), Color.Lime)
+                }},
+                Spans = new[] {   
+                    new SpanStruct
+                    {
+                        Name = "TODO Comment", 
+                        StartKeyword = "//TODO", 
+                        StopKeyword = "\n", 
+                        EscapeChar = '\n', 
+                        Style = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Underline), Color.DeepSkyBlue)
+                    },
+                new SpanStruct
+                {
+                    Name = "Comment", 
+                    StartKeyword = "//", 
+                    StopKeyword = "\n", 
+                    EscapeChar = '\n', 
+                    Style = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Italic), Color.Green)
+                },
+                new SpanStruct
+                {
+                    Name = "Inline String", 
+                    StartKeyword = "\"", 
+                    StopKeyword = "\"", 
+                    EscapeChar = '\\', 
+                    Style = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Bold), Color.Violet)
+                }
+            }
+
+
+            };
+        }
+
     }
 }
