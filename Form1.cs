@@ -34,7 +34,7 @@ namespace ShaderIDE
 
        private Point _lastMousePos, _currentMousePos;
        private int _hoverCount;
-       private bool _hoverHintShowing;
+      
 
         public int[] ErrorList;
         private bool _inParser;
@@ -211,8 +211,8 @@ namespace ShaderIDE
             _lastTokenList = new List<TokenStruct>();
             _inParser = false;
 
-            Theme = ThemeHelper.DefaultGLSLDarkTheme(richTextBox1.Font);
-
+            //Theme = ThemeHelper.DefaultGLSLDarkTheme(richTextBox1.Font);
+            Theme = ThemeHelper.DefaultGLSLLightTheme(richTextBox1.Font);
             _highlights.Add(new HighlightStruct(1, "Hint: don't talk too much in comments", Color.MidnightBlue)); //debug
             _highlights.Add(new HighlightStruct(8, "Warning: blah blah blah2", Color.Goldenrod)); //debug
             _highlights.Add(new HighlightStruct(38, "Warning: Color.GoldenRod is kinda weird", Color.Goldenrod)); //debug
@@ -636,7 +636,6 @@ namespace ShaderIDE
                        var hintLocationWithOffset = _currentMousePos;
                        hintLocationWithOffset.Offset(new Point(0, 20));
                        toolTip1.Show(hoverHint, richTextBox1, hintLocationWithOffset);
-                     //  _hoverHintShowing = true;
                    }
                    _hoverCount = 0;
                }
@@ -654,7 +653,6 @@ namespace ShaderIDE
            if (_currentMousePos != _lastMousePos)
            {
                toolTip1.Hide(richTextBox1);
-          //     _hoverHintShowing = false;
                _hoverCount = 0;
 
            }
