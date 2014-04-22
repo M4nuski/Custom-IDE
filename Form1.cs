@@ -460,14 +460,28 @@ namespace ShaderIDE
 
         private void MenuItem_SaveClick(object sender, EventArgs e)
         {
-            ThemeHelper.SaveTheme(Theme, "Test.thm");
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    ThemeHelper.SaveTheme(Theme, saveFileDialog1.FileName);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, @"Error Saving Theme", MessageBoxButtons.OK);
+                }   
+            }
         }
 
         private void MenuItem_LoadClick(object sender, EventArgs e)
         {
-            Theme = ThemeHelper.LoadTheme(Theme, "Test.thm");
-            PopulateMenu();
-            force_Redraw(sender, e);
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                Theme = ThemeHelper.LoadTheme(Theme, openFileDialog1.FileName);
+                PopulateMenu();
+                force_Redraw(sender, e);                
+            }
+
         }
 
        private void SetToLargest(ToolStripItemCollection stripCollection)

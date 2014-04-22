@@ -57,6 +57,8 @@
             this.hoverTimer = new System.Windows.Forms.Timer(this.components);
             this.hoverHintLabel = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -119,7 +121,7 @@
             // 
             this.MenuStrip_ThemeLoad.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.MenuStrip_ThemeLoad.Name = "MenuStrip_ThemeLoad";
-            this.MenuStrip_ThemeLoad.Size = new System.Drawing.Size(124, 24);
+            this.MenuStrip_ThemeLoad.Size = new System.Drawing.Size(152, 24);
             this.MenuStrip_ThemeLoad.Text = "Load...";
             this.MenuStrip_ThemeLoad.Click += new System.EventHandler(this.MenuItem_LoadClick);
             // 
@@ -127,7 +129,7 @@
             // 
             this.MenuStrip_ThemeSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.MenuStrip_ThemeSave.Name = "MenuStrip_ThemeSave";
-            this.MenuStrip_ThemeSave.Size = new System.Drawing.Size(124, 24);
+            this.MenuStrip_ThemeSave.Size = new System.Drawing.Size(152, 24);
             this.MenuStrip_ThemeSave.Text = "Save...";
             this.MenuStrip_ThemeSave.Click += new System.EventHandler(this.MenuItem_SaveClick);
             // 
@@ -135,7 +137,7 @@
             // 
             this.MenuStrip_ThemeFont.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.MenuStrip_ThemeFont.Name = "MenuStrip_ThemeFont";
-            this.MenuStrip_ThemeFont.Size = new System.Drawing.Size(124, 24);
+            this.MenuStrip_ThemeFont.Size = new System.Drawing.Size(152, 24);
             this.MenuStrip_ThemeFont.Text = "Font";
             this.MenuStrip_ThemeFont.Click += new System.EventHandler(this.MenuItem_FontClick);
             // 
@@ -147,7 +149,7 @@
             this.MenuStrip_ColorsBackground,
             this.MenuStrip_ColorsCurrentline});
             this.MenuStrip_ThemeColors.Name = "MenuStrip_ThemeColors";
-            this.MenuStrip_ThemeColors.Size = new System.Drawing.Size(124, 24);
+            this.MenuStrip_ThemeColors.Size = new System.Drawing.Size(152, 24);
             this.MenuStrip_ThemeColors.Text = "Colors";
             // 
             // MenuStrip_ColorsText
@@ -183,7 +185,7 @@
             this.MenuStrip_TokensSpans,
             this.V0});
             this.MenuStrip_ThemeTokens.Name = "MenuStrip_ThemeTokens";
-            this.MenuStrip_ThemeTokens.Size = new System.Drawing.Size(124, 24);
+            this.MenuStrip_ThemeTokens.Size = new System.Drawing.Size(152, 24);
             this.MenuStrip_ThemeTokens.Text = "Tokens";
             // 
             // MenuStrip_TokensDelimiter
@@ -298,6 +300,19 @@
             this.toolTip1.UseAnimation = false;
             this.toolTip1.UseFading = false;
             // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.DefaultExt = "thm";
+            this.openFileDialog1.FileName = "*.thm";
+            this.openFileDialog1.Filter = "Themes files|*.thm|All files|*.*";
+            this.openFileDialog1.Title = "Open Theme File";
+            // 
+            // saveFileDialog1
+            // 
+            this.saveFileDialog1.DefaultExt = "thm";
+            this.saveFileDialog1.Filter = "Themes files|*.thm|All files|*.*";
+            this.saveFileDialog1.Title = "Save Theme File";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -347,6 +362,8 @@
         private System.Windows.Forms.Timer hoverTimer;
         private System.Windows.Forms.Label hoverHintLabel;
         private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
     }
 }
 
