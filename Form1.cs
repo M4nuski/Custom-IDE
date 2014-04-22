@@ -211,8 +211,10 @@ namespace ShaderIDE
             _lastTokenList = new List<TokenStruct>();
             _inParser = false;
 
-            //Theme = ThemeHelper.DefaultGLSLDarkTheme(richTextBox1.Font);
-            Theme = ThemeHelper.DefaultGLSLLightTheme(richTextBox1.Font);
+            Theme = ThemeHelper.DefaultGLSLDarkTheme(richTextBox1.Font);
+            //Theme = ThemeHelper.DefaultGLSLLightTheme(richTextBox1.Font);
+            //Theme = ThemeHelper.DefaultCSDarkTheme(richTextBox1.Font);
+            //Theme = ThemeHelper.DefaultCSBlueTheme(richTextBox1.Font);
             _highlights.Add(new HighlightStruct(1, "Hint: don't talk too much in comments", Color.MidnightBlue)); //debug
             _highlights.Add(new HighlightStruct(8, "Warning: blah blah blah2", Color.Goldenrod)); //debug
             _highlights.Add(new HighlightStruct(38, "Warning: Color.GoldenRod is kinda weird", Color.Goldenrod)); //debug

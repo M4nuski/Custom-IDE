@@ -458,6 +458,145 @@ namespace ShaderIDE
 
             };
         }
+        public static ThemeStruct DefaultCSDarkTheme(Font prototypeFont)
+        {
+            return new ThemeStruct
+            {
+                Name = "Default C# Dark",
+                BackgroundColor = Color.FromArgb(255, 30, 30, 30),
+                CurrentLineColor = Color.FromArgb(255, 15, 15, 15),
+                TextStyle = new FontAndColorStruct(prototypeFont, Color.White),
+                ValueStyle = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Regular), Color.FromArgb(255, 156, 206, 168)),
 
+
+                Delimiters = new[]{
+                new DelimiterStruct { //whitespaces, breaks and operators
+                    Name = "Breaks",
+                    Keychars = new[] {' ', ',', ';', '(', ')', '{', '}', '/', '+', '-', '*', '=', '<', '>', '!', '[',']'},
+                    Style = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Bold), Color.White)
+                }},
+
+                Words = new[]{
+                new WordStruct
+                {
+                    Name = "Reserved",
+                    Keywords = new[] {"int", "new", "public", "private", "static", "class", "bool", "float", "single", "double", "try",
+                    "catch", "throw", "const", "return​", "if", "else", "for", "foreach", "var", "while", "char", "string", "void"},
+                    Style = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Regular), Color.FromArgb(255, 67, 156, 214 ))
+                },
+                new WordStruct
+                {
+                    Name = "Classes",
+                    Keywords = new[] { "Font", "Form", "Exception", "MessageBox", "Convert", "File", "BinaryReader", "BinaryWriter", "EventArgs" },
+                    Style = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Bold), Color.FromArgb(255, 78, 201, 176))
+                }},
+                Spans = new[] {   
+                    new SpanStruct
+                    {
+                        Name = "TODO Comment", 
+                        StartKeyword = "//TODO",
+                        StopKeyword = "\n", 
+                        EscapeChar = '\n', 
+                        Style = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Bold), Color.FromArgb(255,135,206,250) )
+                    },
+                new SpanStruct
+                {
+                    Name = "Comment", 
+                    StartKeyword = "//", 
+                    StopKeyword = "\n", 
+                    EscapeChar = '\n', 
+                    Style = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Italic), Color.FromArgb(255, 96, 139, 78))
+                },
+                new SpanStruct
+                {
+                    Name = "Inline String", 
+                    StartKeyword = "\"", 
+                    StopKeyword = "\"", 
+                    EscapeChar = '\\', 
+                    Style = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Bold),  Color.FromArgb(255, 214, 157, 133))
+                },
+                new SpanStruct
+                {
+                    Name = "Region", 
+                    StartKeyword = "#", 
+                    StopKeyword = "\n", 
+                    EscapeChar = '\n', 
+                    Style = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Bold),  Color.FromArgb(255, 155, 155, 155))
+                }
+            }
+
+
+            };
+        }
+        public static ThemeStruct DefaultCSBlueTheme(Font prototypeFont)
+        {
+            return new ThemeStruct
+            {
+                Name = "Default C# Blue",
+                BackgroundColor = Color.FromArgb(255, 255, 255, 255),
+                CurrentLineColor = Color.FromArgb(255, 255, 255, 255),
+                TextStyle = new FontAndColorStruct(prototypeFont, Color.Black),
+                ValueStyle = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Regular), Color.Black),
+
+
+                Delimiters = new[]{
+                new DelimiterStruct { //whitespaces, breaks and operators
+                    Name = "Breaks",
+                    Keychars = new[] {' ', ',', ';', '(', ')', '{', '}', '/', '+', '-', '*', '=', '<', '>', '!', '[',']'},
+                    Style = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Bold), Color.Black)
+                }},
+
+                Words = new[]{
+                new WordStruct
+                {
+                    Name = "Reserved",
+                    Keywords = new[] {"int", "new", "public", "private", "static", "class", "bool", "float", "single", "double", "try",
+                    "catch", "throw", "const", "return​", "if", "else", "for", "foreach", "var", "while", "char", "string", "void"},
+                    Style = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Regular), Color.FromArgb(255, 0, 0, 255 ))
+                },
+                new WordStruct
+                {
+                    Name = "Classes",
+                    Keywords = new[] { "Font", "Form", "Exception", "MessageBox", "Convert", "File", "BinaryReader", "BinaryWriter", "EventArgs" },
+                    Style = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Bold), Color.FromArgb(255, 43, 145, 175))
+                }},
+                Spans = new[] {   
+                    new SpanStruct
+                    {
+                        Name = "TODO Comment", 
+                        StartKeyword = "//TODO",
+                        StopKeyword = "\n",
+                        EscapeChar = '\n', 
+                        Style = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Bold), Color.FromArgb(255,0,0,139) )
+                    },
+                new SpanStruct
+                {
+                    Name = "Comment", 
+                    StartKeyword = "//", 
+                    StopKeyword = "\n", 
+                    EscapeChar = '\n', 
+                    Style = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Regular), Color.FromArgb(255, 0, 128, 0))
+                },
+                new SpanStruct
+                {
+                    Name = "Inline String", 
+                    StartKeyword = "\"", 
+                    StopKeyword = "\"", 
+                    EscapeChar = '\\', 
+                    Style = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Bold),  Color.FromArgb(255, 163, 21, 21))
+                },
+                new SpanStruct
+                {
+                    Name = "Region", 
+                    StartKeyword = "#", 
+                    StopKeyword = "\n", 
+                    EscapeChar = '\n', 
+                    Style = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Bold),  Color.FromArgb(255, 0, 0, 255))
+                }
+            }
+
+
+            };
+        }
     }
 }
