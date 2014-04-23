@@ -266,7 +266,7 @@ namespace ShaderIDE
                     {
                         firstMismatch++;
                     }
-                    while (ThemeHelper.TokenEqual(TokenList[lastMismatch], _lastTokenList[lastMismatch - tokenCountsDelta]) & (lastMismatch > firstMismatch))
+                    while (ThemeHelper.TokenEqual(TokenList[lastMismatch], _lastTokenList[lastMismatch - tokenCountsDelta]) & (lastMismatch > (firstMismatch + tokenCountsDelta)))
                     {
                         lastMismatch--;
                     }
@@ -288,7 +288,7 @@ namespace ShaderIDE
                     {
                         firstMismatch++;
                     }
-                    while (ThemeHelper.TokenEqual(_lastTokenList[lastMismatch], TokenList[lastMismatch - tokenCountsDelta]) & (lastMismatch > firstMismatch))
+                    while (ThemeHelper.TokenEqual(_lastTokenList[lastMismatch], TokenList[lastMismatch - tokenCountsDelta]) & (lastMismatch > (firstMismatch + tokenCountsDelta)))
                     {
                         lastMismatch--;
                     }
