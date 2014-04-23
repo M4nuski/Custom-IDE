@@ -167,6 +167,36 @@ namespace ShaderIDE
             style.StyleFont = new Font(fontName, fontEmSize, styleBuffer);
             return style;
         }
+
+        public static ThemeStruct ChangeFont(ThemeStruct theme, Font newfont)
+        {
+            var newTheme = theme;
+
+            newTheme.TextStyle.StyleFont = newfont;
+            var backupStyle = newTheme.ValueStyle.StyleFont.Style;
+            newTheme.ValueStyle.StyleFont = new Font(newfont, backupStyle);
+
+            //Update all tokens to use this new font.
+            for (var i = 0; i < newTheme.Delimiters.Length; i++)
+            {
+                backupStyle = newTheme.Delimiters[i].Style.StyleFont.Style;
+                newTheme.Delimiters[i].Style.StyleFont = new Font(newfont, backupStyle);
+            }
+
+            for (var i = 0; i < newTheme.Words.Length; i++)
+            {
+                backupStyle = newTheme.Words[i].Style.StyleFont.Style;
+                newTheme.Words[i].Style.StyleFont = new Font(newfont, backupStyle);
+            }
+
+            for (var i = 0; i < newTheme.Spans.Length; i++)
+            {
+                backupStyle = newTheme.Spans[i].Style.StyleFont.Style;
+                newTheme.Spans[i].Style.StyleFont = new Font(newfont, backupStyle);
+            }
+            return newTheme;
+        }
+
         #endregion
 
         static public void SaveTheme(ThemeStruct theme, string filename)

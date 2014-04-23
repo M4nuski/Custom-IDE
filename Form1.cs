@@ -430,32 +430,11 @@ namespace ShaderIDE
             fontDialog1.Font = Theme.TextStyle.StyleFont;
             if (fontDialog1.ShowDialog() == DialogResult.OK)
             {
-                Theme.TextStyle.StyleFont = fontDialog1.Font;
+                Theme = ThemeHelper.ChangeFont(Theme, fontDialog1.Font);
                 richTextBox1.Font = fontDialog1.Font;
-
-                //Update all tokens to use this new font.
-                for (var i = 0; i < Theme.Delimiters.Length; i++)
-                {
-                    var backupStyle = Theme.Delimiters[i].Style.StyleFont.Style;
-                    Theme.Delimiters[i].Style.StyleFont = new Font(richTextBox1.Font, backupStyle);
-                }
-
-                for (var i = 0; i < Theme.Words.Length; i++)
-                {
-                    var backupStyle = Theme.Words[i].Style.StyleFont.Style;
-                    Theme.Words[i].Style.StyleFont = new Font(richTextBox1.Font, backupStyle);
-                }
-
-                for (var i = 0; i < Theme.Spans.Length; i++)
-                {
-                    var backupStyle = Theme.Spans[i].Style.StyleFont.Style;
-                    Theme.Spans[i].Style.StyleFont = new Font(richTextBox1.Font, backupStyle);
-                }
-
                 force_Redraw(sender, e);
             }
         }
-
 
 
         private void MenuItem_SaveClick(object sender, EventArgs e)
@@ -670,8 +649,9 @@ namespace ShaderIDE
            {
                toolTip1.Hide(richTextBox1);
                _hoverCount = 0;
-
            }
        }
+
+
     }//class
 }//namespace
