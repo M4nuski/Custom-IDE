@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
 
 namespace ShaderIDE
 {
 
-   public partial class Form1 : Form
+    public partial class Form1 : Form
     {
         #region Debug Fields
         private readonly Stopwatch _debugStopwatch = new Stopwatch();
@@ -32,9 +28,9 @@ namespace ShaderIDE
 
         private Point _boxOriginPoint; // RichEditBox client area point
 
-       private Point _lastMousePos, _currentMousePos;
-       private int _hoverCount;
-      
+        private Point _lastMousePos, _currentMousePos;
+        private int _hoverCount;
+
 
         public int[] ErrorList;
         private bool _inParser;
@@ -62,7 +58,7 @@ namespace ShaderIDE
             return Theme.TextStyle;
         }
 
-       private FontAndColorStruct GetWordFont(string s)
+        private FontAndColorStruct GetWordFont(string s)
         {
             foreach (var wordStruct in Theme.Words.Where(wordStruct => wordStruct.Keywords.Contains(s)))
             {
@@ -71,7 +67,7 @@ namespace ShaderIDE
             return IsValue(s) ? Theme.ValueStyle : Theme.TextStyle;
         }
 
-       private List<TokenStruct> TokenizeLines(string[] lines)
+        private List<TokenStruct> TokenizeLines(string[] lines)
         {
             var textOffset = 0;
             var result = new List<TokenStruct>();
@@ -99,7 +95,7 @@ namespace ShaderIDE
                 for (var j = 0; j < Theme.Spans.Length; j++)
                 {
                     spanStartIndices[j] = line.IndexOf(Theme.Spans[j].StartKeyword, StringComparison.Ordinal);
-                } 
+                }
                 // Find the first one on the line
                 var firstSpanStartIndex = line.Length;
                 var firstSpanType = -1;
@@ -112,7 +108,7 @@ namespace ShaderIDE
                     }
                 }
                 if (firstSpanType > -1) //Check if there is still a span to tokenize in the line
-                { 
+                {
                     if (spanStartIndices[firstSpanType] > 0)
                     {
                         // Tokenize line up to first occurence
@@ -154,7 +150,7 @@ namespace ShaderIDE
                     line = line.Substring(spanEndIndex);
                     lineOffset += spanEndIndex;
                 }
-                else 
+                else
                 {   // No more span in this line
                     result.AddRange(TokenizeLinePerDelimiter(line, offset + lineOffset));
                     line = "";
@@ -228,7 +224,7 @@ namespace ShaderIDE
             _boxOriginPoint = new Point(richTextBox1.ClientSize) { Y = 1 };
         }
         #endregion
-        
+
         #region Editor Update
         private void force_Redraw(object sender, EventArgs e) // Force Parsing
         {
@@ -320,10 +316,10 @@ namespace ShaderIDE
                 _lineSelectionStart = richTextBox1.GetFirstCharIndexFromLine(lineNumber);
                 _lineSelectionLength = richTextBox1.GetFirstCharIndexFromLine(lineNumber + 1) - _lineSelectionStart;
             }
-            else 
+            else
             {
                 _lineSelectionStart = richTextBox1.GetFirstCharIndexFromLine(maxLine);
-                _lineSelectionLength = richTextBox1.TextLength-1 - _lineSelectionStart;
+                _lineSelectionLength = richTextBox1.TextLength - 1 - _lineSelectionStart;
             }
         }
 
@@ -343,12 +339,12 @@ namespace ShaderIDE
             GetSelectionFromLine(richTextBox1.GetLineFromCharIndex(richTextBox1.GetFirstCharIndexOfCurrentLine()));
             var currentLineIndex = _lineSelectionStart;
             var currentLineLength = _lineSelectionLength;
-          
+
             // Reset Background
             richTextBox1.BackColor = Theme.BackgroundColor;
             richTextBox1.SelectAll();
             richTextBox1.SelectionBackColor = Theme.BackgroundColor;
-            
+
             // Update Colors
             for (var i = 0; i < TokenList.Count; i++)
                 if (changedList[i])
@@ -390,7 +386,7 @@ namespace ShaderIDE
             if (!_inParser)
             {
                 _inParser = true;
-                
+
                 _totalApplyColors = 0;//debug
                 _totalCheckChanges = 0;//debug
                 _totalTokenize = 0;//debug
@@ -402,7 +398,7 @@ namespace ShaderIDE
                 _debugStopwatch.Restart();//Debug
 
                 var changedTokens = CheckForChanges();
-                
+
                 _totalCheckChanges += _debugStopwatch.Elapsed.Ticks;//Debug
                 _debugStopwatch.Restart();//Debug
 
@@ -447,7 +443,7 @@ namespace ShaderIDE
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message, @"Error Saving Theme", MessageBoxButtons.OK);
-                }   
+                }
             }
         }
 
@@ -457,199 +453,199 @@ namespace ShaderIDE
             {
                 Theme = ThemeHelper.LoadTheme(Theme, openFileDialog1.FileName);
                 PopulateMenu();
-                force_Redraw(sender, e);                
+                force_Redraw(sender, e);
             }
 
         }
 
-       private void SetToLargest(ToolStripItemCollection stripCollection)
-       {
-           var largestWidth = 0;
-           for (var i = 0; i < stripCollection.Count; i++)
-           {
-               var currentWidth =
-                   TextRenderer.MeasureText(stripCollection[i].Text, MenuStrip_TopTheme.Font).Width;
-               largestWidth = (currentWidth > largestWidth) ? currentWidth : largestWidth;
-           }
-           for (var i = 0; i < stripCollection.Count; i++)
-           {
-               stripCollection[i].Width = largestWidth;
-           }
-       }
+        private void SetToLargest(ToolStripItemCollection stripCollection)
+        {
+            var largestWidth = 0;
+            for (var i = 0; i < stripCollection.Count; i++)
+            {
+                var currentWidth =
+                    TextRenderer.MeasureText(stripCollection[i].Text, MenuStrip_TopTheme.Font).Width;
+                largestWidth = (currentWidth > largestWidth) ? currentWidth : largestWidth;
+            }
+            for (var i = 0; i < stripCollection.Count; i++)
+            {
+                stripCollection[i].Width = largestWidth;
+            }
+        }
 
-       private void PopulateMenu()
-       {
-           while (MenuStrip_TokensDelimiter.DropDownItems.Count > 2) MenuStrip_TokensDelimiter.DropDownItems.RemoveAt(2);
-           for (var i = 0; i < Theme.Delimiters.Length; i++)
-           {
-               var currentItem = MenuStrip_TokensDelimiter.DropDownItems.Add(new ToolStripButton(
-                   Theme.Delimiters[i].Name));
-               MenuStrip_TokensDelimiter.DropDownItems[currentItem].Name = "D" + i.ToString(CultureInfo.InvariantCulture);
-               MenuStrip_TokensDelimiter.DropDownItems[currentItem].Click += MenuItem_TokensClick;
-           }
-           SetToLargest(MenuStrip_TokensDelimiter.DropDownItems);
+        private void PopulateMenu()
+        {
+            while (MenuStrip_TokensDelimiter.DropDownItems.Count > 2) MenuStrip_TokensDelimiter.DropDownItems.RemoveAt(2);
+            for (var i = 0; i < Theme.Delimiters.Length; i++)
+            {
+                var currentItem = MenuStrip_TokensDelimiter.DropDownItems.Add(new ToolStripButton(
+                    Theme.Delimiters[i].Name));
+                MenuStrip_TokensDelimiter.DropDownItems[currentItem].Name = "D" + i.ToString(CultureInfo.InvariantCulture);
+                MenuStrip_TokensDelimiter.DropDownItems[currentItem].Click += MenuItem_TokensClick;
+            }
+            SetToLargest(MenuStrip_TokensDelimiter.DropDownItems);
 
-           while (MenuStrip_TokensWords.DropDownItems.Count > 2) MenuStrip_TokensWords.DropDownItems.RemoveAt(2);
-           for (var i = 0; i < Theme.Words.Length; i++)
-           {
-               var currentItem = MenuStrip_TokensWords.DropDownItems.Add(new ToolStripButton(
-                   Theme.Words[i].Name));
-               MenuStrip_TokensWords.DropDownItems[currentItem].Name = "W" + i.ToString(CultureInfo.InvariantCulture);
-               MenuStrip_TokensWords.DropDownItems[currentItem].Click += MenuItem_TokensClick;
-           }
-           SetToLargest(MenuStrip_TokensWords.DropDownItems);
+            while (MenuStrip_TokensWords.DropDownItems.Count > 2) MenuStrip_TokensWords.DropDownItems.RemoveAt(2);
+            for (var i = 0; i < Theme.Words.Length; i++)
+            {
+                var currentItem = MenuStrip_TokensWords.DropDownItems.Add(new ToolStripButton(
+                    Theme.Words[i].Name));
+                MenuStrip_TokensWords.DropDownItems[currentItem].Name = "W" + i.ToString(CultureInfo.InvariantCulture);
+                MenuStrip_TokensWords.DropDownItems[currentItem].Click += MenuItem_TokensClick;
+            }
+            SetToLargest(MenuStrip_TokensWords.DropDownItems);
 
-           while (MenuStrip_TokensSpans.DropDownItems.Count > 2) MenuStrip_TokensSpans.DropDownItems.RemoveAt(2);
-           for (var i = 0; i < Theme.Spans.Length; i++)
-           {
-               var currentItem = MenuStrip_TokensSpans.DropDownItems.Add(new ToolStripButton(
-                   Theme.Spans[i].Name));
-               MenuStrip_TokensSpans.DropDownItems[currentItem].Name = "S" + i.ToString(CultureInfo.InvariantCulture);
-               MenuStrip_TokensSpans.DropDownItems[currentItem].Click += MenuItem_TokensClick;
-           }
-           SetToLargest(MenuStrip_TokensSpans.DropDownItems);
-       }
+            while (MenuStrip_TokensSpans.DropDownItems.Count > 2) MenuStrip_TokensSpans.DropDownItems.RemoveAt(2);
+            for (var i = 0; i < Theme.Spans.Length; i++)
+            {
+                var currentItem = MenuStrip_TokensSpans.DropDownItems.Add(new ToolStripButton(
+                    Theme.Spans[i].Name));
+                MenuStrip_TokensSpans.DropDownItems[currentItem].Name = "S" + i.ToString(CultureInfo.InvariantCulture);
+                MenuStrip_TokensSpans.DropDownItems[currentItem].Click += MenuItem_TokensClick;
+            }
+            SetToLargest(MenuStrip_TokensSpans.DropDownItems);
+        }
 
-       private void MenuItem_TokensClick(object sender, EventArgs e)
-       {
-           var sendeMenu = sender as ToolStripItem;
-           if (sendeMenu != null)
-           {
-               //Check which on is called, spawn the dialog, if OK add to theme
-               int currentIndex;
-               if (int.TryParse(sendeMenu.Name.Substring(1), out currentIndex))
-               {
-                   if (sendeMenu.Name[0] == 'V')
-                       if (_styleDialogWords.ShowDialog(Theme.ValueStyle, Theme.BackgroundColor) == DialogResult.OK)
-                       {
-                           var microsoftsWeirdMarshalingWariningEliminator =_styleDialogWords.DialogOutput;
-                           Theme.ValueStyle = microsoftsWeirdMarshalingWariningEliminator.Style;
-                       }
-                   if (sendeMenu.Name[0] == 'D')
-                   {
-                    if (_styleDialogDelimiters.ShowDialog(Theme.Delimiters[currentIndex], Theme.BackgroundColor) == DialogResult.OK)
-                       {
-                           Theme.Delimiters[currentIndex] = _styleDialogDelimiters.DialogOutput;
-                           MenuStrip_TokensDelimiter.DropDownItems[currentIndex + 2].Text = Theme.Delimiters[currentIndex].Name;
-                           SetToLargest(MenuStrip_TokensDelimiter.DropDownItems);
-                       }
-                   }
-                   if (sendeMenu.Name[0] == 'W')
-                       if (_styleDialogWords.ShowDialog(Theme.Words[currentIndex], Theme.BackgroundColor) == DialogResult.OK)
-                       {
-                           Theme.Words[currentIndex] = _styleDialogWords.DialogOutput;
-                           MenuStrip_TokensWords.DropDownItems[currentIndex + 2].Text = Theme.Words[currentIndex].Name;
-                           SetToLargest(MenuStrip_TokensWords.DropDownItems);
-                       }
+        private void MenuItem_TokensClick(object sender, EventArgs e)
+        {
+            var sendeMenu = sender as ToolStripItem;
+            if (sendeMenu != null)
+            {
+                //Check which on is called, spawn the dialog, if OK add to theme
+                int currentIndex;
+                if (int.TryParse(sendeMenu.Name.Substring(1), out currentIndex))
+                {
+                    if (sendeMenu.Name[0] == 'V')
+                        if (_styleDialogWords.ShowDialog(Theme.ValueStyle, Theme.BackgroundColor) == DialogResult.OK)
+                        {
+                            var microsoftsWeirdMarshalingWariningEliminator = _styleDialogWords.DialogOutput;
+                            Theme.ValueStyle = microsoftsWeirdMarshalingWariningEliminator.Style;
+                        }
+                    if (sendeMenu.Name[0] == 'D')
+                    {
+                        if (_styleDialogDelimiters.ShowDialog(Theme.Delimiters[currentIndex], Theme.BackgroundColor) == DialogResult.OK)
+                        {
+                            Theme.Delimiters[currentIndex] = _styleDialogDelimiters.DialogOutput;
+                            MenuStrip_TokensDelimiter.DropDownItems[currentIndex + 2].Text = Theme.Delimiters[currentIndex].Name;
+                            SetToLargest(MenuStrip_TokensDelimiter.DropDownItems);
+                        }
+                    }
+                    if (sendeMenu.Name[0] == 'W')
+                        if (_styleDialogWords.ShowDialog(Theme.Words[currentIndex], Theme.BackgroundColor) == DialogResult.OK)
+                        {
+                            Theme.Words[currentIndex] = _styleDialogWords.DialogOutput;
+                            MenuStrip_TokensWords.DropDownItems[currentIndex + 2].Text = Theme.Words[currentIndex].Name;
+                            SetToLargest(MenuStrip_TokensWords.DropDownItems);
+                        }
 
-                   if (sendeMenu.Name[0] == 'S')
-                   {
-                       if (_styleDialogSpans.ShowDialog(Theme.Spans[currentIndex], Theme.BackgroundColor) == DialogResult.OK)
-                       {
-                           Theme.Spans[currentIndex] = _styleDialogSpans.DialogOutput;
-                           MenuStrip_TokensSpans.DropDownItems[currentIndex + 2].Text = Theme.Spans[currentIndex].Name;
-                           SetToLargest(MenuStrip_TokensSpans.DropDownItems);
-                       }
-                   }
+                    if (sendeMenu.Name[0] == 'S')
+                    {
+                        if (_styleDialogSpans.ShowDialog(Theme.Spans[currentIndex], Theme.BackgroundColor) == DialogResult.OK)
+                        {
+                            Theme.Spans[currentIndex] = _styleDialogSpans.DialogOutput;
+                            MenuStrip_TokensSpans.DropDownItems[currentIndex + 2].Text = Theme.Spans[currentIndex].Name;
+                            SetToLargest(MenuStrip_TokensSpans.DropDownItems);
+                        }
+                    }
 
-               } //tryparse
-               force_Redraw(sender, e);
-           }//not null
-           else Text = @"Null Reference in TokensClick";
-       }
+                } //tryparse
+                force_Redraw(sender, e);
+            }//not null
+            else Text = @"Null Reference in TokensClick";
+        }
 
-       #endregion
+        #endregion
 
-       private Color GetColorDialogResult(Color initialColor)
-       {
-           colorDialog1.Color = initialColor;
-           return colorDialog1.ShowDialog() == DialogResult.OK ? colorDialog1.Color : initialColor;
-       }
+        private Color GetColorDialogResult(Color initialColor)
+        {
+            colorDialog1.Color = initialColor;
+            return colorDialog1.ShowDialog() == DialogResult.OK ? colorDialog1.Color : initialColor;
+        }
 
-       private static T[] AppendArray<T>(T[] inputArray, T newElement)
-       {
-           var newArray = new T[inputArray.Length + 1];
-           inputArray.CopyTo(newArray, 0);
-           newArray[newArray.Length - 1] = newElement;
-           return newArray;
-       }
+        private static T[] AppendArray<T>(T[] inputArray, T newElement)
+        {
+            var newArray = new T[inputArray.Length + 1];
+            inputArray.CopyTo(newArray, 0);
+            newArray[newArray.Length - 1] = newElement;
+            return newArray;
+        }
 
-       private void MenuItem_ColorsClick(object sender, EventArgs e)
-       {
-           var senderObject = sender as ToolStripItem;
-           if (senderObject != null)
-           {
-               if (senderObject.Tag.ToString() == "TXT_COLOR") Theme.TextStyle.StyleColor = GetColorDialogResult(Theme.TextStyle.StyleColor);
-               if (senderObject.Tag.ToString() == "BG_COLOR") Theme.BackgroundColor = GetColorDialogResult(Theme.BackgroundColor);
-               if (senderObject.Tag.ToString() == "LINE_COLOR") Theme.CurrentLineColor = GetColorDialogResult(Theme.CurrentLineColor);
-               force_Redraw(sender, e);
-           }
-           else Text = @"Null Reference in ColorClick";
-       }
+        private void MenuItem_ColorsClick(object sender, EventArgs e)
+        {
+            var senderObject = sender as ToolStripItem;
+            if (senderObject != null)
+            {
+                if (senderObject.Tag.ToString() == "TXT_COLOR") Theme.TextStyle.StyleColor = GetColorDialogResult(Theme.TextStyle.StyleColor);
+                if (senderObject.Tag.ToString() == "BG_COLOR") Theme.BackgroundColor = GetColorDialogResult(Theme.BackgroundColor);
+                if (senderObject.Tag.ToString() == "LINE_COLOR") Theme.CurrentLineColor = GetColorDialogResult(Theme.CurrentLineColor);
+                force_Redraw(sender, e);
+            }
+            else Text = @"Null Reference in ColorClick";
+        }
 
-       private void MenuItem_Tokens_NewClick(object sender, EventArgs e)
-       {
-           var senderObject = sender as ToolStripItem;
-           if (senderObject != null)
-           {
-               if (senderObject.Tag.ToString() == "DEL_NEW") 
-                   if (_styleDialogDelimiters.ShowDialog(
-                        new DelimiterStruct(Theme.TextStyle.StyleFont), 
-                        Theme.BackgroundColor) == DialogResult.OK)
-                   Theme.Delimiters = AppendArray(Theme.Delimiters, _styleDialogDelimiters.DialogOutput);
+        private void MenuItem_Tokens_NewClick(object sender, EventArgs e)
+        {
+            var senderObject = sender as ToolStripItem;
+            if (senderObject != null)
+            {
+                if (senderObject.Tag.ToString() == "DEL_NEW")
+                    if (_styleDialogDelimiters.ShowDialog(
+                         new DelimiterStruct(Theme.TextStyle.StyleFont),
+                         Theme.BackgroundColor) == DialogResult.OK)
+                        Theme.Delimiters = AppendArray(Theme.Delimiters, _styleDialogDelimiters.DialogOutput);
 
-               if (senderObject.Tag.ToString() == "WORD_NEW")
-                   if (_styleDialogWords.ShowDialog(
-                        new WordStruct(Theme.TextStyle.StyleFont),
-                        Theme.BackgroundColor) == DialogResult.OK)
-                   Theme.Words = AppendArray(Theme.Words, _styleDialogWords.DialogOutput);
+                if (senderObject.Tag.ToString() == "WORD_NEW")
+                    if (_styleDialogWords.ShowDialog(
+                         new WordStruct(Theme.TextStyle.StyleFont),
+                         Theme.BackgroundColor) == DialogResult.OK)
+                        Theme.Words = AppendArray(Theme.Words, _styleDialogWords.DialogOutput);
 
-               if (senderObject.Tag.ToString() == "SPAN_NEW") 
-                   if (_styleDialogSpans.ShowDialog(
-                        new SpanStruct(Theme.TextStyle.StyleFont),
-                        Theme.BackgroundColor) == DialogResult.OK)
-                   Theme.Spans = AppendArray(Theme.Spans, _styleDialogSpans.DialogOutput);
+                if (senderObject.Tag.ToString() == "SPAN_NEW")
+                    if (_styleDialogSpans.ShowDialog(
+                         new SpanStruct(Theme.TextStyle.StyleFont),
+                         Theme.BackgroundColor) == DialogResult.OK)
+                        Theme.Spans = AppendArray(Theme.Spans, _styleDialogSpans.DialogOutput);
 
-               PopulateMenu();
-               force_Redraw(sender, e);
-           }
-           else Text = @"Null Reference in NewTokensClick";
-       }
+                PopulateMenu();
+                force_Redraw(sender, e);
+            }
+            else Text = @"Null Reference in NewTokensClick";
+        }
 
-       private void hoverTimer_Tick(object sender, EventArgs e)
-       {
-           if (_currentMousePos == _lastMousePos)
-           {
-               _hoverCount++;
-               if ((_hoverCount > 5) & (toolTip1.Active))
-               {
-                   var hoverLine = richTextBox1.GetLineFromCharIndex(richTextBox1.GetCharIndexFromPosition(_currentMousePos));
-                   var hoverHint = _highlights.Where(hlLine => hlLine.LineNumber == hoverLine).Aggregate("", (current, hlLine) => current + (hlLine.LineHint + "\n"));
-                   if (hoverHint != "")
-                   {
-                       var hintLocationWithOffset = _currentMousePos;
-                       hintLocationWithOffset.Offset(new Point(0, 20));
-                       toolTip1.Show(hoverHint, richTextBox1, hintLocationWithOffset);
-                   }
-                   _hoverCount = 0;
-               }
-           }
-           else
-           {
-               _lastMousePos = _currentMousePos;
-           }
+        private void hoverTimer_Tick(object sender, EventArgs e)
+        {
+            if (_currentMousePos == _lastMousePos)
+            {
+                _hoverCount++;
+                if ((_hoverCount > 5) & (toolTip1.Active))
+                {
+                    var hoverLine = richTextBox1.GetLineFromCharIndex(richTextBox1.GetCharIndexFromPosition(_currentMousePos));
+                    var hoverHint = _highlights.Where(hlLine => hlLine.LineNumber == hoverLine).Aggregate("", (current, hlLine) => current + (hlLine.LineHint + "\n"));
+                    if (hoverHint != "")
+                    {
+                        var hintLocationWithOffset = _currentMousePos;
+                        hintLocationWithOffset.Offset(new Point(0, 20));
+                        toolTip1.Show(hoverHint, richTextBox1, hintLocationWithOffset);
+                    }
+                    _hoverCount = 0;
+                }
+            }
+            else
+            {
+                _lastMousePos = _currentMousePos;
+            }
 
-       }
+        }
 
-       private void richTextBox1_MouseMove(object sender, MouseEventArgs e)
-       {
-           _currentMousePos = e.Location;
-           if (_currentMousePos != _lastMousePos)
-           {
-               toolTip1.Hide(richTextBox1);
-               _hoverCount = 0;
-           }
-       }
+        private void richTextBox1_MouseMove(object sender, MouseEventArgs e)
+        {
+            _currentMousePos = e.Location;
+            if (_currentMousePos != _lastMousePos)
+            {
+                toolTip1.Hide(richTextBox1);
+                _hoverCount = 0;
+            }
+        }
 
 
     }//class
