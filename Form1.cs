@@ -55,24 +55,23 @@ namespace ShaderIDE
 
         private FontAndColorStruct GetDelimiterFont(char c)
         {
-            foreach (var delimiterStruct in Theme.Delimiters)
+            foreach (var delimiterStruct in Theme.Delimiters.Where(delimiterStruct => delimiterStruct.Keychars.Contains(c)))
             {
-                if (delimiterStruct.Keychars.Contains(c)) return delimiterStruct.Style;
+                return delimiterStruct.Style;
             }
             return Theme.TextStyle;
         }
 
-        private FontAndColorStruct GetWordFont(string s)
+       private FontAndColorStruct GetWordFont(string s)
         {
-            foreach (var wordStruct in Theme.Words)
+            foreach (var wordStruct in Theme.Words.Where(wordStruct => wordStruct.Keywords.Contains(s)))
             {
-                if (wordStruct.Keywords.Contains(s)) return wordStruct.Style;
+                return wordStruct.Style;
             }
-            if (IsValue(s)) return Theme.ValueStyle;
-            return Theme.TextStyle;
+            return IsValue(s) ? Theme.ValueStyle : Theme.TextStyle;
         }
 
-        private List<TokenStruct> TokenizeLines(string[] lines)
+       private List<TokenStruct> TokenizeLines(string[] lines)
         {
             var textOffset = 0;
             var result = new List<TokenStruct>();
