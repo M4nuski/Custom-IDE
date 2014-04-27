@@ -19,23 +19,22 @@ namespace ShaderIDE
         #region Lists
         public List<TokenStruct> TokenList;
         private List<TokenStruct> _lastTokenList;
-        private List<HighlightStruct> _highlights = new List<HighlightStruct>();
+        public List<HighlightStruct> Highlights = new List<HighlightStruct>();
         #endregion
 
         #region Properties
-
-        public ThemeStruct Theme;
-
-        private Point _boxOriginPoint; // RichEditBox client area point
-
+        //Tooltip
         private Point _lastMousePos, _currentMousePos;
         private int _hoverCount;
-
-
-        public int[] ErrorList;
-        private bool _inParser;
+        
+        //Parser and Editor controls
+        public ThemeStruct Theme;
+        private bool _inParser; 
+        private Point _textboxBottomLeftPoint;
         private int _lineSelectionStart, _lineSelectionLength;
+        private int _lastSelectionStart, _lastSelectionLength;
 
+        //Dialogs
         private readonly WordStyleDialog _styleDialogWords = new WordStyleDialog();
         private readonly DelimiterStyleDialog _styleDialogDelimiters = new DelimiterStyleDialog();
         private readonly SpanStyleDialog _styleDialogSpans = new SpanStyleDialog();
@@ -210,10 +209,10 @@ namespace ShaderIDE
             //Theme = ThemeHelper.DefaultGLSLLightTheme(richTextBox1.Font);
             //Theme = ThemeHelper.DefaultCSDarkTheme(richTextBox1.Font);
             //Theme = ThemeHelper.DefaultCSBlueTheme(richTextBox1.Font);
-            _highlights.Add(new HighlightStruct(1, "Hint: don't talk too much in comments", Color.MidnightBlue)); //debug
-            _highlights.Add(new HighlightStruct(8, "Warning: blah blah blah2", Color.Goldenrod)); //debug
-            _highlights.Add(new HighlightStruct(38, "Warning: Color.GoldenRod is kinda weird", Color.Goldenrod)); //debug
-            _highlights.Add(new HighlightStruct(8, "ERROR: blah blah blah", Color.DarkRed)); //debug
+            Highlights.Add(new HighlightStruct(1, "Hint: don't talk too much in comments", Color.MidnightBlue)); //debug
+            Highlights.Add(new HighlightStruct(8, "Warning: blah blah blah2", Color.Goldenrod)); //debug
+            Highlights.Add(new HighlightStruct(38, "Warning: Color.GoldenRod is kinda weird", Color.Goldenrod)); //debug
+            Highlights.Add(new HighlightStruct(8, "ERROR: blah blah blah", Color.DarkRed)); //debug
 
             PopulateMenu();
             force_Redraw(this, new EventArgs());
@@ -221,27 +220,40 @@ namespace ShaderIDE
 
         private void richTextBox1_Resize(object sender, EventArgs e)
         {
-            _boxOriginPoint = new Point(richTextBox1.ClientSize) { Y = 1 };
-        }
-        #endregion
-
-        #region Editor Update
-        private void force_Redraw(object sender, EventArgs e) // Force Parsing
-        {
-            _lastTokenList = new List<TokenStruct>(); //Clear old list
-            _inParser = false;
-            richEditBox_ReDraw(sender, e);
-        }
-
-        private void richTextBox1_Click(object sender, EventArgs e)
+            _textboxBottomLeftPoint = new Point(richTextBox1.ClientSize) { Y = 1 };
+        }        
+        
+        private void richTextBox1_Click(object sender, EventArgs e) //Redraw selections and background
         {
             if (!_inParser & (TokenList != null))
             {
                 _inParser = true;
                 var dummyArray = new bool[TokenList.Count];
+                if ((_lastSelectionStart != richTextBox1.SelectionStart) |
+                    (_lastSelectionLength != richTextBox1.SelectionLength))
+                {
+                    var startOffset =richTextBox1.GetFirstCharIndexFromLine(richTextBox1.GetLineFromCharIndex(_lastSelectionStart));
+
+                    for (var i = 0; i < dummyArray.Length; i++)
+                    {
+                        dummyArray[i] = (TokenList[i].Offset + 1 >= startOffset) &
+                             (TokenList[i].Offset-1 <= _lastSelectionStart + _lastSelectionLength);
+                    }
+                    _lastSelectionStart = richTextBox1.SelectionStart;
+                    _lastSelectionLength = richTextBox1.SelectionLength;
+                }
                 ReDraw(dummyArray);
                 _inParser = false;
             }
+        }
+        #endregion
+
+        #region Editor Update
+        private void force_Redraw(object sender, EventArgs e)
+        {
+            _lastTokenList = new List<TokenStruct>(); //Clear old list
+            _inParser = false;
+            richEditBox_TextChanged(sender, e);
         }
 
         private bool[] CheckForChanges()
@@ -250,7 +262,6 @@ namespace ShaderIDE
 
             if ((TokenList.Count > 0) & (_lastTokenList.Count > 0))
             {
-
                 if (TokenList.Count >= _lastTokenList.Count)
                 {
                     var firstMismatch = 0;
@@ -333,7 +344,7 @@ namespace ShaderIDE
             // Save current state
             var carretPositionBuffer = richTextBox1.SelectionStart;
             var carretLengthBuffer = richTextBox1.SelectionLength;
-            var boxOrigin = richTextBox1.GetCharIndexFromPosition(_boxOriginPoint);
+            var boxOrigin = richTextBox1.GetCharIndexFromPosition(_textboxBottomLeftPoint);
 
             // Get Current Line informations
             GetSelectionFromLine(richTextBox1.GetLineFromCharIndex(richTextBox1.GetFirstCharIndexOfCurrentLine()));
@@ -356,7 +367,7 @@ namespace ShaderIDE
                 }
 
             // Line highlights Color
-            foreach (var currentHighlight in _highlights)
+            foreach (var currentHighlight in Highlights)
             {
                 GetSelectionFromLine(currentHighlight.LineNumber);
                 richTextBox1.Select(_lineSelectionStart, _lineSelectionLength);
@@ -381,7 +392,7 @@ namespace ShaderIDE
             return totalReDrawn;
         }
 
-        private void richEditBox_ReDraw(object sender, EventArgs e)
+        private void richEditBox_TextChanged(object sender, EventArgs e)
         {
             if (!_inParser)
             {
@@ -430,7 +441,6 @@ namespace ShaderIDE
                 force_Redraw(sender, e);
             }
         }
-
 
         private void MenuItem_SaveClick(object sender, EventArgs e)
         {
@@ -554,8 +564,6 @@ namespace ShaderIDE
             else Text = @"Null Reference in TokensClick";
         }
 
-        #endregion
-
         private Color GetColorDialogResult(Color initialColor)
         {
             colorDialog1.Color = initialColor;
@@ -611,7 +619,9 @@ namespace ShaderIDE
             }
             else Text = @"Null Reference in NewTokensClick";
         }
+        #endregion
 
+        #region Tooltip Handling
         private void hoverTimer_Tick(object sender, EventArgs e)
         {
             if (_currentMousePos == _lastMousePos)
@@ -620,7 +630,7 @@ namespace ShaderIDE
                 if ((_hoverCount > 5) & (toolTip1.Active))
                 {
                     var hoverLine = richTextBox1.GetLineFromCharIndex(richTextBox1.GetCharIndexFromPosition(_currentMousePos));
-                    var hoverHint = _highlights.Where(hlLine => hlLine.LineNumber == hoverLine).Aggregate("", (current, hlLine) => current + (hlLine.LineHint + "\n"));
+                    var hoverHint = Highlights.Where(hlLine => hlLine.LineNumber == hoverLine).Aggregate("", (current, hlLine) => current + (hlLine.LineHint + "\n"));
                     if (hoverHint != "")
                     {
                         var hintLocationWithOffset = _currentMousePos;
@@ -646,7 +656,7 @@ namespace ShaderIDE
                 _hoverCount = 0;
             }
         }
-
+        #endregion
 
     }//class
 }//namespace

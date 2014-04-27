@@ -89,7 +89,7 @@
             this.richTextBox1.Text = resources.GetString("richTextBox1.Text");
             this.richTextBox1.WordWrap = false;
             this.richTextBox1.Click += new System.EventHandler(this.richTextBox1_Click);
-            this.richTextBox1.TextChanged += new System.EventHandler(this.richEditBox_ReDraw);
+            this.richTextBox1.TextChanged += new System.EventHandler(this.richEditBox_TextChanged);
             this.richTextBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.richTextBox1_MouseMove);
             this.richTextBox1.Resize += new System.EventHandler(this.richTextBox1_Resize);
             // 
