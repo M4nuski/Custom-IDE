@@ -356,7 +356,7 @@ namespace ShaderIDE
                 Delimiters = new[]{
                 new DelimiterStruct { //whitespaces and breaks
                     Name = "Breaks",
-                    Keychars = new[] {' ', ',', ';', '(', ')', '{', '}'},
+                    Keychars = new[] {' ', ',', ';', '(', ')', '{', '}', '\t'},
                     Style = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Bold), Color.Gray)
                 },               
                 new DelimiterStruct { //operators
@@ -429,7 +429,7 @@ namespace ShaderIDE
                 Delimiters = new[]{
                 new DelimiterStruct { //whitespaces and breaks
                     Name = "Breaks",
-                    Keychars = new[] {' ', ',', ';', '(', ')', '{', '}'},
+                    Keychars = new[] {' ', ',', ';', '(', ')', '{', '}', '\t'},
                     Style = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Bold), Color.LightSlateGray)
                 },               
                 new DelimiterStruct { //operators
@@ -502,7 +502,7 @@ namespace ShaderIDE
                 Delimiters = new[]{
                 new DelimiterStruct { //whitespaces, breaks and operators
                     Name = "Breaks",
-                    Keychars = new[] {' ', ',', ';', '(', ')', '{', '}', '/', '+', '-', '*', '=', '<', '>', '!', '[',']'},
+                    Keychars = new[] {' ', ',', ';', '(', ')', '{', '}', '/', '+', '-', '*', '=', '<', '>', '!', '[',']', '\t'},
                     Style = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Bold), Color.White)
                 }},
 
@@ -572,7 +572,7 @@ namespace ShaderIDE
                 Delimiters = new[]{
                 new DelimiterStruct { //whitespaces, breaks and operators
                     Name = "Breaks",
-                    Keychars = new[] {' ', ',', ';', '(', ')', '{', '}', '/', '+', '-', '*', '=', '<', '>', '!', '[',']'},
+                    Keychars = new[] {' ', ',', ';', '(', ')', '{', '}', '/', '+', '-', '*', '=', '<', '>', '!', '[',']', '\t'},
                     Style = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Bold), Color.Black)
                 }},
 
