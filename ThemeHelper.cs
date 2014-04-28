@@ -32,6 +32,18 @@ namespace ShaderIDE
         public SpanStruct[] Spans;
         public FontAndColorStruct TextStyle, ValueStyle;
         public Color BackgroundColor, CurrentLineColor;
+
+        public ThemeStruct(Font prototypeFont, Color textColor, Color backColor)
+        {
+            Name = "<Default>";
+            BackgroundColor = backColor;
+            CurrentLineColor = backColor;
+            TextStyle = new FontAndColorStruct(prototypeFont, textColor);
+            ValueStyle = new FontAndColorStruct(prototypeFont, textColor);
+            Delimiters = new DelimiterStruct[0];
+            Words = new WordStruct[0];
+            Spans = new SpanStruct[0];
+        }
     }
 
     public struct DelimiterStruct
@@ -43,8 +55,8 @@ namespace ShaderIDE
         public DelimiterStruct(Font prototypeFont)
         {
             Name = "<new>";
-            Keychars = new char[] {};
-            Style = new FontAndColorStruct {StyleFont = prototypeFont};
+            Keychars = new char[] { };
+            Style = new FontAndColorStruct { StyleFont = prototypeFont };
         }
     }
 
@@ -58,7 +70,7 @@ namespace ShaderIDE
         {
             Name = "<new>";
             Keywords = new string[] { };
-            Style = new FontAndColorStruct {StyleFont = prototypeFont};
+            Style = new FontAndColorStruct { StyleFont = prototypeFont };
         }
     }
 
@@ -76,7 +88,7 @@ namespace ShaderIDE
             StartKeyword = "";
             StopKeyword = "";
             EscapeChar = '\n';
-            Style = new FontAndColorStruct {StyleFont = prototypeFont};
+            Style = new FontAndColorStruct { StyleFont = prototypeFont };
         }
     }
 
@@ -113,7 +125,7 @@ namespace ShaderIDE
         #region Helpers Methods
         static public bool StyleEqual(FontAndColorStruct a, FontAndColorStruct b)
         {
-            return  (a.StyleColor == b.StyleColor) & (a.StyleFont.Equals(b.StyleFont));
+            return (a.StyleColor == b.StyleColor) & (a.StyleFont.Equals(b.StyleFont));
         }
 
         static public bool TokenEqual(TokenStruct a, TokenStruct b)
@@ -131,7 +143,7 @@ namespace ShaderIDE
 
         static private Color ReadColor(BinaryReader reader)
         {
-            return Color.FromArgb(  reader.ReadByte(),
+            return Color.FromArgb(reader.ReadByte(),
                                     reader.ReadByte(),
                                     reader.ReadByte(),
                                     reader.ReadByte());
@@ -203,10 +215,10 @@ namespace ShaderIDE
         {
             var fileStream = File.Create(filename);
             var writer = new BinaryWriter(fileStream);
-            
+
             writer.Write("CustomIDETheme"); //File header
             writer.Write(theme.Name);
-           
+
             writer.Write("Delimiters");
             writer.Write(theme.Delimiters.Length);
             for (var i = 0; i < theme.Delimiters.Length; i++)
@@ -285,7 +297,7 @@ namespace ShaderIDE
                             }
                             theme.Delimiters[i].Style = ReadStyle(reader);
                         }
-                    } 
+                    }
                     else throw new Exception("File Structure Error.");
 
                     follower = "Words";
@@ -328,7 +340,8 @@ namespace ShaderIDE
                     if (reader.ReadString() == "BackgroundColor") theme.BackgroundColor = ReadColor(reader); else throw new Exception("File Structure Error.");
                     follower = "CurrentLineColor";
                     if (reader.ReadString() == "CurrentLineColor") theme.CurrentLineColor = ReadColor(reader); else throw new Exception("File Structure Error.");
-                } else throw new Exception("Bad file header.");
+                }
+                else throw new Exception("Bad file header.");
 
                 follower = "CustomIDEEndOfTheme";
                 if (reader.ReadString() != "CustomIDEEndOfTheme") throw new Exception("Bad file footer.");

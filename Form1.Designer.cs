@@ -28,10 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.MenuStrip_TopTheme = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuStrip_ThemeLoad = new System.Windows.Forms.ToolStripMenuItem();
@@ -54,11 +51,9 @@
             this.V0 = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuStrip_TopForceParse = new System.Windows.Forms.ToolStripMenuItem();
             this.fontDialog1 = new System.Windows.Forms.FontDialog();
-            this.hoverTimer = new System.Windows.Forms.Timer(this.components);
-            this.hoverHintLabel = new System.Windows.Forms.Label();
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.editorBox1 = new ShaderIDE.EditorBox();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -66,32 +61,6 @@
             // 
             this.colorDialog1.AnyColor = true;
             this.colorDialog1.FullOpen = true;
-            // 
-            // richTextBox1
-            // 
-            this.richTextBox1.AcceptsTab = true;
-            this.richTextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.richTextBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.richTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.richTextBox1.DetectUrls = false;
-            this.richTextBox1.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.richTextBox1.ForeColor = System.Drawing.Color.White;
-            this.richTextBox1.HideSelection = false;
-            this.richTextBox1.Location = new System.Drawing.Point(1, 28);
-            this.richTextBox1.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
-            this.richTextBox1.Size = new System.Drawing.Size(1196, 812);
-            this.richTextBox1.TabIndex = 12;
-            this.richTextBox1.TabStop = false;
-            this.richTextBox1.Text = resources.GetString("richTextBox1.Text");
-            this.richTextBox1.WordWrap = false;
-            this.richTextBox1.Click += new System.EventHandler(this.richTextBox1_Click);
-            this.richTextBox1.TextChanged += new System.EventHandler(this.richEditBox_TextChanged);
-            this.richTextBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.richTextBox1_MouseMove);
-            this.richTextBox1.Resize += new System.EventHandler(this.richTextBox1_Resize);
             // 
             // menuStrip1
             // 
@@ -121,7 +90,7 @@
             // 
             this.MenuStrip_ThemeLoad.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.MenuStrip_ThemeLoad.Name = "MenuStrip_ThemeLoad";
-            this.MenuStrip_ThemeLoad.Size = new System.Drawing.Size(152, 24);
+            this.MenuStrip_ThemeLoad.Size = new System.Drawing.Size(124, 24);
             this.MenuStrip_ThemeLoad.Text = "Load...";
             this.MenuStrip_ThemeLoad.Click += new System.EventHandler(this.MenuItem_LoadClick);
             // 
@@ -129,7 +98,7 @@
             // 
             this.MenuStrip_ThemeSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.MenuStrip_ThemeSave.Name = "MenuStrip_ThemeSave";
-            this.MenuStrip_ThemeSave.Size = new System.Drawing.Size(152, 24);
+            this.MenuStrip_ThemeSave.Size = new System.Drawing.Size(124, 24);
             this.MenuStrip_ThemeSave.Text = "Save...";
             this.MenuStrip_ThemeSave.Click += new System.EventHandler(this.MenuItem_SaveClick);
             // 
@@ -137,7 +106,7 @@
             // 
             this.MenuStrip_ThemeFont.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.MenuStrip_ThemeFont.Name = "MenuStrip_ThemeFont";
-            this.MenuStrip_ThemeFont.Size = new System.Drawing.Size(152, 24);
+            this.MenuStrip_ThemeFont.Size = new System.Drawing.Size(124, 24);
             this.MenuStrip_ThemeFont.Text = "Font";
             this.MenuStrip_ThemeFont.Click += new System.EventHandler(this.MenuItem_FontClick);
             // 
@@ -149,7 +118,7 @@
             this.MenuStrip_ColorsBackground,
             this.MenuStrip_ColorsCurrentline});
             this.MenuStrip_ThemeColors.Name = "MenuStrip_ThemeColors";
-            this.MenuStrip_ThemeColors.Size = new System.Drawing.Size(152, 24);
+            this.MenuStrip_ThemeColors.Size = new System.Drawing.Size(124, 24);
             this.MenuStrip_ThemeColors.Text = "Colors";
             // 
             // MenuStrip_ColorsText
@@ -185,7 +154,7 @@
             this.MenuStrip_TokensSpans,
             this.V0});
             this.MenuStrip_ThemeTokens.Name = "MenuStrip_ThemeTokens";
-            this.MenuStrip_ThemeTokens.Size = new System.Drawing.Size(152, 24);
+            this.MenuStrip_ThemeTokens.Size = new System.Drawing.Size(124, 24);
             this.MenuStrip_ThemeTokens.Text = "Tokens";
             // 
             // MenuStrip_TokensDelimiter
@@ -271,34 +240,6 @@
             this.MenuStrip_TopForceParse.Name = "MenuStrip_TopForceParse";
             this.MenuStrip_TopForceParse.Size = new System.Drawing.Size(96, 24);
             this.MenuStrip_TopForceParse.Text = "Force Parse";
-            this.MenuStrip_TopForceParse.Click += new System.EventHandler(this.force_Redraw);
-            // 
-            // hoverTimer
-            // 
-            this.hoverTimer.Enabled = true;
-            this.hoverTimer.Interval = 50;
-            this.hoverTimer.Tick += new System.EventHandler(this.hoverTimer_Tick);
-            // 
-            // hoverHintLabel
-            // 
-            this.hoverHintLabel.AutoSize = true;
-            this.hoverHintLabel.Enabled = false;
-            this.hoverHintLabel.Location = new System.Drawing.Point(1127, 0);
-            this.hoverHintLabel.Name = "hoverHintLabel";
-            this.hoverHintLabel.Size = new System.Drawing.Size(72, 17);
-            this.hoverHintLabel.TabIndex = 16;
-            this.hoverHintLabel.Text = "Hint Label";
-            // 
-            // toolTip1
-            // 
-            this.toolTip1.AutomaticDelay = 50;
-            this.toolTip1.AutoPopDelay = 5000;
-            this.toolTip1.BackColor = System.Drawing.Color.DimGray;
-            this.toolTip1.ForeColor = System.Drawing.Color.Silver;
-            this.toolTip1.InitialDelay = 100;
-            this.toolTip1.ReshowDelay = 0;
-            this.toolTip1.UseAnimation = false;
-            this.toolTip1.UseFading = false;
             // 
             // openFileDialog1
             // 
@@ -313,14 +254,30 @@
             this.saveFileDialog1.Filter = "Themes files|*.thm|All files|*.*";
             this.saveFileDialog1.Title = "Save Theme File";
             // 
+            // editorBox1
+            // 
+            this.editorBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.editorBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.editorBox1.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.editorBox1.ForeColor = System.Drawing.Color.White;
+            this.editorBox1.Location = new System.Drawing.Point(0, 28);
+            this.editorBox1.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
+            this.editorBox1.Name = "editorBox1";
+            this.editorBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
+            this.editorBox1.Size = new System.Drawing.Size(1197, 812);
+            this.editorBox1.TabIndex = 17;
+            this.editorBox1.Text = "Frist Test Line\nSecond Test Line\nuniform vec4 yup";
+            this.editorBox1.WordWrap = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.AppWorkspace;
             this.ClientSize = new System.Drawing.Size(1197, 840);
-            this.Controls.Add(this.richTextBox1);
-            this.Controls.Add(this.hoverHintLabel);
+            this.Controls.Add(this.editorBox1);
             this.Controls.Add(this.menuStrip1);
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
@@ -336,7 +293,6 @@
         #endregion
 
         private System.Windows.Forms.ColorDialog colorDialog1;
-        private System.Windows.Forms.RichTextBox richTextBox1;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem MenuStrip_TopTheme;
         private System.Windows.Forms.ToolStripMenuItem MenuStrip_ThemeFont;
@@ -359,11 +315,9 @@
         private System.Windows.Forms.ToolStripMenuItem MenuStrip_ColorsText;
         private System.Windows.Forms.ToolStripMenuItem MenuStrip_ColorsBackground;
         private System.Windows.Forms.ToolStripMenuItem MenuStrip_ColorsCurrentline;
-        private System.Windows.Forms.Timer hoverTimer;
-        private System.Windows.Forms.Label hoverHintLabel;
-        private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private EditorBox editorBox1;
     }
 }
 

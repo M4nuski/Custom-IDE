@@ -120,157 +120,16 @@
   <metadata name="colorDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
-  <data name="richTextBox1.Text" xml:space="preserve">
-    <value>uniform int = 42;
-//Full line Comment Span
-out = "String Span"
-string = "String Span" + "other String Span"; //Comment
-uniform float test; //end of line Comment Span
-"text with escape char: \" continued here." No longer in the text span;
-gl_Position = max(in_vertex, 0.0, 1.0); //TODO Todo Span
-
-Lots of text:
-Lots of text:
-// Vertex Shader
-// OpenGL v3.3
-// GLSL v3.30
-// ADS per Vertex Shader
-// Vertices Data: Vertex Normal UV
-// Material: Ambiant Diffuse Specular, Shininess, Texture
-// Matrices: MVP ModelView Normal
-// Light: Qty Type, Ambient Diffuse Specular, Origin Orientation, cutoff attenuation
-
-#version 330
-
-//Geometry Input Data
-layout(location = 0) in vec3 in_vertex;
-layout(location = 1) in vec3 in_normal;
-layout(location = 2) in vec2 in_uv;
-
-//Material
-uniform vec4 material_ambient;
-uniform vec4 material_diffuse;
-uniform vec4 material_specular;
-uniform float material_shininess;
-
-//Matrices
-uniform mat4 matrix_modelviewprojection;
-uniform mat4 matrix_modelview;
-uniform mat4 matrix_nomal; 
-
-//Light
-uniform int light_qty;
-uniform int light_type;
-uniform vec4 light_ambient;
-uniform vec4 light_diffuse;
-uniform vec4 light_specular;
-uniform vec4 light_origin;
-uniform vec4 light_orientation;
-uniform float light_cutoff;
-uniform float light_attenuation;
-
-//out vec4 gl_Position;
-out vec4 var_color;
-out vec2 var_uv;
-
-void main()
-{
-	vec4 buf_specular, buf_normal;
-	float fact_diffuse, fact_specular;
-	
-	buf_normal = normalize(matrix_normal * vec4(in_normal, 0.0));	
-	fact_diffuse = max(dot(light_orientation, buf_normal), 0.0);
-	if (fact_diffuse &gt; 0.0) {
-		vec4 buf_halfvector = normalize((matrix_modelview * vec4(in_vertex, 0.0)) + light_orientation);
-		fact_specular = max(dot(buf_normal, buf_halfvector), 0.0);
-		buf_specular = material_specular * light_specular * pow(fact_specular, material_shininess);
-	} else { 
-		buf_specular = vec4(0.0, 0.0, 0.0, 0.0); 
-	}
-	var_color = clamp((light_ambient * material_ambient) + ((fact_diffuse * light_diffuse) * material_diffuse) + buf_specular, 0.0, 1.0);	
-	gl_Position = matrix_modelviewprojection * vec4(in_vertex, 1.0);
-	var_uv = in_uv;
-}
-
-
-// Vertex Shader
-// OpenGL v3.3
-// GLSL v3.30
-// ADS per Vertex Shader
-// Vertices Data: Vertex Normal UV
-// Material: Ambiant Diffuse Specular, Shininess, Texture
-// Matrices: MVP ModelView Normal
-// Light: Qty Type, Ambient Diffuse Specular, Origin Orientation, cutoff attenuation
-
-#version 330
-
-//Geometry Input Data
-layout(location = 0) in vec3 in_vertex;
-layout(location = 1) in vec3 in_normal;
-layout(location = 2) in vec2 in_uv;
-
-//Material
-uniform vec4 material_ambient;
-uniform vec4 material_diffuse;
-uniform vec4 material_specular;
-uniform float material_shininess;
-
-//Matrices
-uniform mat4 matrix_modelviewprojection;
-uniform mat4 matrix_modelview;
-uniform mat4 matrix_nomal; 
-
-//Light
-uniform int light_qty;
-uniform int light_type;
-uniform vec4 light_ambient;
-uniform vec4 light_diffuse;
-uniform vec4 light_specular;
-uniform vec4 light_origin;
-uniform vec4 light_orientation;
-uniform float light_cutoff;
-uniform float light_attenuation;
-
-//out vec4 gl_Position;
-out vec4 var_color;
-out vec2 var_uv;
-
-void main()
-{
-	vec4 buf_specular, buf_normal;
-	float fact_diffuse, fact_specular;
-	
-	buf_normal = normalize(matrix_normal * vec4(in_normal, 0.0));	
-	fact_diffuse = max(dot(light_orientation, buf_normal), 0.0);
-	if (fact_diffuse &gt; 0.0) {
-		vec4 buf_halfvector = normalize((matrix_modelview * vec4(in_vertex, 0.0)) + light_orientation);
-		fact_specular = max(dot(buf_normal, buf_halfvector), 0.0);
-		buf_specular = material_specular * light_specular * pow(fact_specular, material_shininess);
-	} else { 
-		buf_specular = vec4(0.0, 0.0, 0.0, 0.0); 
-	}
-	var_color = clamp((light_ambient * material_ambient) + ((fact_diffuse * light_diffuse) * material_diffuse) + buf_specular, 0.0, 1.0);	
-	gl_Position = matrix_modelviewprojection * vec4(in_vertex, 1.0);
-	var_uv = in_uv;
-}
-</value>
-  </data>
   <metadata name="menuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>157, 17</value>
   </metadata>
   <metadata name="fontDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>288, 17</value>
   </metadata>
-  <metadata name="hoverTimer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>421, 17</value>
-  </metadata>
-  <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>551, 17</value>
-  </metadata>
   <metadata name="openFileDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>660, 17</value>
+    <value>452, 17</value>
   </metadata>
   <metadata name="saveFileDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>823, 17</value>
+    <value>631, 13</value>
   </metadata>
 </root>
