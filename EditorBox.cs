@@ -23,7 +23,7 @@ namespace ShaderIDE
         private readonly ToolTip _hoverToolTip = new ToolTip();
 
         //Parser and Editor controls
-        public ThemeStruct Theme = new ThemeStruct();
+        public ThemeStruct Theme { get; set; }
         private bool _inParser;
         private Point _textboxBottomLeftPoint;
         private int _lineSelectionStart, _lineSelectionLength;

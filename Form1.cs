@@ -126,8 +126,10 @@ namespace ShaderIDE
                     if (sendeMenu.Name[0] == 'V')
                         if (_styleDialogWords.ShowDialog(editorBox1.Theme.ValueStyle, editorBox1.Theme.BackgroundColor) == DialogResult.OK)
                         {
+                            var bufferTheme = editorBox1.Theme;
                             var microsoftsWeirdMarshalingWariningEliminator = _styleDialogWords.DialogOutput;
-                            editorBox1.Theme.ValueStyle = microsoftsWeirdMarshalingWariningEliminator.Style;
+                            bufferTheme.ValueStyle = microsoftsWeirdMarshalingWariningEliminator.Style;
+                            editorBox1.Theme = bufferTheme;
                         }
                     if (sendeMenu.Name[0] == 'D')
                     {
@@ -181,9 +183,11 @@ namespace ShaderIDE
             var senderObject = sender as ToolStripItem;
             if (senderObject != null)
             {
-                if (senderObject.Tag.ToString() == "TXT_COLOR") editorBox1.Theme.TextStyle.StyleColor = GetColorDialogResult(editorBox1.Theme.TextStyle.StyleColor);
-                if (senderObject.Tag.ToString() == "BG_COLOR") editorBox1.Theme.BackgroundColor = GetColorDialogResult(editorBox1.Theme.BackgroundColor);
-                if (senderObject.Tag.ToString() == "LINE_COLOR") editorBox1.Theme.CurrentLineColor = GetColorDialogResult(editorBox1.Theme.CurrentLineColor);
+                var bufferTheme = editorBox1.Theme;
+                if (senderObject.Tag.ToString() == "TXT_COLOR") bufferTheme.TextStyle.StyleColor = GetColorDialogResult(editorBox1.Theme.TextStyle.StyleColor);
+                if (senderObject.Tag.ToString() == "BG_COLOR") bufferTheme.BackgroundColor = GetColorDialogResult(editorBox1.Theme.BackgroundColor);
+                if (senderObject.Tag.ToString() == "LINE_COLOR") bufferTheme.CurrentLineColor = GetColorDialogResult(editorBox1.Theme.CurrentLineColor);
+                editorBox1.Theme = bufferTheme;
                 editorBox1.ForceRedraw(sender, e);
             }
             else Text = @"Null Reference in ColorClick";
@@ -196,21 +200,33 @@ namespace ShaderIDE
             {
                 if (senderObject.Tag.ToString() == "DEL_NEW")
                     if (_styleDialogDelimiters.ShowDialog(
-                         new DelimiterStruct(editorBox1.Theme.TextStyle.StyleFont),
-                         editorBox1.Theme.BackgroundColor) == DialogResult.OK)
-                        editorBox1.Theme.Delimiters = AppendArray(editorBox1.Theme.Delimiters, _styleDialogDelimiters.DialogOutput);
+                        new DelimiterStruct(editorBox1.Theme.TextStyle.StyleFont),
+                        editorBox1.Theme.BackgroundColor) == DialogResult.OK)
+                    {
+                        var bufferTheme = editorBox1.Theme;
+                        bufferTheme.Delimiters = AppendArray(editorBox1.Theme.Delimiters, _styleDialogDelimiters.DialogOutput);
+                        editorBox1.Theme = bufferTheme;
+                    }
 
                 if (senderObject.Tag.ToString() == "WORD_NEW")
                     if (_styleDialogWords.ShowDialog(
-                         new WordStruct(editorBox1.Theme.TextStyle.StyleFont),
-                         editorBox1.Theme.BackgroundColor) == DialogResult.OK)
-                        editorBox1.Theme.Words = AppendArray(editorBox1.Theme.Words, _styleDialogWords.DialogOutput);
+                        new WordStruct(editorBox1.Theme.TextStyle.StyleFont),
+                        editorBox1.Theme.BackgroundColor) == DialogResult.OK)
+                    {
+                        var bufferTheme = editorBox1.Theme;
+                        bufferTheme.Words = AppendArray(editorBox1.Theme.Words, _styleDialogWords.DialogOutput);
+                        editorBox1.Theme = bufferTheme;                       
+                    }
 
                 if (senderObject.Tag.ToString() == "SPAN_NEW")
                     if (_styleDialogSpans.ShowDialog(
-                         new SpanStruct(editorBox1.Theme.TextStyle.StyleFont),
-                         editorBox1.Theme.BackgroundColor) == DialogResult.OK)
-                        editorBox1.Theme.Spans = AppendArray(editorBox1.Theme.Spans, _styleDialogSpans.DialogOutput);
+                        new SpanStruct(editorBox1.Theme.TextStyle.StyleFont),
+                        editorBox1.Theme.BackgroundColor) == DialogResult.OK)
+                    {
+                        var bufferTheme = editorBox1.Theme;
+                        bufferTheme.Spans = AppendArray(editorBox1.Theme.Spans, _styleDialogSpans.DialogOutput);
+                        editorBox1.Theme = bufferTheme;  
+                    }
 
                 PopulateMenu();
                 editorBox1.ForceRedraw(sender, e);
