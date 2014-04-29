@@ -16,16 +16,24 @@ namespace ShaderIDE
         public Form1()
         {
             InitializeComponent();
-
-            PopulateMenu();
             //editorBox1.Highlights.Add(new HighlightStruct(1, "Hint: don't talk too much in comments", Color.MidnightBlue)); //debug
             //editorBox1.Highlights.Add(new HighlightStruct(8, "Warning: blah blah blah2", Color.Goldenrod)); //debug
             //editorBox1.Highlights.Add(new HighlightStruct(38, "Warning: Color.GoldenRod is kinda weird", Color.Goldenrod)); //debug
             //editorBox1.Highlights.Add(new HighlightStruct(8, "ERROR: blah blah blah", Color.DarkRed)); //debug
-            //editorBox1.Theme = ThemeHelper.DefaultGLSLDarkTheme(Font);
+            //editorBox1.Theme = ThemeHelper.DefaultGLSLDarkTheme(editorBox1.Font);
             //editorBox1.Theme = ThemeHelper.DefaultGLSLLightTheme(richTextBox1.Font);
             //editorBox1.Theme = ThemeHelper.DefaultCSDarkTheme(richTextBox1.Font);
             //editorBox1.Theme = ThemeHelper.DefaultCSBlueTheme(richTextBox1.Font);
+
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            editorBox1.Theme = ThemeHelper.DefaultGLSLDarkTheme(editorBox1.Font);
+            editorBox2.Theme = ThemeHelper.DefaultGLSLDarkTheme(editorBox1.Font);
+            PopulateMenu();
+            editorBox1.ForceRedraw(sender, e);
+            editorBox2.ForceRedraw(sender, e);
         }
         #endregion
 
@@ -234,6 +242,32 @@ namespace ShaderIDE
             else Text = @"Null Reference in NewTokensClick";
         }
         #endregion
+
+        private void compileShaderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var shader = tabControl1.SelectedIndex;
+            if (shader == 0)
+            {
+                //compile vertex shader
+                textBox1.Text = @"Compiling Vertex Shader:";
+            }
+            else if (shader == 1)
+            {
+                //compile fragment shader
+                textBox1.Text = @"Compiling Fragment Shader:";
+            }
+        }
+
+        private void buildProgramToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //compile all shader and try linking into program
+            textBox1.Text = @"Building Program:";
+        }
+
+
+
+
+
 
     }//class
 }//namespace

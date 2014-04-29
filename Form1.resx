@@ -132,4 +132,84 @@
   <metadata name="saveFileDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>631, 13</value>
   </metadata>
+  <data name="editorBox1.Text" xml:space="preserve">
+    <value>// Vertex Shader
+// OpenGL v3.3
+// GLSL v3.30
+// Legacy Shader
+// For geometry tests without materials
+// Vertices Data: Vertex, Normal, Color
+// Matrices: MVP, Normal (inverse transpose of modelview_matrix: same as modelview without scaling)
+// Light: Ambient, Diffuse, Orientation (non-spot, non-point)
+// Per-vertex colors and ambient / diffuse lighting.
+#version 330
+//out vec4 gl_Position; Actual and useless declaration of mandatory output from vertex shader.
+
+//Geometry Input Data
+layout(location = 0) in vec3 in_vertex;
+layout(location = 1) in vec3 in_normal;
+layout(location = 2) in vec4 in_color;
+
+//Matrices
+uniform mat4 matrix_modelviewprojection;
+uniform mat4 matrix_normal; 
+
+//Light
+uniform vec4 light_ambient;
+uniform vec4 light_diffuse;
+uniform vec4 light_orientation;
+
+out vec4 var_color;
+
+void main()
+{
+	vec4 buf_normal = normalize(matrix_normal * vec4(in_normal, 0.0));	
+	float fact_diffuse = max(dot(light_orientation, buf_normal), 0.0);
+	var_color = clamp((light_ambient * in_color) + ((fact_diffuse * light_diffuse) * in_color), 0.0, 1.0);	
+	gl_Position = matrix_modelviewprojection * vec4(in_vertex, 1.0);
+}</value>
+  </data>
+  <data name="editorBox2.Text" xml:space="preserve">
+    <value>// Pixel Shader
+// OpenGL v3.3
+// GLSL v3.30
+// Legacy Shader
+// For geometry tests without materials
+// Vertices Data: Vertex, Normal, Color
+// Matrices: MVP, Normal (inverse transpose of modelview_matrix: same as modelview without scaling)
+// Light: Ambient, Diffuse, Orientation (non-spot, non-point)
+// Pass-thru per-vertex lighting and colors.
+#version 330
+// Output to default color buffer (0) 
+// glBindFragDataLocation(Program, 0, "frag_color");
+
+layout(location = 0) out vec4 frag_color; 
+
+in vec4 var_color; // From Vertex Shader
+
+uniform vec4 fog_color;
+uniform vec2 fog_coord;
+
+void main() {
+	//float z = (gl_FragCoord.z / gl_FragCoord.w);	
+
+	//linear fog (fog_coord.x = near, fog_coord.y = far - near):
+	//float fact_fog = (z - fog_coord.x) / fog_coord.y;
+	//fact_fog = clamp(fact_fog, 0.0, 1.0);
+
+	//exp2 fog:
+	//float fact_fog = exp2( -fog_coord.x * fog_coord.x * z * z * 1.442695 );
+	//fact_fog = 1.0-clamp(fact_fog, 0.0, 1.0);
+
+	//frag_color = mix(var_color, fog_color, fact_fog);
+
+	//pass-through:
+	frag_color = var_color;
+}
+	//depth buffer:
+	//float z = 1.0 - ((gl_FragCoord.z / gl_FragCoord.w) / 256.0);
+	//frag_color = vec4(z, z, z, 1.0);
+
+	</value>
+  </data>
 </root>
