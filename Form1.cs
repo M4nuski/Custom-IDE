@@ -2,6 +2,10 @@
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
+using OpenTK;
+using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
+using OpenTK.Platform;
 
 namespace ShaderIDE
 {
@@ -11,6 +15,14 @@ namespace ShaderIDE
         private readonly WordStyleDialog _styleDialogWords = new WordStyleDialog();
         private readonly DelimiterStyleDialog _styleDialogDelimiters = new DelimiterStyleDialog();
         private readonly SpanStyleDialog _styleDialogSpans = new SpanStyleDialog();
+
+        //private IWindowInfo WindowInfo;
+        //private IGraphicsContext Context;
+        //public ColorFormat CF1 = new ColorFormat(8, 8, 8, 8);
+
+
+        private ContextSetup ContextSetupData = new ContextSetup();
+
 
         #region Initialization and basic Form Events
         public Form1()
@@ -34,6 +46,7 @@ namespace ShaderIDE
             PopulateMenu();
             editorBox1.ForceRedraw(sender, e);
             editorBox2.ForceRedraw(sender, e);
+            propertyGrid1.SelectedObject = ContextSetupData;
         }
         #endregion
 
@@ -262,6 +275,28 @@ namespace ShaderIDE
         {
             //compile all shader and try linking into program
             textBox1.Text = @"Building Program:";
+        }
+
+        private void quitToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            //CCD= new ContextSetup();
+            //propertyGrid1.SelectedObject = CCD;
+            //WindowInfo = Utilities.CreateWindowsWindowInfo(tabPage4.Handle);
+       //     var colorFormat = new ColorFormat(CCD.Red, CCD.green, CCD.blue, CCD.alpha);
+     //       var accumFormat = new ColorFormat(CCD.accum_red, CCD.accum_green, CCD.accum_blue, CCD.accum_alpha);
+
+    //        var mode = new GraphicsMode(colorFormat, CCD.depth, CCD.stencil, CCD.samples, accumFormat, CCD.buffers, false);
+     //       Context = new GraphicsContext(mode, WindowInfo, 3, 3, GraphicsContextFlags.ForwardCompatible);
+      //      Context.MakeCurrent(WindowInfo);
+      //      (Context as IGraphicsContextInternal).LoadAll();
+          //  GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+      //      GL.Enable(EnableCap.CullFace);
+      //      GL.Enable(EnableCap.DepthTest);
         }
 
 
