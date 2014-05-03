@@ -9,6 +9,7 @@ using OpenTK.Platform;
 
 namespace ShaderIDE
 {
+    [System.ComponentModel.DesignerCategory(@"Code")]
     public partial class Form1 : Form
     {
         //Dialogs
@@ -16,8 +17,8 @@ namespace ShaderIDE
         private readonly DelimiterStyleDialog _styleDialogDelimiters = new DelimiterStyleDialog();
         private readonly SpanStyleDialog _styleDialogSpans = new SpanStyleDialog();
 
-        //private IWindowInfo WindowInfo;
-        //private IGraphicsContext Context;
+        private IWindowInfo _windowInfo;
+        private IGraphicsContext _context;
         //public ColorFormat CF1 = new ColorFormat(8, 8, 8, 8);
 
 
@@ -25,9 +26,16 @@ namespace ShaderIDE
 
 
         #region Initialization and basic Form Events
+        private void Msg(string msg)
+        {
+            textBox1.AppendText(msg + "\r\n");
+        }
+
         public Form1()
         {
             InitializeComponent();
+            Console.OnConsoleMessage += Msg;
+
             //editorBox1.Highlights.Add(new HighlightStruct(1, "Hint: don't talk too much in comments", Color.MidnightBlue)); //debug
             //editorBox1.Highlights.Add(new HighlightStruct(8, "Warning: blah blah blah2", Color.Goldenrod)); //debug
             //editorBox1.Highlights.Add(new HighlightStruct(38, "Warning: Color.GoldenRod is kinda weird", Color.Goldenrod)); //debug
@@ -44,9 +52,13 @@ namespace ShaderIDE
             editorBox1.Theme = ThemeHelper.DefaultGLSLDarkTheme(editorBox1.Font);
             editorBox2.Theme = ThemeHelper.DefaultGLSLDarkTheme(editorBox1.Font);
             PopulateMenu();
+            editorBox1.Size = tabPage1.Size;
+            editorBox2.Size = tabPage2.Size;
             editorBox1.ForceRedraw(sender, e);
             editorBox2.ForceRedraw(sender, e);
             propertyGrid1.SelectedObject = ContextSetupData;
+            button1_Click(this, new EventArgs());
+
         }
         #endregion
 
@@ -258,23 +270,50 @@ namespace ShaderIDE
 
         private void compileShaderToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var shader = tabControl1.SelectedIndex;
-            if (shader == 0)
+            if (_context != null)
             {
-                //compile vertex shader
-                textBox1.Text = @"Compiling Vertex Shader:";
+                var shader = tabControl1.SelectedIndex;
+                if (shader == 0)
+                {
+                    //compile vertex shader
+                    Console.Message(@"Compiling Vertex Shader:");
+                    _context.MakeCurrent(_windowInfo);
+                    var currentShader = ShaderLoader.Load_Shader(editorBox1.Text, ShaderType.VertexShader);
+                    if (currentShader == -1)
+                    {
+                        //find error line and highlight;
+                    }
+                    else
+                    {
+                        Console.Message(@"Done.");
+                    }
+                }
+                else if (shader == 1)
+                {
+                    //compile fragment shader
+                    Console.Message(@"Compiling Fragment Shader:");
+                    _context.MakeCurrent(_windowInfo);
+                    var currentShader = ShaderLoader.Load_Shader(editorBox2.Text, ShaderType.FragmentShader);
+                    if (currentShader == -1)
+                    {
+                        //find error line and highlight;
+                    }
+                    else
+                    {
+                        Console.Message(@"Done.");
+                    }
+                }
             }
-            else if (shader == 1)
+            else
             {
-                //compile fragment shader
-                textBox1.Text = @"Compiling Fragment Shader:";
+                Console.Message(@"Context not set.");
             }
         }
 
         private void buildProgramToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //compile all shader and try linking into program
-            textBox1.Text = @"Building Program:";
+            Console.Message(@"Building Program:");
         }
 
         private void quitToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -282,21 +321,57 @@ namespace ShaderIDE
             Close();
         }
 
+        private GraphicsContextFlags BoolToGraphContextFlags()
+        {
+            var result = GraphicsContextFlags.Default;
+            if (ContextSetupData.DebugFlag) result |= GraphicsContextFlags.Debug;
+            if (ContextSetupData.EmbeddedFlag) result |= GraphicsContextFlags.Embedded;
+            if (ContextSetupData.ForwardCompatibleFlag) result |= GraphicsContextFlags.ForwardCompatible;
+            return result;
+        }
+
+        private ClearBufferMask BoolToClearMask()
+        {
+            var result = ClearBufferMask.None;
+            if (ContextSetupData.ClearColorBuffer) result |= ClearBufferMask.ColorBufferBit;
+            if (ContextSetupData.ClearDepthBuffer) result |= ClearBufferMask.DepthBufferBit;
+            return result;
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
-            //CCD= new ContextSetup();
-            //propertyGrid1.SelectedObject = CCD;
-            //WindowInfo = Utilities.CreateWindowsWindowInfo(tabPage4.Handle);
-       //     var colorFormat = new ColorFormat(CCD.Red, CCD.green, CCD.blue, CCD.alpha);
-     //       var accumFormat = new ColorFormat(CCD.accum_red, CCD.accum_green, CCD.accum_blue, CCD.accum_alpha);
 
-    //        var mode = new GraphicsMode(colorFormat, CCD.depth, CCD.stencil, CCD.samples, accumFormat, CCD.buffers, false);
-     //       Context = new GraphicsContext(mode, WindowInfo, 3, 3, GraphicsContextFlags.ForwardCompatible);
-      //      Context.MakeCurrent(WindowInfo);
-      //      (Context as IGraphicsContextInternal).LoadAll();
-          //  GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-      //      GL.Enable(EnableCap.CullFace);
-      //      GL.Enable(EnableCap.DepthTest);
+            Console.Message(@"Reseting Context");
+            _windowInfo = Utilities.CreateWindowsWindowInfo(tabPage4.Handle);
+            var colorFormat = new ColorFormat(ContextSetupData.Red, ContextSetupData.Green, ContextSetupData.Blue, ContextSetupData.Alpha);
+            var accumFormat = new ColorFormat(ContextSetupData.AccumRed, ContextSetupData.AccumGreen, ContextSetupData.AccumBlue, ContextSetupData.AccumAlpha);
+
+            var mode = new GraphicsMode(colorFormat, ContextSetupData.Depth, ContextSetupData.Stencil, ContextSetupData.Samples, accumFormat, ContextSetupData.Buffers, ContextSetupData.Stereo);
+            if (_context != null) _context.Dispose();
+            _context = new GraphicsContext(mode, _windowInfo, ContextSetupData.MajorVersion, ContextSetupData.MinorVersion, BoolToGraphContextFlags());
+            _context.MakeCurrent(_windowInfo);
+            (_context as IGraphicsContextInternal).LoadAll();
+
+            Console.Message(@"Setting OpenGL State");
+            GL.PolygonMode(ContextSetupData.MaterialFace, ContextSetupData.PolygonMode);
+            if (ContextSetupData.CullFace) { GL.Enable(EnableCap.CullFace); } else { GL.Disable(EnableCap.CullFace); }
+            if (ContextSetupData.DepthTest) { GL.Enable(EnableCap.DepthTest); } else { GL.Disable(EnableCap.DepthTest); }
+
+            GL.ClearColor(ContextSetupData.ClearColor);
+            GL.Clear(ClearBufferMask.AccumBufferBit);
+            GL.Clear(BoolToClearMask());
+
+        }
+
+        private void tabPage4_Click(object sender, EventArgs e)
+        {
+            if (_context != null)
+            {
+                _context.MakeCurrent(_windowInfo); 
+                GL.ClearColor(ContextSetupData.ClearColor);
+                GL.Clear(BoolToClearMask());
+                _context.SwapBuffers();
+            }
         }
 
 

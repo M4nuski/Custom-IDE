@@ -171,10 +171,10 @@ namespace ShaderIDE
             var fontEmSize = reader.ReadSingle();
 
             var styleBuffer = FontStyle.Regular;
-            if (reader.ReadBoolean()) styleBuffer = styleBuffer | FontStyle.Bold;
-            if (reader.ReadBoolean()) styleBuffer = styleBuffer | FontStyle.Italic;
-            if (reader.ReadBoolean()) styleBuffer = styleBuffer | FontStyle.Strikeout;
-            if (reader.ReadBoolean()) styleBuffer = styleBuffer | FontStyle.Underline;
+            if (reader.ReadBoolean()) styleBuffer |= FontStyle.Bold;
+            if (reader.ReadBoolean()) styleBuffer |= FontStyle.Italic;
+            if (reader.ReadBoolean()) styleBuffer |= FontStyle.Strikeout;
+            if (reader.ReadBoolean()) styleBuffer |= FontStyle.Underline;
 
             style.StyleFont = new Font(fontName, fontEmSize, styleBuffer);
             return style;

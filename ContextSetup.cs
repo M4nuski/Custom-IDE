@@ -213,6 +213,24 @@ namespace ShaderIDE
             get { return _polyMode; }
             set { _polyMode = value; }
         }
+
+        private bool _clearColorBuffer = true;
+        [CategoryAttribute("Render"),
+         Description("Clear Color Buffer before render")]
+        public bool ClearColorBuffer
+        {
+            get { return _clearColorBuffer; }
+            set { _clearColorBuffer = value; }
+        }
+
+        private bool _clearDepthBuffer = true;
+        [CategoryAttribute("Render"),
+         Description("Clear Depth Buffer before render")]
+        public bool ClearDepthBuffer
+        {
+            get { return _clearDepthBuffer; }
+            set { _clearDepthBuffer = value; }
+        }
         // ReSharper restore RedundantDefaultFieldInitializer
         // ReSharper restore ConvertToAutoProperty
     }

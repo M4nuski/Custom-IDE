@@ -132,4 +132,119 @@
   <metadata name="saveFileDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>631, 13</value>
   </metadata>
+  <data name="editorBox1.Text" xml:space="preserve">
+    <value>// Vertex Shader
+// OpenGL v3.3
+// GLSL v3.30
+// ADS per Vertex Shader
+// Vertices Data: Vertex Normal UV
+// Material: Ambiant Diffuse Specular, Shininess, Texture
+// Matrices: MVP ModelView Normal
+// Light: Qty Type, Ambient Diffuse Specular, Origin Orientation, cutoff attenuation
+
+#version 330
+
+//Geometry Input Data
+layout(location = 0) in vec3 in_vertex;
+layout(location = 1) in vec3 in_normal;
+layout(location = 2) in vec2 in_uv;
+
+//Material
+uniform vec4 material_ambient;
+uniform vec4 material_diffuse;
+uniform vec4 material_specular;
+uniform float material_shininess;
+
+//Matrices
+uniform mat4 matrix_modelviewprojection;
+uniform mat4 matrix_modelview;
+uniform mat4 matrix_normal; 
+
+//Light
+uniform int light_qty;
+uniform int light_type;
+uniform vec4 light_ambient;
+uniform vec4 light_diffuse;
+uniform vec4 light_specular;
+uniform vec4 light_origin;
+uniform vec4 light_orientation;
+uniform float light_cutoff;
+uniform float light_attenuation;
+
+//out vec4 gl_Position;
+out vec4 var_color;
+out vec2 var_uv;
+
+void main()
+{
+	vec4 buf_specular, buf_normal;
+	float fact_diffuse, fact_specular;
+	
+	buf_normal = normalize(matrix_normal * vec4(in_normal, 0.0));	
+	fact_diffuse = max(dot(light_orientation, buf_normal), 0.0);
+	if (fact_diffuse &gt; 0.0) {
+		vec4 buf_halfvector = normalize((matrix_modelview * vec4(in_vertex, 0.0)) + light_orientation);
+		fact_specular = max(dot(buf_normal, buf_halfvector), 0.0);
+		buf_specular = material_specular * light_specular * pow(fact_specular, material_shininess);
+	} else { 
+		buf_specular = vec4(0.0, 0.0, 0.0, 0.0); 
+	}
+	var_color = clamp((light_ambient * material_ambient) + ((fact_diffuse * light_diffuse) * material_diffuse) + buf_specular, 0.0, 1.0);	
+	gl_Position = matrix_modelviewprojection * vec4(in_vertex, 1.0);
+	var_uv = in_uv;
+}
+
+</value>
+  </data>
+  <data name="editorBox2.Text" xml:space="preserve">
+    <value>// Pixel Shader
+// OpenGL v3.3
+// GLSL v3.30
+// ADS per Vertex Shader
+// Vertices Data: Vertex Normal UV
+// Material: Ambiant Diffuse Specular, Shininess, Texture
+// Matrices: MVP ModelView Normal
+// Light: Qty Type, Ambient Diffuse Specular, Origin Orientation, cutoff attenuation
+
+#version 330
+// Output to default color buffer (0) 
+// glBindFragDataLocation(Program, 0, "frag_color");
+
+layout(location = 0) out vec4 frag_color; 
+
+in vec4 var_color; // From Vertex Shader
+in vec2 var_uv;
+
+uniform sampler2D material_texture;
+
+uniform vec4 fog_color;
+uniform vec2 fog_coord;
+uniform float post_saturation;
+
+void main() {
+	float z = (gl_FragCoord.z / gl_FragCoord.w);	
+
+	//linear fog (fog_coord.x = near, fog_coord.y = far - near):
+	//float fact_fog = (z - fog_coord.x) / fog_coord.y;
+	//fact_fog = clamp(fact_fog, 0.0, 1.0);
+
+	//exp2 fog:
+	//float fact_fog = exp2( -fog_coord.x * fog_coord.x * z * z * 1.442695 );
+	//fact_fog = 1.0-clamp(fact_fog, 0.0, 1.0);
+
+	//frag_color = mix(var_color, fog_color, fact_fog);
+
+	//pass-through:
+	//vec4 buf_color = texture2D(material_texture, var_uv);
+	//frag_color = var_color * buf_color;
+	vec4 buf_bw_color = vec4((var_color.r + var_color.g + var_color.b) / 3.0);
+	buf_bw_color.a = var_color.a;
+	frag_color = mix(buf_bw_color, var_color, clamp((120.0-z) / 20.0, 0.0, 3.0));//post_saturation);
+}
+	//depth buffer:
+	//float z = 1.0 - ((gl_FragCoord.z / gl_FragCoord.w) / 256.0);
+	//frag_color = vec4(z, z, z, 1.0);
+
+	</value>
+  </data>
 </root>
