@@ -11,7 +11,7 @@ namespace ShaderIDE
     {
         public static string SafeRemove(this string inputString, int index)
         {
-            return (index < inputString.Length) ? inputString.Remove(index) : inputString;
+            return (index <= 0) ? "" : (index < inputString.Length) ? inputString.Remove(index) : inputString;
         }
     }
 }

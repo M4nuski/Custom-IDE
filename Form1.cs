@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
+using System.Linq;
 using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics;
@@ -9,7 +11,6 @@ using OpenTK.Platform;
 
 namespace ShaderIDE
 {
-    [System.ComponentModel.DesignerCategory(@"Code")]
     public partial class Form1 : Form
     {
         //Dialogs
@@ -19,16 +20,22 @@ namespace ShaderIDE
 
         private IWindowInfo _windowInfo;
         private IGraphicsContext _context;
-        //public ColorFormat CF1 = new ColorFormat(8, 8, 8, 8);
-
-
         private ContextSetup ContextSetupData = new ContextSetup();
 
+        //private int _lastProgram = -1; // not used yet
+        private int _lastVextexShader = -1;
+        private int _lastFragmentShader = -1;
+
+        private string _lastError = "";
 
         #region Initialization and basic Form Events
         private void Msg(string msg)
         {
             textBox1.AppendText(msg + "\r\n");
+            if (msg.SafeRemove(6) == "ERROR:")
+            {
+                _lastError = msg.Substring(6);
+            }
         }
 
         public Form1()
@@ -248,7 +255,7 @@ namespace ShaderIDE
                     {
                         var bufferTheme = editorBox1.Theme;
                         bufferTheme.Words = AppendArray(editorBox1.Theme.Words, _styleDialogWords.DialogOutput);
-                        editorBox1.Theme = bufferTheme;                       
+                        editorBox1.Theme = bufferTheme;
                     }
 
                 if (senderObject.Tag.ToString() == "SPAN_NEW")
@@ -258,7 +265,7 @@ namespace ShaderIDE
                     {
                         var bufferTheme = editorBox1.Theme;
                         bufferTheme.Spans = AppendArray(editorBox1.Theme.Spans, _styleDialogSpans.DialogOutput);
-                        editorBox1.Theme = bufferTheme;  
+                        editorBox1.Theme = bufferTheme;
                     }
 
                 PopulateMenu();
@@ -268,39 +275,67 @@ namespace ShaderIDE
         }
         #endregion
 
+        private int compileShader(EditorBox editor, ShaderType type)
+        {
+            var currentShader = ShaderLoader.Load_Shader(editor.Text, type);
+            editor.Highlights.Clear();
+            if (currentShader == -1)
+            {
+                var errorList = _lastError.Split('\n');
+                foreach (var currentError in errorList)
+                {
+                    var startIndex = currentError.IndexOf("(", StringComparison.Ordinal) + 1;
+                    var lineStart = currentError.Substring(startIndex);
+                    var stopIndex = lineStart.IndexOf(")", StringComparison.Ordinal);
+
+                    int errorLine;
+                    var errorPos = lineStart.SafeRemove(stopIndex);
+                    if (errorPos != "")
+                    {
+                        int.TryParse(errorPos, out errorLine);
+                        editor.Highlights.Add(new HighlightStruct
+                        {
+                            LineColor = Color.Red,
+                            LineHint = currentError.Substring(currentError.IndexOf(":", StringComparison.Ordinal) + 1),
+                            LineNumber = errorLine - 1
+                        });
+                        editor.ForceRedraw(this, new EventArgs());
+                    }
+                }
+            }
+            return currentShader;
+        }
+
         private void compileShaderToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (_context != null)
             {
+                textBox1.Clear();
+                _context.MakeCurrent(_windowInfo);
+
                 var shader = tabControl1.SelectedIndex;
+
                 if (shader == 0)
                 {
                     //compile vertex shader
                     Console.Message(@"Compiling Vertex Shader:");
-                    _context.MakeCurrent(_windowInfo);
-                    var currentShader = ShaderLoader.Load_Shader(editorBox1.Text, ShaderType.VertexShader);
-                    if (currentShader == -1)
-                    {
-                        //find error line and highlight;
-                    }
-                    else
+                    var _currentShaderResult = compileShader(editorBox1, ShaderType.VertexShader);
+                    if (_currentShaderResult > -1)
                     {
                         Console.Message(@"Done.");
+                        _lastVextexShader = _currentShaderResult;
                     }
                 }
+
                 else if (shader == 1)
                 {
                     //compile fragment shader
                     Console.Message(@"Compiling Fragment Shader:");
-                    _context.MakeCurrent(_windowInfo);
-                    var currentShader = ShaderLoader.Load_Shader(editorBox2.Text, ShaderType.FragmentShader);
-                    if (currentShader == -1)
-                    {
-                        //find error line and highlight;
-                    }
-                    else
+                    var _currentShaderResult = compileShader(editorBox2, ShaderType.FragmentShader);
+                    if (_currentShaderResult > -1)
                     {
                         Console.Message(@"Done.");
+                        _lastFragmentShader = _currentShaderResult;
                     }
                 }
             }
@@ -367,7 +402,7 @@ namespace ShaderIDE
         {
             if (_context != null)
             {
-                _context.MakeCurrent(_windowInfo); 
+                _context.MakeCurrent(_windowInfo);
                 GL.ClearColor(ContextSetupData.ClearColor);
                 GL.Clear(BoolToClearMask());
                 _context.SwapBuffers();

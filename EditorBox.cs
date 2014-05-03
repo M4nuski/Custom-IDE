@@ -19,8 +19,8 @@ namespace ShaderIDE
         //Tooltip
         private Point _lastMousePos, _currentMousePos;
         private int _hoverCount;
-        private readonly Timer _hoverTimer = new Timer();
         private readonly ToolTip _hoverToolTip = new ToolTip();
+        private readonly Timer _hoverTimer = new Timer();
 
         //Parser and Editor controls
         public ThemeStruct Theme { get; set; }
@@ -220,10 +220,11 @@ namespace ShaderIDE
             if (_currentMousePos == _lastMousePos)
             {
                 _hoverCount++;
-                if ((_hoverCount > 5) & (_hoverToolTip.Active))
+                if ((_hoverCount > 3) & (_hoverToolTip.Active))
                 {
                     var hoverLine = GetLineFromCharIndex(GetCharIndexFromPosition(_currentMousePos));
-                    var hoverHint = Highlights.Where(hlLine => hlLine.LineNumber == hoverLine).Aggregate("", (current, hlLine) => current + (hlLine.LineHint + "\n"));
+                    var hoverHint = Highlights.Where(hlLine => hlLine.LineNumber == hoverLine)
+                        .Aggregate("", (current, hlLine) => current + (hlLine.LineHint + "\n"));
                     if (hoverHint != "")
                     {
                         var hintLocationWithOffset = _currentMousePos;
@@ -237,13 +238,12 @@ namespace ShaderIDE
             {
                 _lastMousePos = _currentMousePos;
             }
-
         }
 
         private void EditorBox_MouseMove(object sender, MouseEventArgs e)
         {
             _currentMousePos = e.Location;
-            if (_currentMousePos != _lastMousePos)
+            if ((_currentMousePos != _lastMousePos) & (_hoverToolTip != null))
             {
                 _hoverToolTip.Hide(this);
                 _hoverCount = 0;
@@ -256,18 +256,32 @@ namespace ShaderIDE
             _lastTokenList = new List<TokenStruct>();
             _inParser = false;
 
-            _hoverTimer.Interval = 50;
-            _hoverTimer.Tick += hoverTimer_Tick;
-
             TextChanged += EditorBox_TextChanged;
             Resize += EditorBox_Resize;
             Click += EditorBox_Click;
             MouseMove += EditorBox_MouseMove;
             ForeColorChanged += OnForeColorChanged;
+            Disposed += OnDisposed;
 
             ScrollBars = RichTextBoxScrollBars.ForcedBoth;
             WordWrap = false;
+
             Theme = new ThemeStruct(Font, ForeColor, BackColor);
+
+            _hoverToolTip.Active = true;
+            _hoverTimer.Tick += hoverTimer_Tick;
+            _hoverTimer.Interval = 100;
+            _hoverTimer.Enabled = true;
+
+        }
+
+        private void OnDisposed(object sender, EventArgs eventArgs)
+        {
+            if (_hoverTimer != null)
+            {
+                _hoverTimer.Enabled = false;
+                _hoverTimer.Tick -= hoverTimer_Tick;
+            }
         }
 
         private void OnForeColorChanged(object sender, EventArgs eventArgs)
@@ -397,6 +411,18 @@ namespace ShaderIDE
             }
         }
 
+        private Color MixColors(Color A, Color B, float factor)
+        {
+            factor = (factor > 1.0f) ? 1.0f : (factor < 0) ? 0 : factor;
+
+            var invFactor = 1.0f - factor;
+            var aa = (A.A * invFactor) + (B.A * factor);
+            var rr = (A.R * invFactor) + (B.R * factor);
+            var gg = (A.G * invFactor) + (B.G * factor);
+            var bb = (A.B * invFactor) + (B.B * factor);
+            return Color.FromArgb((int)(aa), (int)(rr), (int)(gg), (int)(bb));
+        }
+
         private void ReDraw(bool[] changedList)
         {
             SuspendUpdate.Suspend(this);
@@ -425,17 +451,17 @@ namespace ShaderIDE
                     SelectionFont = TokenList[i].Style.StyleFont;
                 }
 
+            // Current line Color
+            Select(currentLineIndex, currentLineLength);
+            SelectionBackColor = Theme.CurrentLineColor;
+
             // Line highlights Color
             foreach (var currentHighlight in Highlights)
             {
                 GetSelectionFromLine(currentHighlight.LineNumber);
                 Select(_lineSelectionStart, _lineSelectionLength);
-                SelectionBackColor = currentHighlight.LineColor;
+                SelectionBackColor = currentLineIndex != _lineSelectionStart ? currentHighlight.LineColor : MixColors(Theme.CurrentLineColor, currentHighlight.LineColor, 0.3f);
             }
-
-            // Current line Color
-            Select(currentLineIndex, currentLineLength);
-            SelectionBackColor = Theme.CurrentLineColor;
 
             // Reset View
             Select(boxOrigin, 0);

@@ -24,7 +24,8 @@ namespace ShaderIDE
 
             if (_shaderResult == 0)
             {
-                Console.Message("Shader Compile Fail: " + "\r\n" + GL.GetShaderInfoLog(shaderOutput));
+                Console.Message("Shader Compile Fail:");
+                Console.Message("ERROR:" + GL.GetShaderInfoLog(shaderOutput));
                 shaderOutput = -1;
             }
             return shaderOutput;
@@ -47,7 +48,8 @@ namespace ShaderIDE
 
             if (programResult == 0)
             {
-                Console.Message("Program Link Fail: " + "\r\n" + GL.GetProgramInfoLog(programOutput));
+                Console.Message("Program Link Fail:");
+                Console.Message("ERROR:" + GL.GetProgramInfoLog(programOutput));
                 programOutput = -1;
             }
 
