@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -65,20 +66,27 @@
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.editorBox1 = new ShaderIDE.EditorBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.editorBox2 = new ShaderIDE.EditorBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.button1 = new System.Windows.Forms.Button();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.textBox1 = new System.Windows.Forms.TextBox();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.editorBox1 = new ShaderIDE.EditorBox();
+            this.editorBox2 = new ShaderIDE.EditorBox();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
+            this.tabPage4.SuspendLayout();
             this.SuspendLayout();
             // 
             // colorDialog1
@@ -383,23 +391,6 @@
             this.tabPage1.Text = "Vertex Shader";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // editorBox1
-            // 
-            this.editorBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.editorBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.editorBox1.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.editorBox1.ForeColor = System.Drawing.Color.White;
-            this.editorBox1.Location = new System.Drawing.Point(0, 0);
-            this.editorBox1.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
-            this.editorBox1.Name = "editorBox1";
-            this.editorBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
-            this.editorBox1.Size = new System.Drawing.Size(875, 422);
-            this.editorBox1.TabIndex = 17;
-            this.editorBox1.Text = resources.GetString("editorBox1.Text");
-            this.editorBox1.WordWrap = false;
-            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.editorBox2);
@@ -410,22 +401,6 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Fragment Shader";
             this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // editorBox2
-            // 
-            this.editorBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.editorBox2.BackColor = System.Drawing.SystemColors.Window;
-            this.editorBox2.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.editorBox2.Location = new System.Drawing.Point(0, 0);
-            this.editorBox2.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            this.editorBox2.Name = "editorBox2";
-            this.editorBox2.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
-            this.editorBox2.Size = new System.Drawing.Size(875, 432);
-            this.editorBox2.TabIndex = 0;
-            this.editorBox2.Text = resources.GetString("editorBox2.Text");
-            this.editorBox2.WordWrap = false;
             // 
             // tabPage3
             // 
@@ -470,7 +445,12 @@
             // 
             // tabPage4
             // 
-            this.tabPage4.BackColor = System.Drawing.Color.Black;
+            this.tabPage4.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage4.Controls.Add(this.label4);
+            this.tabPage4.Controls.Add(this.label3);
+            this.tabPage4.Controls.Add(this.label2);
+            this.tabPage4.Controls.Add(this.label1);
+            this.tabPage4.Controls.Add(this.panel1);
             this.tabPage4.Location = new System.Drawing.Point(4, 27);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Size = new System.Drawing.Size(985, 488);
@@ -493,6 +473,88 @@
             this.textBox1.Text = "Output";
             this.textBox1.WordWrap = false;
             // 
+            // timer1
+            // 
+            this.timer1.Enabled = true;
+            this.timer1.Interval = 1000;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // editorBox1
+            // 
+            this.editorBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.editorBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.editorBox1.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.editorBox1.ForeColor = System.Drawing.Color.White;
+            this.editorBox1.Location = new System.Drawing.Point(0, 0);
+            this.editorBox1.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
+            this.editorBox1.Name = "editorBox1";
+            this.editorBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
+            this.editorBox1.Size = new System.Drawing.Size(875, 396);
+            this.editorBox1.TabIndex = 17;
+            this.editorBox1.Text = resources.GetString("editorBox1.Text");
+            this.editorBox1.WordWrap = false;
+            // 
+            // editorBox2
+            // 
+            this.editorBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.editorBox2.BackColor = System.Drawing.SystemColors.Window;
+            this.editorBox2.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.editorBox2.Location = new System.Drawing.Point(0, 0);
+            this.editorBox2.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            this.editorBox2.Name = "editorBox2";
+            this.editorBox2.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
+            this.editorBox2.Size = new System.Drawing.Size(875, 432);
+            this.editorBox2.TabIndex = 0;
+            this.editorBox2.Text = resources.GetString("editorBox2.Text");
+            this.editorBox2.WordWrap = false;
+            // 
+            // panel1
+            // 
+            this.panel1.Location = new System.Drawing.Point(386, 40);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(527, 324);
+            this.panel1.TabIndex = 0;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(8, 130);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(97, 18);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Model Matrix:";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(8, 69);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(87, 18);
+            this.label2.TabIndex = 2;
+            this.label2.Text = "View Matrix:";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(8, 11);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(123, 18);
+            this.label3.TabIndex = 3;
+            this.label3.Text = "Projection Matrix:";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(8, 193);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(88, 18);
+            this.label4.TabIndex = 4;
+            this.label4.Text = "Model Data:";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
@@ -508,12 +570,15 @@
             this.Name = "Form1";
             this.Text = "Custom IDE / GLSL Shader";
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Form1_KeyPress);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
+            this.tabPage4.ResumeLayout(false);
+            this.tabPage4.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -566,6 +631,12 @@
         private System.Windows.Forms.TabPage tabPage4;
         private System.Windows.Forms.PropertyGrid propertyGrid1;
         private System.Windows.Forms.TabPage tabPage5;
+        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Panel panel1;
     }
 }
 

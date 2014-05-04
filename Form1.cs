@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
-using System.Linq;
 using System.Windows.Forms;
-using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Platform;
@@ -13,20 +11,28 @@ namespace ShaderIDE
 {
     public partial class Form1 : Form
     {
-        //Dialogs
+        #region Properties
+
+        #region Dialogs
         private readonly WordStyleDialog _styleDialogWords = new WordStyleDialog();
         private readonly DelimiterStyleDialog _styleDialogDelimiters = new DelimiterStyleDialog();
         private readonly SpanStyleDialog _styleDialogSpans = new SpanStyleDialog();
+        #endregion
 
+        #region Context
         private IWindowInfo _windowInfo;
         private IGraphicsContext _context;
         private ContextSetup ContextSetupData = new ContextSetup();
+        #endregion
 
-        private int _lastProgram = -1; // not used yet
+        #region Build Results
+        private int _lastProgram = -1;
         private int _lastVextexShader = -1;
         private int _lastFragmentShader = -1;
-
         private string _lastError = "";
+        #endregion
+
+        #endregion
 
         #region Initialization and basic Form Events
         private void Msg(string msg)
@@ -42,16 +48,6 @@ namespace ShaderIDE
         {
             InitializeComponent();
             Console.OnConsoleMessage += Msg;
-
-            //editorBox1.Highlights.Add(new HighlightStruct(1, "Hint: don't talk too much in comments", Color.MidnightBlue)); //debug
-            //editorBox1.Highlights.Add(new HighlightStruct(8, "Warning: blah blah blah2", Color.Goldenrod)); //debug
-            //editorBox1.Highlights.Add(new HighlightStruct(38, "Warning: Color.GoldenRod is kinda weird", Color.Goldenrod)); //debug
-            //editorBox1.Highlights.Add(new HighlightStruct(8, "ERROR: blah blah blah", Color.DarkRed)); //debug
-            //editorBox1.Theme = ThemeHelper.DefaultGLSLDarkTheme(editorBox1.Font);
-            //editorBox1.Theme = ThemeHelper.DefaultGLSLLightTheme(richTextBox1.Font);
-            //editorBox1.Theme = ThemeHelper.DefaultCSDarkTheme(richTextBox1.Font);
-            //editorBox1.Theme = ThemeHelper.DefaultCSBlueTheme(richTextBox1.Font);
-
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -66,6 +62,11 @@ namespace ShaderIDE
             propertyGrid1.SelectedObject = ContextSetupData;
             button1_Click(this, new EventArgs());
 
+        }
+
+        private void quitToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Close();
         }
         #endregion
 
@@ -275,11 +276,10 @@ namespace ShaderIDE
         }
         #endregion
 
+        #region Uniforms
         private int BindAndMsg(string uniformName, int _program)
         {
-            var loc = GL.GetUniformLocation(_program, uniformName);
-            Msg(uniformName + ": " + loc);
-            return loc;
+            return GL.GetUniformLocation(_program, uniformName);
         }
 
         private void FindAndBind(EditorBox editor, int _program)
@@ -298,7 +298,7 @@ namespace ShaderIDE
                     {
                         editor.Highlights.Add(new HighlightStruct
                         {
-                            LineColor = Color.Peru,
+                            LineColor = Color.DarkOliveGreen,
                             LineHint = "Hint: Uniform not used in program.",
                             LineNumber = i
                         });
@@ -307,6 +307,23 @@ namespace ShaderIDE
             }
         }
 
+        private void Form1_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
+        {
+            timer1.Start();
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            if ((_lastProgram > -1) & (_lastVextexShader > -1) & (_lastFragmentShader > -1))
+            {
+                GL.UseProgram(_lastProgram);
+                FindAndBind(editorBox1, _lastProgram);
+                FindAndBind(editorBox2, _lastProgram);
+            }
+        }
+        #endregion
+
+        #region Build and Link
         private int compileShader(EditorBox editor, ShaderType type)
         {
             var currentShader = ShaderLoader.Load_Shader(editor.Text, type);
@@ -341,6 +358,7 @@ namespace ShaderIDE
         {
             if (_context != null)
             {
+                timer1.Stop();
                 textBox1.Clear();
                 _context.MakeCurrent(_windowInfo);
 
@@ -377,6 +395,7 @@ namespace ShaderIDE
                         editorBox2.ForceRedraw(this, new EventArgs());
                     }
                 }
+                timer1.Start();
             }
             else
             {
@@ -396,44 +415,42 @@ namespace ShaderIDE
 
                 //compile vertex shader
                 Console.Message(@"Compiling Vertex Shader:");
-                var _currentShaderResult = compileShader(editorBox1, ShaderType.VertexShader);
-                if (_currentShaderResult > -1)
+                _lastVextexShader = compileShader(editorBox1, ShaderType.VertexShader);
+                if (_lastVextexShader > -1)
                 {
-                    _lastVextexShader = _currentShaderResult;
-                    shaderList.Add(_currentShaderResult);
+                    shaderList.Add(_lastVextexShader);
                 }
 
                 //compile fragment shader
                 Console.Message(@"Compiling Fragment Shader:");
-                _currentShaderResult = compileShader(editorBox2, ShaderType.FragmentShader);
-                if (_currentShaderResult > -1)
+                _lastFragmentShader = compileShader(editorBox2, ShaderType.FragmentShader);
+                if (_lastFragmentShader > -1)
                 {
-                    _lastFragmentShader = _currentShaderResult;
-                    shaderList.Add(_currentShaderResult);
+                    shaderList.Add(_lastFragmentShader);
                 }
-                _currentShaderResult = ShaderLoader.Link_Program(shaderList);
-                if (_currentShaderResult > -1)
+
+                //linking program
+                _lastProgram = ShaderLoader.Link_Program(shaderList);
+                if ((_lastProgram > -1) & (shaderList.Count == 2))
                 {
-                    _lastProgram = _currentShaderResult;
                     GL.UseProgram(_lastProgram);
                     Console.Message(@"Done with " + shaderList.Count + " Shaders.");
+
                     FindAndBind(editorBox1, _lastProgram);
                     FindAndBind(editorBox2, _lastProgram);
-                    editorBox1.ForceRedraw(this, new EventArgs());
-                    editorBox2.ForceRedraw(this, new EventArgs());
+
                 }
                 else
                 {
                     Console.Message(@"Program Link Failed.");
                 }
+                editorBox1.ForceRedraw(this, new EventArgs());
+                editorBox2.ForceRedraw(this, new EventArgs());
             }
         }
+        #endregion
 
-        private void quitToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
-
+        #region Helpers
         private GraphicsContextFlags BoolToGraphContextFlags()
         {
             var result = GraphicsContextFlags.Default;
@@ -450,12 +467,14 @@ namespace ShaderIDE
             if (ContextSetupData.ClearDepthBuffer) result |= ClearBufferMask.DepthBufferBit;
             return result;
         }
+        #endregion
 
+        #region Context
         private void button1_Click(object sender, EventArgs e)
         {
             textBox1.Clear();
             Console.Message(@"Reseting Context");
-            _windowInfo = Utilities.CreateWindowsWindowInfo(tabPage4.Handle);
+            _windowInfo = Utilities.CreateWindowsWindowInfo(panel1.Handle);
             var colorFormat = new ColorFormat(ContextSetupData.Red, ContextSetupData.Green, ContextSetupData.Blue, ContextSetupData.Alpha);
             var accumFormat = new ColorFormat(ContextSetupData.AccumRed, ContextSetupData.AccumGreen, ContextSetupData.AccumBlue, ContextSetupData.AccumAlpha);
 
@@ -485,7 +504,6 @@ namespace ShaderIDE
                 _context.SwapBuffers();
             }
         }
-
-
+        #endregion
     }//class
 }//namespace

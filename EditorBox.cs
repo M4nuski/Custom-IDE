@@ -16,19 +16,23 @@ namespace ShaderIDE
         #endregion
 
         #region Properties
-        //Tooltip
+
+        #region Tooptip
         private Point _lastMousePos, _currentMousePos;
         private int _hoverCount;
         private readonly ToolTip _hoverToolTip = new ToolTip();
         private readonly Timer _hoverTimer = new Timer();
+        #endregion
 
-        //Parser and Editor controls
+        #region Parser and Editor controls
         public ThemeStruct Theme { get; set; }
         private bool _inParser;
         private Point _textboxBottomLeftPoint;
         private int _lineSelectionStart, _lineSelectionLength;
         private int _lastSelectionStart, _lastSelectionLength;
         private int _lastNumLines;
+        #endregion
+
         #endregion
 
         #region Parsing / Tokens
@@ -252,6 +256,7 @@ namespace ShaderIDE
         }
         #endregion
 
+        #region Form Events
         public EditorBox()
         {
             _lastTokenList = new List<TokenStruct>();
@@ -327,6 +332,7 @@ namespace ShaderIDE
                 _inParser = false;
             }
         }
+        #endregion
 
         #region Editor Update
         public void ForceRedraw(object sender, EventArgs e)
