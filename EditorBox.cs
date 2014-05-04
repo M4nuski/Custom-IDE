@@ -28,6 +28,7 @@ namespace ShaderIDE
         private Point _textboxBottomLeftPoint;
         private int _lineSelectionStart, _lineSelectionLength;
         private int _lastSelectionStart, _lastSelectionLength;
+        private int _lastNumLines;
         #endregion
 
         #region Parsing / Tokens
@@ -299,8 +300,14 @@ namespace ShaderIDE
 
         private void EditorBox_Click(object sender, EventArgs e) //Redraw selections and background
         {
+
             if (!_inParser & (TokenList != null))
             {
+                if (_lastNumLines != Lines.Length)
+                {
+                    Highlights.Clear();
+                    _lastNumLines = Lines.Length;
+                }
                 _inParser = true;
                 var dummyArray = new bool[TokenList.Count];
                 if ((_lastSelectionStart != SelectionStart) |
@@ -479,6 +486,11 @@ namespace ShaderIDE
         {
             if (!_inParser)
             {
+                if (_lastNumLines != Lines.Length)
+                {
+                    Highlights.Clear();
+                    _lastNumLines = Lines.Length;
+                }
                 _inParser = true;
                 TokenList = TokenizeLines(Lines);
                 ReDraw(CheckForChanges());

@@ -65,15 +65,15 @@
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.editorBox1 = new ShaderIDE.EditorBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.editorBox2 = new ShaderIDE.EditorBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.button1 = new System.Windows.Forms.Button();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.editorBox1 = new ShaderIDE.EditorBox();
-            this.editorBox2 = new ShaderIDE.EditorBox();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -383,6 +383,23 @@
             this.tabPage1.Text = "Vertex Shader";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // editorBox1
+            // 
+            this.editorBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.editorBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.editorBox1.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.editorBox1.ForeColor = System.Drawing.Color.White;
+            this.editorBox1.Location = new System.Drawing.Point(0, 0);
+            this.editorBox1.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
+            this.editorBox1.Name = "editorBox1";
+            this.editorBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
+            this.editorBox1.Size = new System.Drawing.Size(875, 422);
+            this.editorBox1.TabIndex = 17;
+            this.editorBox1.Text = resources.GetString("editorBox1.Text");
+            this.editorBox1.WordWrap = false;
+            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.editorBox2);
@@ -393,6 +410,22 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Fragment Shader";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // editorBox2
+            // 
+            this.editorBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.editorBox2.BackColor = System.Drawing.SystemColors.Window;
+            this.editorBox2.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.editorBox2.Location = new System.Drawing.Point(0, 0);
+            this.editorBox2.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            this.editorBox2.Name = "editorBox2";
+            this.editorBox2.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
+            this.editorBox2.Size = new System.Drawing.Size(875, 432);
+            this.editorBox2.TabIndex = 0;
+            this.editorBox2.Text = resources.GetString("editorBox2.Text");
+            this.editorBox2.WordWrap = false;
             // 
             // tabPage3
             // 
@@ -454,43 +487,11 @@
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
+            this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.textBox1.Size = new System.Drawing.Size(993, 115);
             this.textBox1.TabIndex = 19;
             this.textBox1.Text = "Output";
             this.textBox1.WordWrap = false;
-            // 
-            // editorBox1
-            // 
-            this.editorBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.editorBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.editorBox1.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.editorBox1.ForeColor = System.Drawing.Color.White;
-            this.editorBox1.Location = new System.Drawing.Point(0, 0);
-            this.editorBox1.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
-            this.editorBox1.Name = "editorBox1";
-            this.editorBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
-            this.editorBox1.Size = new System.Drawing.Size(875, 422);
-            this.editorBox1.TabIndex = 17;
-            this.editorBox1.Text = resources.GetString("editorBox1.Text");
-            this.editorBox1.WordWrap = false;
-            // 
-            // editorBox2
-            // 
-            this.editorBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.editorBox2.BackColor = System.Drawing.SystemColors.Window;
-            this.editorBox2.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.editorBox2.Location = new System.Drawing.Point(0, 0);
-            this.editorBox2.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            this.editorBox2.Name = "editorBox2";
-            this.editorBox2.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
-            this.editorBox2.Size = new System.Drawing.Size(875, 432);
-            this.editorBox2.TabIndex = 0;
-            this.editorBox2.Text = resources.GetString("editorBox2.Text");
-            this.editorBox2.WordWrap = false;
             // 
             // Form1
             // 

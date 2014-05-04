@@ -22,7 +22,7 @@ namespace ShaderIDE
         private IGraphicsContext _context;
         private ContextSetup ContextSetupData = new ContextSetup();
 
-        //private int _lastProgram = -1; // not used yet
+        private int _lastProgram = -1; // not used yet
         private int _lastVextexShader = -1;
         private int _lastFragmentShader = -1;
 
@@ -275,6 +275,38 @@ namespace ShaderIDE
         }
         #endregion
 
+        private int BindAndMsg(string uniformName, int _program)
+        {
+            var loc = GL.GetUniformLocation(_program, uniformName);
+            Msg(uniformName + ": " + loc);
+            return loc;
+        }
+
+        private void FindAndBind(EditorBox editor, int _program)
+        {
+            for (var i = 0; i < editor.Lines.Length; i++)
+            {
+                var currentUniform = editor.Lines[i];
+                currentUniform = currentUniform.Trim(new[] { ' ', '\t', '\n', '\r', ';' });
+                if (currentUniform.StartsWith("uniform"))
+                {
+                    var uniformStart = currentUniform.LastIndexOf(' ') + 1;
+
+                    currentUniform = currentUniform.Substring(uniformStart, currentUniform.Length - uniformStart);
+                    var uniInt = BindAndMsg(currentUniform, _program);
+                    if (uniInt == -1)
+                    {
+                        editor.Highlights.Add(new HighlightStruct
+                        {
+                            LineColor = Color.Peru,
+                            LineHint = "Hint: Uniform not used in program.",
+                            LineNumber = i
+                        });
+                    }
+                }
+            }
+        }
+
         private int compileShader(EditorBox editor, ShaderType type)
         {
             var currentShader = ShaderLoader.Load_Shader(editor.Text, type);
@@ -299,7 +331,6 @@ namespace ShaderIDE
                             LineHint = currentError.Substring(currentError.IndexOf(":", StringComparison.Ordinal) + 1),
                             LineNumber = errorLine - 1
                         });
-                        editor.ForceRedraw(this, new EventArgs());
                     }
                 }
             }
@@ -325,6 +356,10 @@ namespace ShaderIDE
                         Console.Message(@"Done.");
                         _lastVextexShader = _currentShaderResult;
                     }
+                    else
+                    {
+                        editorBox1.ForceRedraw(this, new EventArgs());
+                    }
                 }
 
                 else if (shader == 1)
@@ -337,6 +372,10 @@ namespace ShaderIDE
                         Console.Message(@"Done.");
                         _lastFragmentShader = _currentShaderResult;
                     }
+                    else
+                    {
+                        editorBox2.ForceRedraw(this, new EventArgs());
+                    }
                 }
             }
             else
@@ -348,7 +387,46 @@ namespace ShaderIDE
         private void buildProgramToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //compile all shader and try linking into program
-            Console.Message(@"Building Program:");
+            if (_context != null)
+            {
+                textBox1.Clear();
+                _context.MakeCurrent(_windowInfo);
+                Console.Message(@"Building Program:");
+                var shaderList = new List<int>();
+
+                //compile vertex shader
+                Console.Message(@"Compiling Vertex Shader:");
+                var _currentShaderResult = compileShader(editorBox1, ShaderType.VertexShader);
+                if (_currentShaderResult > -1)
+                {
+                    _lastVextexShader = _currentShaderResult;
+                    shaderList.Add(_currentShaderResult);
+                }
+
+                //compile fragment shader
+                Console.Message(@"Compiling Fragment Shader:");
+                _currentShaderResult = compileShader(editorBox2, ShaderType.FragmentShader);
+                if (_currentShaderResult > -1)
+                {
+                    _lastFragmentShader = _currentShaderResult;
+                    shaderList.Add(_currentShaderResult);
+                }
+                _currentShaderResult = ShaderLoader.Link_Program(shaderList);
+                if (_currentShaderResult > -1)
+                {
+                    _lastProgram = _currentShaderResult;
+                    GL.UseProgram(_lastProgram);
+                    Console.Message(@"Done with " + shaderList.Count + " Shaders.");
+                    FindAndBind(editorBox1, _lastProgram);
+                    FindAndBind(editorBox2, _lastProgram);
+                    editorBox1.ForceRedraw(this, new EventArgs());
+                    editorBox2.ForceRedraw(this, new EventArgs());
+                }
+                else
+                {
+                    Console.Message(@"Program Link Failed.");
+                }
+            }
         }
 
         private void quitToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -375,7 +453,7 @@ namespace ShaderIDE
 
         private void button1_Click(object sender, EventArgs e)
         {
-
+            textBox1.Clear();
             Console.Message(@"Reseting Context");
             _windowInfo = Utilities.CreateWindowsWindowInfo(tabPage4.Handle);
             var colorFormat = new ColorFormat(ContextSetupData.Red, ContextSetupData.Green, ContextSetupData.Blue, ContextSetupData.Alpha);
@@ -395,7 +473,6 @@ namespace ShaderIDE
             GL.ClearColor(ContextSetupData.ClearColor);
             GL.Clear(ClearBufferMask.AccumBufferBit);
             GL.Clear(BoolToClearMask());
-
         }
 
         private void tabPage4_Click(object sender, EventArgs e)
@@ -408,10 +485,6 @@ namespace ShaderIDE
                 _context.SwapBuffers();
             }
         }
-
-
-
-
 
 
     }//class
