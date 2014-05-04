@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
+using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Platform;
+using KeyPressEventArgs = System.Windows.Forms.KeyPressEventArgs;
 
 namespace ShaderIDE
 {
@@ -22,7 +24,7 @@ namespace ShaderIDE
         #region Context
         private IWindowInfo _windowInfo;
         private IGraphicsContext _context;
-        private ContextSetup ContextSetupData = new ContextSetup();
+        private readonly ContextSetup ContextSetupData = new ContextSetup();
         #endregion
 
         #region Build Results
@@ -30,6 +32,13 @@ namespace ShaderIDE
         private int _lastVextexShader = -1;
         private int _lastFragmentShader = -1;
         private string _lastError = "";
+        private Color _ErrorColor = Color.Red;
+        private Color _HintColor = Color.DarkOliveGreen;
+        #endregion
+
+        #region Uniform and Data
+        private Vector4 l_pos;
+        private Matrix4 m_view;
         #endregion
 
         #endregion
@@ -298,7 +307,7 @@ namespace ShaderIDE
                     {
                         editor.Highlights.Add(new HighlightStruct
                         {
-                            LineColor = Color.DarkOliveGreen,
+                            LineColor = _HintColor,
                             LineHint = "Hint: Uniform not used in program.",
                             LineNumber = i
                         });
@@ -307,7 +316,7 @@ namespace ShaderIDE
             }
         }
 
-        private void Form1_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
+        private void Form1_KeyPress(object sender, KeyPressEventArgs e)
         {
             timer1.Start();
         }
@@ -316,6 +325,14 @@ namespace ShaderIDE
         {
             if ((_lastProgram > -1) & (_lastVextexShader > -1) & (_lastFragmentShader > -1))
             {
+                for (var i = editorBox1.Highlights.Count -1; i >=0 ; i--)
+                {
+                    if (editorBox1.Highlights[i].LineColor == _HintColor) editorBox1.Highlights.RemoveAt(i);
+                }
+                for (var i = editorBox2.Highlights.Count - 1; i >= 0; i--)
+                {
+                    if (editorBox2.Highlights[i].LineColor == _HintColor) editorBox2.Highlights.RemoveAt(i);
+                }
                 GL.UseProgram(_lastProgram);
                 FindAndBind(editorBox1, _lastProgram);
                 FindAndBind(editorBox2, _lastProgram);
@@ -344,7 +361,7 @@ namespace ShaderIDE
                         int.TryParse(errorPos, out errorLine);
                         editor.Highlights.Add(new HighlightStruct
                         {
-                            LineColor = Color.Red,
+                            LineColor = _ErrorColor,
                             LineHint = currentError.Substring(currentError.IndexOf(":", StringComparison.Ordinal) + 1),
                             LineNumber = errorLine - 1
                         });
@@ -505,5 +522,17 @@ namespace ShaderIDE
             }
         }
         #endregion
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listBox1.SelectedIndex == 0)
+            {
+                propertyGrid2.SelectedObject = l_pos;
+            }
+            if (listBox1.SelectedIndex == 1)
+            {
+                propertyGrid2.SelectedObject = m_view;
+            }
+        }
     }//class
 }//namespace
