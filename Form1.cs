@@ -36,9 +36,27 @@ namespace ShaderIDE
         private Color _HintColor = Color.DarkOliveGreen;
         #endregion
 
-        #region Uniform and Data
-        private Vector4 l_pos;
-        private Matrix4 m_view;
+        #region Uniform and Data             
+        public enum UniformType
+             {
+            Bool, Int,
+                 Float, Vec2, Vec3, Vec4,
+                    Mat3, Mat4
+             }
+        private struct Uniform
+        {
+            private UniformType GLType;
+            private object Data;
+        }
+
+        private struct V3
+        {
+            public float X { get; set; }
+            public float Y { get; set; }
+            public float Z { get; set; }
+        }
+        private List<Uniform> Uniforms;
+ 
         #endregion
 
         #endregion
@@ -312,6 +330,10 @@ namespace ShaderIDE
                             LineNumber = i
                         });
                     }
+                    else
+                    {
+                        listBox1.Items.Add(currentUniform);
+                    }
                 }
             }
         }
@@ -334,6 +356,7 @@ namespace ShaderIDE
                     if (editorBox2.Highlights[i].LineColor == _HintColor) editorBox2.Highlights.RemoveAt(i);
                 }
                 GL.UseProgram(_lastProgram);
+                listBox1.Items.Clear();
                 FindAndBind(editorBox1, _lastProgram);
                 FindAndBind(editorBox2, _lastProgram);
             }
@@ -452,7 +475,7 @@ namespace ShaderIDE
                 {
                     GL.UseProgram(_lastProgram);
                     Console.Message(@"Done with " + shaderList.Count + " Shaders.");
-
+                    listBox1.Items.Clear();
                     FindAndBind(editorBox1, _lastProgram);
                     FindAndBind(editorBox2, _lastProgram);
 
@@ -523,16 +546,11 @@ namespace ShaderIDE
         }
         #endregion
 
-        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        #region Uniforms And Data
+        private void trackBar1_Scroll(object sender, EventArgs e)
         {
-            if (listBox1.SelectedIndex == 0)
-            {
-                propertyGrid2.SelectedObject = l_pos;
-            }
-            if (listBox1.SelectedIndex == 1)
-            {
-                propertyGrid2.SelectedObject = m_view;
-            }
+            textBoxFOV.Text = trackBar1.Value.ToString("F1");
         }
+        #endregion
     }//class
 }//namespace

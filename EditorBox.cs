@@ -403,7 +403,7 @@ namespace ShaderIDE
 
         private void GetSelectionFromLine(int lineNumber)
         {
-            if (Lines.Length > 0)
+            if ((Lines.Length > 0) & (lineNumber > -1))
             {
                 var maxLine = Lines.Length - 1;
                 if (lineNumber < maxLine)
