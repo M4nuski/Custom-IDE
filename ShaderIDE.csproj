@@ -76,6 +76,7 @@
     </Compile>
     <Compile Include="StringSafeRemove.cs" />
     <Compile Include="ThemeHelper.cs" />
+    <Compile Include="UniformSetup.cs" />
     <Compile Include="WordStyleDialog.cs">
       <SubType>Form</SubType>
     </Compile>

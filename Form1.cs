@@ -37,26 +37,16 @@ namespace ShaderIDE
         #endregion
 
         #region Uniform and Data             
-        public enum UniformType
-             {
-            Bool, Int,
-                 Float, Vec2, Vec3, Vec4,
-                    Mat3, Mat4
-             }
-        private struct Uniform
-        {
-            private UniformType GLType;
-            private object Data;
-        }
 
-        private struct V3
+        private List<IUniformProperty> UniformData;
+        
+        private struct Vec3
         {
             public float X { get; set; }
             public float Y { get; set; }
             public float Z { get; set; }
         }
-        private List<Uniform> Uniforms;
- 
+
         #endregion
 
         #endregion
@@ -87,8 +77,10 @@ namespace ShaderIDE
             editorBox1.ForceRedraw(sender, e);
             editorBox2.ForceRedraw(sender, e);
             propertyGrid1.SelectedObject = ContextSetupData;
+            
             button1_Click(this, new EventArgs());
-
+            UniformData = UniformPropertyHelper.BuildDefaultList(propertyGrid2);
+            PopulateUniformList();
         }
 
         private void quitToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -547,9 +539,23 @@ namespace ShaderIDE
         #endregion
 
         #region Uniforms And Data
+
+        private void PopulateUniformList()
+        {
+            listBox2.Items.Clear();
+            foreach (var uniformProperty in UniformData)
+            {
+                listBox2.Items.Add(uniformProperty.Name);
+            }
+        }
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
             textBoxFOV.Text = trackBar1.Value.ToString("F1");
+        }
+
+        private void listBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UniformData[listBox2.SelectedIndex].EditProperty();
         }
         #endregion
     }//class
