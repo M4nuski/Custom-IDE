@@ -114,10 +114,12 @@
             this.propertyGrid2 = new System.Windows.Forms.PropertyGrid();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.editorBox2 = new ShaderIDE.EditorBox();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.editorBox1 = new ShaderIDE.EditorBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.directorySearcher1 = new System.DirectoryServices.DirectorySearcher();
+            this.editorBox1 = new ShaderIDE.EditorBox();
+            this.editorBox2 = new ShaderIDE.EditorBox();
+            this.matrixControl1 = new ShaderIDE.MatrixControl();
             this.menuStrip1.SuspendLayout();
             this.tabPage4.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -450,6 +452,7 @@
             this.button1.TabIndex = 20;
             this.button1.Text = "Update Context";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // propertyGrid1
             // 
@@ -469,6 +472,7 @@
             this.button2.TabIndex = 18;
             this.button2.Text = "Update Matrices";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // groupBox3
             // 
@@ -846,6 +850,7 @@
             // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.matrixControl1);
             this.tabPage5.Controls.Add(this.listBox2);
             this.tabPage5.Controls.Add(this.propertyGrid2);
             this.tabPage5.Controls.Add(this.listBox1);
@@ -918,10 +923,11 @@
             // 
             this.propertyGrid2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
+            this.propertyGrid2.HelpVisible = false;
             this.propertyGrid2.Location = new System.Drawing.Point(522, 12);
             this.propertyGrid2.Name = "propertyGrid2";
             this.propertyGrid2.PropertySort = System.Windows.Forms.PropertySort.NoSort;
-            this.propertyGrid2.Size = new System.Drawing.Size(251, 526);
+            this.propertyGrid2.Size = new System.Drawing.Size(251, 89);
             this.propertyGrid2.TabIndex = 1;
             this.propertyGrid2.ToolbarVisible = false;
             // 
@@ -940,6 +946,7 @@
             this.listBox1.Name = "listBox1";
             this.listBox1.Size = new System.Drawing.Size(251, 526);
             this.listBox1.TabIndex = 0;
+            this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             // 
             // tabPage2
             // 
@@ -951,6 +958,56 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Fragment Shader";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.editorBox1);
+            this.tabPage1.Location = new System.Drawing.Point(4, 27);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(985, 550);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "Vertex Shader";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage5);
+            this.tabControl1.Controls.Add(this.tabPage4);
+            this.tabControl1.Location = new System.Drawing.Point(0, 30);
+            this.tabControl1.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(993, 581);
+            this.tabControl1.TabIndex = 18;
+            // 
+            // directorySearcher1
+            // 
+            this.directorySearcher1.ClientTimeout = System.TimeSpan.Parse("-00:00:01");
+            this.directorySearcher1.ServerPageTimeLimit = System.TimeSpan.Parse("-00:00:01");
+            this.directorySearcher1.ServerTimeLimit = System.TimeSpan.Parse("-00:00:01");
+            // 
+            // editorBox1
+            // 
+            this.editorBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.editorBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.editorBox1.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.editorBox1.ForeColor = System.Drawing.Color.White;
+            this.editorBox1.Location = new System.Drawing.Point(0, 0);
+            this.editorBox1.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
+            this.editorBox1.Name = "editorBox1";
+            this.editorBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
+            this.editorBox1.Size = new System.Drawing.Size(875, 346);
+            this.editorBox1.TabIndex = 17;
+            this.editorBox1.Text = resources.GetString("editorBox1.Text");
+            this.editorBox1.WordWrap = false;
             // 
             // editorBox2
             // 
@@ -968,49 +1025,15 @@
             this.editorBox2.Text = resources.GetString("editorBox2.Text");
             this.editorBox2.WordWrap = false;
             // 
-            // tabPage1
+            // matrixControl1
             // 
-            this.tabPage1.Controls.Add(this.editorBox1);
-            this.tabPage1.Location = new System.Drawing.Point(4, 27);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(985, 550);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Vertex Shader";
-            this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // editorBox1
-            // 
-            this.editorBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.editorBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.editorBox1.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.editorBox1.ForeColor = System.Drawing.Color.White;
-            this.editorBox1.Location = new System.Drawing.Point(0, 0);
-            this.editorBox1.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
-            this.editorBox1.Name = "editorBox1";
-            this.editorBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
-            this.editorBox1.Size = new System.Drawing.Size(875, 372);
-            this.editorBox1.TabIndex = 17;
-            this.editorBox1.Text = resources.GetString("editorBox1.Text");
-            this.editorBox1.WordWrap = false;
-            // 
-            // tabControl1
-            // 
-            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Controls.Add(this.tabPage5);
-            this.tabControl1.Controls.Add(this.tabPage4);
-            this.tabControl1.Location = new System.Drawing.Point(0, 30);
-            this.tabControl1.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(993, 581);
-            this.tabControl1.TabIndex = 18;
+            this.matrixControl1.BackColor = System.Drawing.SystemColors.Control;
+            this.matrixControl1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.matrixControl1.Location = new System.Drawing.Point(522, 107);
+            this.matrixControl1.Name = "matrixControl1";
+            this.matrixControl1.Size = new System.Drawing.Size(251, 431);
+            this.matrixControl1.TabIndex = 3;
+            this.matrixControl1.Load += new System.EventHandler(this.matrixControl1_Load);
             // 
             // Form1
             // 
@@ -1137,6 +1160,8 @@
         private System.Windows.Forms.TabPage tabPage1;
         private EditorBox editorBox1;
         private System.Windows.Forms.TabControl tabControl1;
+        private System.DirectoryServices.DirectorySearcher directorySearcher1;
+        private MatrixControl matrixControl1;
     }
 }
 
