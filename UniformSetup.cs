@@ -57,10 +57,7 @@ namespace ShaderIDE
     }
     public class oColor
     {
-        public float R { get; set; }
-        public float G { get; set; }
-        public float B { get; set; }
-        public float A { get; set; }
+        public Color color { get; set; }
     }
     public class oMat2
     {
@@ -299,13 +296,7 @@ namespace ShaderIDE
         {
             Name = name;
             Grid = grid;
-            Value = new oColor
-            {
-                R = defaultValue.R,
-                G = defaultValue.G,
-                B = defaultValue.B,
-                A = defaultValue.A
-            };
+            Value = new oColor { color = defaultValue };
         }
 
         public void EditProperty()
@@ -315,7 +306,7 @@ namespace ShaderIDE
 
         public void ToOpenGL(int UniformLocation)
         {
-            GL.Uniform4(UniformLocation, Value.R, Value.G, Value.B, Value.A);
+            GL.Uniform4(UniformLocation, Value.color.R, Value.color.G, Value.color.B, Value.color.A);
         }
     }
 
