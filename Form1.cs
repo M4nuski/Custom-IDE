@@ -79,7 +79,7 @@ namespace ShaderIDE
             propertyGrid1.SelectedObject = ContextSetupData;
             
             button1_Click(this, new EventArgs());
-            UniformData = UniformPropertyHelper.BuildDefaultList(propertyGrid2);
+            UniformData = UniformPropertyHelper.BuildDefaultList(propertyGrid2, matrixControl1);
             PopulateUniformList();
         }
 
@@ -571,11 +571,11 @@ namespace ShaderIDE
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var mat = new Matrix4();
-
+            //debug
+            //var mat = new Matrix4();
             //mat = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver6, 640/480, 1, 256);
-            mat = Matrix4.CreateOrthographic(2, 2, 1, 256);
-            matrixControl1.SelectedMatrix(ref mat);
+            //mat = Matrix4.CreateOrthographic(2, 2, 1, 256);
+            //matrixControl1.SelectMatrix4(ref mat);
 
         }
     }//class

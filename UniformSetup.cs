@@ -83,7 +83,7 @@ namespace ShaderIDE
 
     public static class UniformPropertyHelper
     {
-        public static List<IUniformProperty> BuildDefaultList(PropertyGrid grid)
+        public static List<IUniformProperty> BuildDefaultList(PropertyGrid grid, MatrixControl ctrl)
         {
             var Data = new List<IUniformProperty>();
             Data.Add(new BoolUniformProperty("Bool_0", grid, false));
@@ -116,11 +116,13 @@ namespace ShaderIDE
             Data.Add(new ColorUniformProperty("Color_2", grid, Color.Green));
             Data.Add(new ColorUniformProperty("Color_3", grid, Color.Blue));
 
-            Data.Add(new Mat2UniformProperty("Mat2_0", grid, new Matrix2()));
-            Data.Add(new Mat2UniformProperty("Mat2_1", grid, Matrix2.Identity));
-            Data.Add(new Mat2UniformProperty("Mat2_2", grid, Matrix2.CreateRotation(3.1415f)));
-            Data.Add(new Mat2UniformProperty("Mat2_3", grid, Matrix2.CreateScale(0.5f)));
-
+            Data.Add(new Mat4UniformProperty("Mat4_0(empty)", ctrl, new Matrix4()));
+            Data.Add(new Mat4UniformProperty("Mat4_1(identity)", ctrl, Matrix4.Identity));
+            Data.Add(new Mat4UniformProperty("Mat4_2(translate)", ctrl,Matrix4.CreateTranslation(0.1f, 0.2f, 0.3f)));
+            Data.Add(new Mat4UniformProperty("Mat4_3(rotateZ)", ctrl, Matrix4.CreateRotationZ(3.1415f)));
+            Data.Add(new Mat4UniformProperty("Mat4_4(scale.5)", ctrl, Matrix4.CreateScale(0.5f)));
+            Data.Add(new Mat4UniformProperty("Mat4_5(ortho)", ctrl, Matrix4.CreateOrthographic(20,20,1,10)));
+            Data.Add(new Mat4UniformProperty("Mat4_6(45degpersp)", ctrl, Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 640/480,1,256)));
             return Data;
         }
     }
@@ -310,40 +312,31 @@ namespace ShaderIDE
         }
     }
 
-    public class Mat2UniformProperty : IUniformProperty
+    public class Mat4UniformProperty : IUniformProperty
     {
-        private readonly PropertyGrid Grid;
-        private oMat2 Value;
+        private readonly MatrixControl Grid;
+        private Matrix4 Value;
         public string Name { get; set; }
 
-        private Matrix2 Mat2;
-        private static oVec2 Vector2Unwrapper(Vector2 vector)
-        {
-            return new oVec2 {X = vector.X, Y = vector.Y};
-        }
-
-        public Mat2UniformProperty(string name, PropertyGrid grid, Matrix2 defaultValue)
+        public Mat4UniformProperty(string name, MatrixControl grid, Matrix4 defaultValue)
         {
             Name = name;
             Grid = grid;
-            Value = new oMat2
-            {
-                M00 = defaultValue.Row0.X,
-                M01 = defaultValue.Row0.Y,
-                M10 = defaultValue.Row1.X,
-                M11 = defaultValue.Row1.Y
-            };
+            Value = defaultValue;
         }
 
         public void EditProperty()
         {
-            Grid.SelectedObject = Value;
+            Grid.SelectMatrix4(ref Value);
         }
 
         public void ToOpenGL(int UniformLocation)
         {
-            Mat2 = new Matrix2(Value.M00, Value.M01, Value.M10, Value.M11);
-            GL.UniformMatrix2(UniformLocation, false, ref Mat2);
+            var Mat4 = new Matrix4(Value.M11, Value.M12, Value.M13, Value.M14,
+                Value.M21, Value.M22, Value.M23, Value.M24,
+                Value.M31, Value.M32, Value.M33, Value.M34,
+                Value.M41, Value.M42, Value.M43, Value.M44);
+            GL.UniformMatrix4(UniformLocation, false, ref Mat4);
         }
     }
     #endregion
