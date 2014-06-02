@@ -121,7 +121,7 @@ namespace ShaderIDE
             Data.Add(new Mat4UniformProperty("Mat4_2(translate)", ctrl,Matrix4.CreateTranslation(0.1f, 0.2f, 0.3f)));
             Data.Add(new Mat4UniformProperty("Mat4_3(rotateZ)", ctrl, Matrix4.CreateRotationZ(3.1415f)));
             Data.Add(new Mat4UniformProperty("Mat4_4(scale.5)", ctrl, Matrix4.CreateScale(0.5f)));
-            Data.Add(new Mat4UniformProperty("Mat4_5(ortho)", ctrl, Matrix4.CreateOrthographic(20,20,1,10)));
+            Data.Add(new Mat4UniformProperty("Mat4_5(ortho)", ctrl, Matrix4.CreateOrthographic(640,480,1,256)));
             Data.Add(new Mat4UniformProperty("Mat4_6(45degpersp)", ctrl, Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 640/480,1,256)));
             return Data;
         }

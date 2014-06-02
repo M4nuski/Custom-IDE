@@ -30,14 +30,14 @@
         {
             this.FartextBox = new System.Windows.Forms.TextBox();
             this.NeartextBox = new System.Windows.Forms.TextBox();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.OrthoRadioButton = new System.Windows.Forms.RadioButton();
             this.WidthtextBox = new System.Windows.Forms.TextBox();
             this.FOVtextBox = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.HeighttextBox = new System.Windows.Forms.TextBox();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
+            this.PerspRadioButton = new System.Windows.Forms.RadioButton();
             this.FOVtrackBar = new System.Windows.Forms.TrackBar();
             this.ScaleZtextBox = new System.Windows.Forms.TextBox();
             this.ScaleYtextBox = new System.Windows.Forms.TextBox();
@@ -51,7 +51,7 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.radioButton3 = new System.Windows.Forms.RadioButton();
+            this.ModelviewRadioButton = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.FOVtrackBar)).BeginInit();
             this.SuspendLayout();
             // 
@@ -71,16 +71,16 @@
             this.NeartextBox.TabIndex = 32;
             this.NeartextBox.Text = "1.0";
             // 
-            // radioButton1
+            // OrthoRadioButton
             // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Location = new System.Drawing.Point(3, 96);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(167, 21);
-            this.radioButton1.TabIndex = 26;
-            this.radioButton1.Text = "Orthogonal Projection";
-            this.radioButton1.UseVisualStyleBackColor = true;
-            this.radioButton1.CheckedChanged += new System.EventHandler(this.Ortho_CheckedChanged);
+            this.OrthoRadioButton.AutoSize = true;
+            this.OrthoRadioButton.Location = new System.Drawing.Point(3, 96);
+            this.OrthoRadioButton.Name = "OrthoRadioButton";
+            this.OrthoRadioButton.Size = new System.Drawing.Size(167, 21);
+            this.OrthoRadioButton.TabIndex = 26;
+            this.OrthoRadioButton.Text = "Orthogonal Projection";
+            this.OrthoRadioButton.UseVisualStyleBackColor = true;
+            this.OrthoRadioButton.CheckedChanged += new System.EventHandler(this.Ortho_CheckedChanged);
             // 
             // WidthtextBox
             // 
@@ -134,18 +134,18 @@
             this.HeighttextBox.TabIndex = 30;
             this.HeighttextBox.Text = "1.0";
             // 
-            // radioButton2
+            // PerspRadioButton
             // 
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.Checked = true;
-            this.radioButton2.Location = new System.Drawing.Point(3, 3);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(170, 21);
-            this.radioButton2.TabIndex = 27;
-            this.radioButton2.TabStop = true;
-            this.radioButton2.Text = "Perspective Projection";
-            this.radioButton2.UseVisualStyleBackColor = true;
-            this.radioButton2.CheckedChanged += new System.EventHandler(this.Persp_CheckedChanged);
+            this.PerspRadioButton.AutoSize = true;
+            this.PerspRadioButton.Checked = true;
+            this.PerspRadioButton.Location = new System.Drawing.Point(3, 3);
+            this.PerspRadioButton.Name = "PerspRadioButton";
+            this.PerspRadioButton.Size = new System.Drawing.Size(170, 21);
+            this.PerspRadioButton.TabIndex = 27;
+            this.PerspRadioButton.TabStop = true;
+            this.PerspRadioButton.Text = "Perspective Projection";
+            this.PerspRadioButton.UseVisualStyleBackColor = true;
+            this.PerspRadioButton.CheckedChanged += new System.EventHandler(this.Persp_CheckedChanged);
             // 
             // FOVtrackBar
             // 
@@ -259,17 +259,17 @@
             this.label4.TabIndex = 37;
             this.label4.Text = "Position";
             // 
-            // radioButton3
+            // ModelviewRadioButton
             // 
-            this.radioButton3.AutoSize = true;
-            this.radioButton3.Location = new System.Drawing.Point(3, 215);
-            this.radioButton3.Name = "radioButton3";
-            this.radioButton3.Size = new System.Drawing.Size(100, 21);
-            this.radioButton3.TabIndex = 49;
-            this.radioButton3.TabStop = true;
-            this.radioButton3.Text = "Model/View";
-            this.radioButton3.UseVisualStyleBackColor = true;
-            this.radioButton3.CheckedChanged += new System.EventHandler(this.ModelView_CheckedChanged);
+            this.ModelviewRadioButton.AutoSize = true;
+            this.ModelviewRadioButton.Location = new System.Drawing.Point(3, 215);
+            this.ModelviewRadioButton.Name = "ModelviewRadioButton";
+            this.ModelviewRadioButton.Size = new System.Drawing.Size(100, 21);
+            this.ModelviewRadioButton.TabIndex = 49;
+            this.ModelviewRadioButton.TabStop = true;
+            this.ModelviewRadioButton.Text = "Model/View";
+            this.ModelviewRadioButton.UseVisualStyleBackColor = true;
+            this.ModelviewRadioButton.CheckedChanged += new System.EventHandler(this.ModelView_CheckedChanged);
             // 
             // MatrixControl
             // 
@@ -277,7 +277,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.Controls.Add(this.radioButton3);
+            this.Controls.Add(this.ModelviewRadioButton);
             this.Controls.Add(this.ScaleZtextBox);
             this.Controls.Add(this.ScaleYtextBox);
             this.Controls.Add(this.ScaleXtextBox);
@@ -292,14 +292,14 @@
             this.Controls.Add(this.label4);
             this.Controls.Add(this.FartextBox);
             this.Controls.Add(this.NeartextBox);
-            this.Controls.Add(this.radioButton1);
+            this.Controls.Add(this.OrthoRadioButton);
             this.Controls.Add(this.WidthtextBox);
             this.Controls.Add(this.FOVtextBox);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.HeighttextBox);
-            this.Controls.Add(this.radioButton2);
+            this.Controls.Add(this.PerspRadioButton);
             this.Controls.Add(this.FOVtrackBar);
             this.Name = "MatrixControl";
             this.Size = new System.Drawing.Size(200, 392);
@@ -314,14 +314,14 @@
 
         private System.Windows.Forms.TextBox FartextBox;
         private System.Windows.Forms.TextBox NeartextBox;
-        private System.Windows.Forms.RadioButton radioButton1;
+        private System.Windows.Forms.RadioButton OrthoRadioButton;
         private System.Windows.Forms.TextBox WidthtextBox;
         private System.Windows.Forms.TextBox FOVtextBox;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox HeighttextBox;
-        private System.Windows.Forms.RadioButton radioButton2;
+        private System.Windows.Forms.RadioButton PerspRadioButton;
         private System.Windows.Forms.TrackBar FOVtrackBar;
         private System.Windows.Forms.TextBox ScaleZtextBox;
         private System.Windows.Forms.TextBox ScaleYtextBox;
@@ -335,6 +335,6 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.RadioButton radioButton3;
+        private System.Windows.Forms.RadioButton ModelviewRadioButton;
     }
 }

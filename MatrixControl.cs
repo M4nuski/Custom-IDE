@@ -83,14 +83,18 @@ namespace ShaderIDE
         {
             if (Matrix.Column3 == OrthogonalCol3)
             {   
-                //orthogonal projection //todo actual calculation
-                var A = -Matrix.M33;
-                var B = -Matrix.M43;
-                var C = (A - 1.0f) / (A + 1.0f);
-                var zFar = (B / 2.0f) * ((1.0f / C) - 1.0f);
-                var zNear = zFar * C;
+                //orthogonal projection
+                var A = -Matrix.M43;
+                var B = -Matrix.M33;
+                var C = (A + 1.0f) / (A - 1.0f);
+                var zFar = (2.0f / B) * 1/((1.0f - (1.0f / C)));
+                var zNear = zFar / C;
                 NeartextBox.Text = zNear.ToString("F2");
                 FartextBox.Text = zFar.ToString("F2");
+                //Width and Height for symetrical orthogonal matrices only
+                WidthtextBox.Text = (2.0f * (1.0f / Matrix.M11)).ToString("F2");
+                HeighttextBox.Text = (2.0f * (1.0f / Matrix.M22)).ToString("F2");
+                OrthoRadioButton.Checked = true;
             }
             else if (Matrix.Column3 == PerspectiveCol3)
             {   
@@ -107,12 +111,12 @@ namespace ShaderIDE
                 var zNear = zFar * C;
                 NeartextBox.Text = zNear.ToString("F2");
                 FartextBox.Text = zFar.ToString("F2");
-
+                PerspRadioButton.Checked = true;
                 FOVtrackBar_Scroll(this, new EventArgs());
             }
-            //else
-            //{   
-                //not a projection //todo fill out only if both perspectives fail
+            else
+            {   
+                //not a projection //todo rotation
                 var pos = Matrix.ExtractTranslation();
                 PosXtextBox.Text = pos.X.ToString("F2");
                 PosYtextBox.Text = pos.Y.ToString("F2");
@@ -127,7 +131,8 @@ namespace ShaderIDE
                 RotXtextBox.Text = ang.X.ToString("F2");
                 RotYtextBox.Text = ang.Y.ToString("F2");
                 RotZtextBox.Text = ang.Z.ToString("F2");
-            //}
+                ModelviewRadioButton.Checked = true;
+            }
         }
     }
 }
