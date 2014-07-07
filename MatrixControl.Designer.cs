@@ -42,9 +42,6 @@
             this.ScaleZtextBox = new System.Windows.Forms.TextBox();
             this.ScaleYtextBox = new System.Windows.Forms.TextBox();
             this.ScaleXtextBox = new System.Windows.Forms.TextBox();
-            this.RotZtextBox = new System.Windows.Forms.TextBox();
-            this.RotYtextBox = new System.Windows.Forms.TextBox();
-            this.RotXtextBox = new System.Windows.Forms.TextBox();
             this.PosZtextBox = new System.Windows.Forms.TextBox();
             this.PosYtextBox = new System.Windows.Forms.TextBox();
             this.PosXtextBox = new System.Windows.Forms.TextBox();
@@ -52,7 +49,9 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.ModelviewRadioButton = new System.Windows.Forms.RadioButton();
+            this.RotationBox = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.FOVtrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RotationBox)).BeginInit();
             this.SuspendLayout();
             // 
             // FartextBox
@@ -162,7 +161,7 @@
             // 
             // ScaleZtextBox
             // 
-            this.ScaleZtextBox.Location = new System.Drawing.Point(134, 355);
+            this.ScaleZtextBox.Location = new System.Drawing.Point(67, 317);
             this.ScaleZtextBox.Name = "ScaleZtextBox";
             this.ScaleZtextBox.Size = new System.Drawing.Size(49, 22);
             this.ScaleZtextBox.TabIndex = 48;
@@ -170,7 +169,7 @@
             // 
             // ScaleYtextBox
             // 
-            this.ScaleYtextBox.Location = new System.Drawing.Point(79, 355);
+            this.ScaleYtextBox.Location = new System.Drawing.Point(68, 289);
             this.ScaleYtextBox.Name = "ScaleYtextBox";
             this.ScaleYtextBox.Size = new System.Drawing.Size(49, 22);
             this.ScaleYtextBox.TabIndex = 47;
@@ -178,39 +177,15 @@
             // 
             // ScaleXtextBox
             // 
-            this.ScaleXtextBox.Location = new System.Drawing.Point(24, 355);
+            this.ScaleXtextBox.Location = new System.Drawing.Point(68, 261);
             this.ScaleXtextBox.Name = "ScaleXtextBox";
             this.ScaleXtextBox.Size = new System.Drawing.Size(49, 22);
             this.ScaleXtextBox.TabIndex = 46;
             this.ScaleXtextBox.Text = "1.0";
             // 
-            // RotZtextBox
-            // 
-            this.RotZtextBox.Location = new System.Drawing.Point(134, 308);
-            this.RotZtextBox.Name = "RotZtextBox";
-            this.RotZtextBox.Size = new System.Drawing.Size(49, 22);
-            this.RotZtextBox.TabIndex = 45;
-            this.RotZtextBox.Text = "0.0";
-            // 
-            // RotYtextBox
-            // 
-            this.RotYtextBox.Location = new System.Drawing.Point(79, 308);
-            this.RotYtextBox.Name = "RotYtextBox";
-            this.RotYtextBox.Size = new System.Drawing.Size(49, 22);
-            this.RotYtextBox.TabIndex = 44;
-            this.RotYtextBox.Text = "0.0";
-            // 
-            // RotXtextBox
-            // 
-            this.RotXtextBox.Location = new System.Drawing.Point(24, 308);
-            this.RotXtextBox.Name = "RotXtextBox";
-            this.RotXtextBox.Size = new System.Drawing.Size(49, 22);
-            this.RotXtextBox.TabIndex = 43;
-            this.RotXtextBox.Text = "0.0";
-            // 
             // PosZtextBox
             // 
-            this.PosZtextBox.Location = new System.Drawing.Point(134, 260);
+            this.PosZtextBox.Location = new System.Drawing.Point(12, 317);
             this.PosZtextBox.Name = "PosZtextBox";
             this.PosZtextBox.Size = new System.Drawing.Size(49, 22);
             this.PosZtextBox.TabIndex = 42;
@@ -218,7 +193,7 @@
             // 
             // PosYtextBox
             // 
-            this.PosYtextBox.Location = new System.Drawing.Point(79, 260);
+            this.PosYtextBox.Location = new System.Drawing.Point(12, 289);
             this.PosYtextBox.Name = "PosYtextBox";
             this.PosYtextBox.Size = new System.Drawing.Size(49, 22);
             this.PosYtextBox.TabIndex = 41;
@@ -226,7 +201,7 @@
             // 
             // PosXtextBox
             // 
-            this.PosXtextBox.Location = new System.Drawing.Point(24, 260);
+            this.PosXtextBox.Location = new System.Drawing.Point(12, 261);
             this.PosXtextBox.Name = "PosXtextBox";
             this.PosXtextBox.Size = new System.Drawing.Size(49, 22);
             this.PosXtextBox.TabIndex = 40;
@@ -235,7 +210,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(21, 335);
+            this.label6.Location = new System.Drawing.Point(73, 241);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(43, 17);
             this.label6.TabIndex = 39;
@@ -244,16 +219,16 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(21, 287);
+            this.label5.Location = new System.Drawing.Point(122, 241);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(61, 17);
+            this.label5.Size = new System.Drawing.Size(65, 17);
             this.label5.TabIndex = 38;
-            this.label5.Text = "Rotation";
+            this.label5.Text = "Rotation ";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(21, 239);
+            this.label4.Location = new System.Drawing.Point(9, 240);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(58, 17);
             this.label4.TabIndex = 37;
@@ -271,19 +246,33 @@
             this.ModelviewRadioButton.UseVisualStyleBackColor = true;
             this.ModelviewRadioButton.CheckedChanged += new System.EventHandler(this.ModelView_CheckedChanged);
             // 
+            // RotationBox
+            // 
+            this.RotationBox.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.RotationBox.InitialImage = null;
+            this.RotationBox.Location = new System.Drawing.Point(125, 261);
+            this.RotationBox.Margin = new System.Windows.Forms.Padding(0, 4, 0, 0);
+            this.RotationBox.Name = "RotationBox";
+            this.RotationBox.Size = new System.Drawing.Size(48, 48);
+            this.RotationBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.RotationBox.TabIndex = 50;
+            this.RotationBox.TabStop = false;
+            this.RotationBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDown);
+            this.RotationBox.MouseLeave += new System.EventHandler(this.pictureBox1_MouseLeave);
+            this.RotationBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseMove);
+            this.RotationBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseUp);
+            // 
             // MatrixControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.Controls.Add(this.RotationBox);
             this.Controls.Add(this.ModelviewRadioButton);
             this.Controls.Add(this.ScaleZtextBox);
             this.Controls.Add(this.ScaleYtextBox);
             this.Controls.Add(this.ScaleXtextBox);
-            this.Controls.Add(this.RotZtextBox);
-            this.Controls.Add(this.RotYtextBox);
-            this.Controls.Add(this.RotXtextBox);
             this.Controls.Add(this.PosZtextBox);
             this.Controls.Add(this.PosYtextBox);
             this.Controls.Add(this.PosXtextBox);
@@ -301,10 +290,12 @@
             this.Controls.Add(this.HeighttextBox);
             this.Controls.Add(this.PerspRadioButton);
             this.Controls.Add(this.FOVtrackBar);
+            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
             this.Name = "MatrixControl";
-            this.Size = new System.Drawing.Size(200, 392);
+            this.Size = new System.Drawing.Size(188, 349);
             this.Load += new System.EventHandler(this.MatrixControl_Load);
             ((System.ComponentModel.ISupportInitialize)(this.FOVtrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RotationBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -326,9 +317,6 @@
         private System.Windows.Forms.TextBox ScaleZtextBox;
         private System.Windows.Forms.TextBox ScaleYtextBox;
         private System.Windows.Forms.TextBox ScaleXtextBox;
-        private System.Windows.Forms.TextBox RotZtextBox;
-        private System.Windows.Forms.TextBox RotYtextBox;
-        private System.Windows.Forms.TextBox RotXtextBox;
         private System.Windows.Forms.TextBox PosZtextBox;
         private System.Windows.Forms.TextBox PosYtextBox;
         private System.Windows.Forms.TextBox PosXtextBox;
@@ -336,5 +324,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.RadioButton ModelviewRadioButton;
+        private System.Windows.Forms.PictureBox RotationBox;
     }
 }

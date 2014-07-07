@@ -555,6 +555,9 @@ namespace ShaderIDE
 
         private void listBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
+
+            matrixControl1.Enabled = false;
+            propertyGrid2.Enabled = false;
             UniformData[listBox2.SelectedIndex].EditProperty();
         }
         #endregion

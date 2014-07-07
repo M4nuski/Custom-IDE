@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -14,7 +15,6 @@ using OpenTK.Graphics.OpenGL;
 
 namespace ShaderIDE
 {
-    //Interface for Uniform Property
     public interface IUniformProperty
     {
         string Name { get; set; }
@@ -61,23 +61,15 @@ namespace ShaderIDE
     }
     public class oMat2
     {
-        public float M00 { get; set; }
-        public float M01 { get; set; }
-        public float M10 { get; set; }
-        public float M11 { get; set; }
+        public Matrix2 matrix { get; set; }
     }
     public class oMat3
     {
-        public oVec3 Row0 { get; set; }
-        public oVec3 Row1 { get; set; }
-        public oVec3 Row2 { get; set; }
+        public Matrix3 matrix { get; set; }
     }
     public class oMat4
     {
-        public oVec4 Row0 { get; set; }
-        public oVec4 Row1 { get; set; }
-        public oVec4 Row2 { get; set; }
-        public oVec4 Row3 { get; set; }
+        public Matrix4 matrix { get; set; }
     }
     #endregion
 
@@ -119,10 +111,16 @@ namespace ShaderIDE
             Data.Add(new Mat4UniformProperty("Mat4_0(empty)", ctrl, new Matrix4()));
             Data.Add(new Mat4UniformProperty("Mat4_1(identity)", ctrl, Matrix4.Identity));
             Data.Add(new Mat4UniformProperty("Mat4_2(translate)", ctrl,Matrix4.CreateTranslation(0.1f, 0.2f, 0.3f)));
-            Data.Add(new Mat4UniformProperty("Mat4_3(rotateZ)", ctrl, Matrix4.CreateRotationZ(3.1415f)));
-            Data.Add(new Mat4UniformProperty("Mat4_4(scale.5)", ctrl, Matrix4.CreateScale(0.5f)));
-            Data.Add(new Mat4UniformProperty("Mat4_5(ortho)", ctrl, Matrix4.CreateOrthographic(640,480,1,256)));
-            Data.Add(new Mat4UniformProperty("Mat4_6(45degpersp)", ctrl, Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 640/480,1,256)));
+            Data.Add(new Mat4UniformProperty("Mat4_3(rotateX)", ctrl, Matrix4.CreateRotationX(0.41f)));
+            Data.Add(new Mat4UniformProperty("Mat4_4(rotateY)", ctrl, Matrix4.CreateRotationY(0.42f)));
+            Data.Add(new Mat4UniformProperty("Mat4_5(rotateZ)", ctrl, Matrix4.CreateRotationZ(0.43f)));
+            var mBuffer = Matrix4.CreateRotationZ(.43f);
+            mBuffer *= Matrix4.CreateRotationX(0.41f);
+            mBuffer *= Matrix4.CreateRotationY(0.42f);
+            Data.Add(new Mat4UniformProperty("Mat4_6(rotateZXY)", ctrl, mBuffer));
+            Data.Add(new Mat4UniformProperty("Mat4_7(scale.5)", ctrl, Matrix4.CreateScale(0.5f)));
+            Data.Add(new Mat4UniformProperty("Mat4_8(ortho)", ctrl, Matrix4.CreateOrthographic(640,480,1,256)));
+            Data.Add(new Mat4UniformProperty("Mat4_9(45degpersp)", ctrl, Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 640/480,1,256)));
             return Data;
         }
     }
@@ -145,6 +143,7 @@ namespace ShaderIDE
         public void EditProperty()
         {
             Grid.SelectedObject = Value;
+            Grid.Enabled = true;
         }
 
         public void ToOpenGL(int UniformLocation)
@@ -169,6 +168,7 @@ namespace ShaderIDE
         public void EditProperty()
         {
             Grid.SelectedObject = Value;
+            Grid.Enabled = true;
         }
 
         public void ToOpenGL(int UniformLocation)
@@ -193,6 +193,7 @@ namespace ShaderIDE
         public void EditProperty()
         {
             Grid.SelectedObject = Value;
+            Grid.Enabled = true;
         }
 
         public void ToOpenGL(int UniformLocation)
@@ -221,6 +222,7 @@ namespace ShaderIDE
         public void EditProperty()
         {
             Grid.SelectedObject = Value;
+            Grid.Enabled = true;
         }
 
         public void ToOpenGL(int UniformLocation)
@@ -250,6 +252,7 @@ namespace ShaderIDE
         public void EditProperty()
         {
             Grid.SelectedObject = Value;
+            Grid.Enabled = true;
         }
 
         public void ToOpenGL(int UniformLocation)
@@ -280,6 +283,7 @@ namespace ShaderIDE
         public void EditProperty()
         {
             Grid.SelectedObject = Value;
+            Grid.Enabled = true;
         }
 
         public void ToOpenGL(int UniformLocation)
@@ -304,6 +308,7 @@ namespace ShaderIDE
         public void EditProperty()
         {
             Grid.SelectedObject = Value;
+            Grid.Enabled = true;
         }
 
         public void ToOpenGL(int UniformLocation)
@@ -315,28 +320,29 @@ namespace ShaderIDE
     public class Mat4UniformProperty : IUniformProperty
     {
         private readonly MatrixControl Grid;
-        private Matrix4 Value;
+        private oMat4 Value;
         public string Name { get; set; }
 
         public Mat4UniformProperty(string name, MatrixControl grid, Matrix4 defaultValue)
         {
             Name = name;
             Grid = grid;
-            Value = defaultValue;
+            Value = new oMat4
+            {
+                matrix = defaultValue
+            };
         }
 
         public void EditProperty()
         {
-            Grid.SelectMatrix4(ref Value);
+            Grid.SelectMatrix4(Value);
+            Grid.Enabled = true;
         }
 
         public void ToOpenGL(int UniformLocation)
         {
-            var Mat4 = new Matrix4(Value.M11, Value.M12, Value.M13, Value.M14,
-                Value.M21, Value.M22, Value.M23, Value.M24,
-                Value.M31, Value.M32, Value.M33, Value.M34,
-                Value.M41, Value.M42, Value.M43, Value.M44);
-            GL.UniformMatrix4(UniformLocation, false, ref Mat4);
+            var matrix4 = Value.matrix;
+            GL.UniformMatrix4(UniformLocation, false, ref matrix4);
         }
     }
     #endregion
