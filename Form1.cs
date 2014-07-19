@@ -548,10 +548,6 @@ namespace ShaderIDE
                 listBox2.Items.Add(uniformProperty.Name);
             }
         }
-        private void trackBar1_Scroll(object sender, EventArgs e)
-        {
-            textBoxFOV.Text = trackBar1.Value.ToString("F1");
-        }
 
         private void listBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
