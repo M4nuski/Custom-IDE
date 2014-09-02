@@ -50,6 +50,9 @@
             this.label4 = new System.Windows.Forms.Label();
             this.ModelviewRadioButton = new System.Windows.Forms.RadioButton();
             this.RotationBox = new System.Windows.Forms.PictureBox();
+            this.ZeroButton = new System.Windows.Forms.Button();
+            this.ARtextBox = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.FOVtrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.RotationBox)).BeginInit();
             this.SuspendLayout();
@@ -61,6 +64,7 @@
             this.FartextBox.Size = new System.Drawing.Size(49, 22);
             this.FartextBox.TabIndex = 34;
             this.FartextBox.Text = "256.0";
+            this.FartextBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TextBox_KeyUp);
             // 
             // NeartextBox
             // 
@@ -69,6 +73,7 @@
             this.NeartextBox.Size = new System.Drawing.Size(49, 22);
             this.NeartextBox.TabIndex = 32;
             this.NeartextBox.Text = "1.0";
+            this.NeartextBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TextBox_KeyUp);
             // 
             // OrthoRadioButton
             // 
@@ -79,7 +84,7 @@
             this.OrthoRadioButton.TabIndex = 26;
             this.OrthoRadioButton.Text = "Orthogonal Projection";
             this.OrthoRadioButton.UseVisualStyleBackColor = true;
-            this.OrthoRadioButton.CheckedChanged += new System.EventHandler(this.Ortho_CheckedChanged);
+            this.OrthoRadioButton.Click += new System.EventHandler(this.Ortho_CheckedChanged);
             // 
             // WidthtextBox
             // 
@@ -88,13 +93,15 @@
             this.WidthtextBox.Size = new System.Drawing.Size(49, 22);
             this.WidthtextBox.TabIndex = 29;
             this.WidthtextBox.Text = "1.0";
+            this.WidthtextBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TextBox_KeyUp);
             // 
             // FOVtextBox
             // 
             this.FOVtextBox.Enabled = false;
-            this.FOVtextBox.Location = new System.Drawing.Point(65, 30);
+            this.FOVtextBox.Location = new System.Drawing.Point(46, 27);
             this.FOVtextBox.Name = "FOVtextBox";
-            this.FOVtextBox.Size = new System.Drawing.Size(64, 22);
+            this.FOVtextBox.ReadOnly = true;
+            this.FOVtextBox.Size = new System.Drawing.Size(49, 22);
             this.FOVtextBox.TabIndex = 36;
             this.FOVtextBox.Text = "45.0";
             // 
@@ -119,7 +126,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(21, 30);
+            this.label3.Location = new System.Drawing.Point(9, 29);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(36, 17);
             this.label3.TabIndex = 31;
@@ -132,6 +139,7 @@
             this.HeighttextBox.Size = new System.Drawing.Size(49, 22);
             this.HeighttextBox.TabIndex = 30;
             this.HeighttextBox.Text = "1.0";
+            this.HeighttextBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TextBox_KeyUp);
             // 
             // PerspRadioButton
             // 
@@ -144,16 +152,16 @@
             this.PerspRadioButton.TabStop = true;
             this.PerspRadioButton.Text = "Perspective Projection";
             this.PerspRadioButton.UseVisualStyleBackColor = true;
-            this.PerspRadioButton.CheckedChanged += new System.EventHandler(this.Persp_CheckedChanged);
+            this.PerspRadioButton.Click += new System.EventHandler(this.Persp_CheckedChanged);
             // 
             // FOVtrackBar
             // 
             this.FOVtrackBar.AutoSize = false;
             this.FOVtrackBar.Location = new System.Drawing.Point(3, 58);
-            this.FOVtrackBar.Maximum = 359;
+            this.FOVtrackBar.Maximum = 179;
             this.FOVtrackBar.Minimum = 1;
             this.FOVtrackBar.Name = "FOVtrackBar";
-            this.FOVtrackBar.Size = new System.Drawing.Size(136, 32);
+            this.FOVtrackBar.Size = new System.Drawing.Size(183, 32);
             this.FOVtrackBar.TabIndex = 28;
             this.FOVtrackBar.TickFrequency = 10;
             this.FOVtrackBar.Value = 45;
@@ -166,6 +174,7 @@
             this.ScaleZtextBox.Size = new System.Drawing.Size(49, 22);
             this.ScaleZtextBox.TabIndex = 48;
             this.ScaleZtextBox.Text = "1.0";
+            this.ScaleZtextBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TextBox_KeyUp);
             // 
             // ScaleYtextBox
             // 
@@ -174,6 +183,7 @@
             this.ScaleYtextBox.Size = new System.Drawing.Size(49, 22);
             this.ScaleYtextBox.TabIndex = 47;
             this.ScaleYtextBox.Text = "1.0";
+            this.ScaleYtextBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TextBox_KeyUp);
             // 
             // ScaleXtextBox
             // 
@@ -182,6 +192,7 @@
             this.ScaleXtextBox.Size = new System.Drawing.Size(49, 22);
             this.ScaleXtextBox.TabIndex = 46;
             this.ScaleXtextBox.Text = "1.0";
+            this.ScaleXtextBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TextBox_KeyUp);
             // 
             // PosZtextBox
             // 
@@ -190,6 +201,7 @@
             this.PosZtextBox.Size = new System.Drawing.Size(49, 22);
             this.PosZtextBox.TabIndex = 42;
             this.PosZtextBox.Text = "1.0";
+            this.PosZtextBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TextBox_KeyUp);
             // 
             // PosYtextBox
             // 
@@ -198,6 +210,7 @@
             this.PosYtextBox.Size = new System.Drawing.Size(49, 22);
             this.PosYtextBox.TabIndex = 41;
             this.PosYtextBox.Text = "0.0";
+            this.PosYtextBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TextBox_KeyUp);
             // 
             // PosXtextBox
             // 
@@ -206,6 +219,7 @@
             this.PosXtextBox.Size = new System.Drawing.Size(49, 22);
             this.PosXtextBox.TabIndex = 40;
             this.PosXtextBox.Text = "0.0";
+            this.PosXtextBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TextBox_KeyUp);
             // 
             // label6
             // 
@@ -244,7 +258,7 @@
             this.ModelviewRadioButton.TabStop = true;
             this.ModelviewRadioButton.Text = "Model/View";
             this.ModelviewRadioButton.UseVisualStyleBackColor = true;
-            this.ModelviewRadioButton.CheckedChanged += new System.EventHandler(this.ModelView_CheckedChanged);
+            this.ModelviewRadioButton.Click += new System.EventHandler(this.ModelView_CheckedChanged);
             // 
             // RotationBox
             // 
@@ -257,10 +271,38 @@
             this.RotationBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.RotationBox.TabIndex = 50;
             this.RotationBox.TabStop = false;
-            this.RotationBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDown);
-            this.RotationBox.MouseLeave += new System.EventHandler(this.pictureBox1_MouseLeave);
-            this.RotationBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseMove);
-            this.RotationBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseUp);
+            this.RotationBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RotationBox_MouseDown);
+            this.RotationBox.MouseLeave += new System.EventHandler(this.RotationBox_MouseLeave);
+            this.RotationBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.RotationBox_MouseMove);
+            this.RotationBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.RotationBox_MouseUp);
+            // 
+            // ZeroButton
+            // 
+            this.ZeroButton.Location = new System.Drawing.Point(125, 317);
+            this.ZeroButton.Name = "ZeroButton";
+            this.ZeroButton.Size = new System.Drawing.Size(48, 22);
+            this.ZeroButton.TabIndex = 51;
+            this.ZeroButton.Text = "Zero";
+            this.ZeroButton.UseVisualStyleBackColor = true;
+            this.ZeroButton.Click += new System.EventHandler(this.ZeroButton_Click);
+            // 
+            // ARtextBox
+            // 
+            this.ARtextBox.Location = new System.Drawing.Point(125, 27);
+            this.ARtextBox.Name = "ARtextBox";
+            this.ARtextBox.Size = new System.Drawing.Size(49, 22);
+            this.ARtextBox.TabIndex = 52;
+            this.ARtextBox.Text = "1.0";
+            this.ARtextBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TextBox_KeyUp);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(99, 29);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(27, 17);
+            this.label1.TabIndex = 53;
+            this.label1.Text = "AR";
             // 
             // MatrixControl
             // 
@@ -268,6 +310,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.ARtextBox);
+            this.Controls.Add(this.ZeroButton);
             this.Controls.Add(this.RotationBox);
             this.Controls.Add(this.ModelviewRadioButton);
             this.Controls.Add(this.ScaleZtextBox);
@@ -292,7 +337,7 @@
             this.Controls.Add(this.FOVtrackBar);
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
             this.Name = "MatrixControl";
-            this.Size = new System.Drawing.Size(188, 349);
+            this.Size = new System.Drawing.Size(185, 350);
             this.Load += new System.EventHandler(this.MatrixControl_Load);
             ((System.ComponentModel.ISupportInitialize)(this.FOVtrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.RotationBox)).EndInit();
@@ -325,5 +370,8 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.RadioButton ModelviewRadioButton;
         private System.Windows.Forms.PictureBox RotationBox;
+        private System.Windows.Forms.Button ZeroButton;
+        private System.Windows.Forms.TextBox ARtextBox;
+        private System.Windows.Forms.Label label1;
     }
 }

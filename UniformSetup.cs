@@ -15,6 +15,18 @@ using OpenTK.Graphics.OpenGL;
 
 namespace ShaderIDE
 {
+
+    public enum MatrixType
+    {
+        Zero, Ortho, Persp, ModelView
+    }
+    public class MatrixData
+    {
+        public MatrixType Type = MatrixType.Zero;
+        public Matrix4 Rotation;
+        public Vector3 Scale, Translation;
+        public float FieldOfView, AspectRatio, Width, Height, ZFar, ZNear;
+    }
     public interface IUniformProperty
     {
         string Name { get; set; }
@@ -28,7 +40,6 @@ namespace ShaderIDE
     {
         public bool Bool { get; set; }
     }
-
     public class oInt
     {
         public int Int { get; set; }
@@ -59,18 +70,122 @@ namespace ShaderIDE
     {
         public Color color { get; set; }
     }
-    public class oMat2
+
+    public interface oMat
+    {            
+        MatrixData ExtractData();
+        void CreateMatrix(MatrixData Data);
+    }
+    public class oMat2 : oMat
     {
         public Matrix2 matrix { get; set; }
+        public void zero()
+        {
+            matrix = Matrix2.Zero;
+        }
+        public void CreateMatrix(MatrixData Data)
+        {
+            //todo implement
+        }
+        public MatrixData ExtractData()
+        {
+            //todo implement    
+            return new MatrixData();
+        }
     }
-    public class oMat3
+    public class oMat3 : oMat
     {
         public Matrix3 matrix { get; set; }
+        public void zero()
+        {
+            matrix = Matrix3.Zero;
+        }
+        public void CreateMatrix(MatrixData Data)
+        {
+            //todo implement
+        }
+        public MatrixData ExtractData()
+        {
+            //todo implement    
+            return new MatrixData();
+        }
     }
-    public class oMat4
+    public class oMat4 : oMat
     {
+        private Vector4 OrthogonalCol3 = new Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+        private Vector4 PerspectiveCol3 = new Vector4(0.0f, 0.0f, -1.0f, 0.0f);
+
         public Matrix4 matrix { get; set; }
+        public void CreateMatrix(MatrixData Data)
+        {
+            if (Data.Type == MatrixType.Zero)
+            {
+                matrix = Matrix4.Zero;
+            }
+            else if (Data.Type == MatrixType.Persp)
+            {
+                matrix = Matrix4.CreatePerspectiveFieldOfView(
+                    MathHelper.DegreesToRadians(Data.FieldOfView), Data.AspectRatio, Data.ZNear, Data.ZFar);
+            }
+            else if (Data.Type == MatrixType.Ortho)
+            {
+                matrix = Matrix4.CreateOrthographic(
+                    Data.Width, Data.Height, Data.ZNear, Data.ZFar);
+            }
+            else if (Data.Type == MatrixType.ModelView)
+            {
+                matrix = Matrix4.Identity;
+                matrix *= Matrix4.CreateScale(Data.Scale);
+                matrix *= Data.Rotation;
+                matrix *= Matrix4.CreateTranslation(Data.Translation);
+            }
+        }
+
+        public MatrixData ExtractData()
+        {
+            var matrixData = new MatrixData();
+
+            var A = -matrix.M33;
+            var B = -matrix.M43;
+
+            if ((matrix.Column3 == OrthogonalCol3) & (Math.Abs(matrix.M41) < float.Epsilon) & (Math.Abs(matrix.M42) < float.Epsilon) & (Math.Abs(B) > float.Epsilon))
+            {
+                matrixData.Type = MatrixType.Ortho;
+                var C = (B + 1.0f) / (B - 1.0f);
+                matrixData.ZFar = (2.0f / A) * 1 / ((1.0f - (1.0f / C)));
+                matrixData.ZNear = matrixData.ZFar / C;
+
+                //Width and Height for symetrical orthogonal matrices only
+                matrixData.Width = 2.0f * (1.0f / matrix.M11);
+                matrixData.Height = 2.0f * (1.0f / matrix.M22);
+            }
+            else if (matrix.Column3 == PerspectiveCol3)
+            {
+                matrixData.Type = MatrixType.Persp;
+                // M11 = Focal Length = 1 / tan(FOV / 2)
+                var FocalLength = matrix.M11;
+                // M22 = FL / 1/AR
+                // AR = W / H
+                matrixData.AspectRatio = matrix.M22 / FocalLength;
+                matrixData.FieldOfView = (float)Math.Atan(1.0f / (FocalLength * matrixData.AspectRatio)) * 2.0f;
+
+                var C = (A - 1.0f) / (A + 1.0f);
+                matrixData.ZFar = (B / 2.0f) * ((1.0f / C) - 1.0f);
+                matrixData.ZNear = matrixData.ZFar * C;
+            }
+            else if (matrix != Matrix4.Zero)
+            {
+                matrixData.Type = MatrixType.ModelView;
+                matrixData.Translation = matrix.ExtractTranslation();
+                matrixData.Scale = matrix.ExtractScale();
+                matrixData.Rotation = matrix.ClearScale().ClearTranslation();
+
+                if (matrixData.Rotation == Matrix4.Zero) matrixData.Rotation = Matrix4.Identity;
+            }
+            return matrixData;
+        }
     }
+
     #endregion
 
     public static class UniformPropertyHelper
@@ -120,7 +235,7 @@ namespace ShaderIDE
             Data.Add(new Mat4UniformProperty("Mat4_6(rotateZXY)", ctrl, mBuffer));
             Data.Add(new Mat4UniformProperty("Mat4_7(scale.5)", ctrl, Matrix4.CreateScale(0.5f)));
             Data.Add(new Mat4UniformProperty("Mat4_8(ortho)", ctrl, Matrix4.CreateOrthographic(640,480,1,256)));
-            Data.Add(new Mat4UniformProperty("Mat4_9(45degpersp)", ctrl, Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 640/480,1,256)));
+            Data.Add(new Mat4UniformProperty("Mat4_9(45degpersp)", ctrl, Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(75), 1920.0f/1080.0f ,1 ,256)));
             return Data;
         }
     }
@@ -335,7 +450,7 @@ namespace ShaderIDE
 
         public void EditProperty()
         {
-            Grid.SelectMatrix4(Value);
+            Grid.SelectMatrix(Value);
             Grid.Enabled = true;
         }
 
