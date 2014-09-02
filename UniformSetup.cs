@@ -9,6 +9,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -76,23 +77,6 @@ namespace ShaderIDE
         MatrixData ExtractData();
         void CreateMatrix(MatrixData Data);
     }
-    public class oMat2 : oMat
-    {
-        public Matrix2 matrix { get; set; }
-        public void zero()
-        {
-            matrix = Matrix2.Zero;
-        }
-        public void CreateMatrix(MatrixData Data)
-        {
-            //todo implement
-        }
-        public MatrixData ExtractData()
-        {
-            //todo implement    
-            return new MatrixData();
-        }
-    }
     public class oMat3 : oMat
     {
         public Matrix3 matrix { get; set; }
@@ -102,12 +86,42 @@ namespace ShaderIDE
         }
         public void CreateMatrix(MatrixData Data)
         {
-            //todo implement
+            if (Data.Type == MatrixType.Zero)
+            {
+                matrix = Matrix3.Zero;
+            }
+            else if (Data.Type == MatrixType.Persp)
+            {
+                matrix = Matrix3.Identity;
+            }
+            else if (Data.Type == MatrixType.Ortho)
+            {
+                matrix = Matrix3.Identity;
+            }
+            else if (Data.Type == MatrixType.ModelView)
+            {
+                matrix = Matrix3.Identity;
+                matrix *= Matrix3.CreateScale(Data.Scale);
+                matrix *= new Matrix3(Data.Rotation);
+            }
         }
         public MatrixData ExtractData()
         {
-            //todo implement    
-            return new MatrixData();
+            var matrixData = new MatrixData();
+            if (matrix == Matrix3.Zero)
+            {
+                matrixData.Type = MatrixType.Zero;
+            }
+            else
+            {
+                matrixData.Type = MatrixType.ModelView;
+                matrixData.Translation = new Vector3(0,0,0);
+                matrixData.Scale = matrix.ExtractScale();
+                var m3Buffer = matrix.ClearScale();
+                matrixData.Rotation = new Matrix4(new Vector4(m3Buffer.Row0, 0), new Vector4(m3Buffer.Row1, 0), new Vector4(m3Buffer.Row2, 0), new Vector4(0));
+                if (matrixData.Rotation == Matrix4.Zero) matrixData.Rotation = Matrix4.Identity;
+            }
+            return matrixData;
         }
     }
     public class oMat4 : oMat
@@ -223,16 +237,27 @@ namespace ShaderIDE
             Data.Add(new ColorUniformProperty("Color_2", grid, Color.Green));
             Data.Add(new ColorUniformProperty("Color_3", grid, Color.Blue));
 
+
+            Data.Add(new Mat3UniformProperty("Mat3_0(empty)", ctrl, new Matrix3()));
+            Data.Add(new Mat3UniformProperty("Mat3_1(identity)", ctrl, Matrix3.Identity));
+            Data.Add(new Mat3UniformProperty("Mat3_2(scale)", ctrl, Matrix3.CreateScale(1.1f, 2.2f, 3.3f)));
+            Data.Add(new Mat3UniformProperty("Mat3_3(rotation)", ctrl, Matrix3.CreateFromAxisAngle(new Vector3(1.0f, 1.0f, 1.0f), 45)));
+            var mBuffer3 = Matrix3.CreateRotationZ(.43f);
+            mBuffer3 *= Matrix3.CreateRotationX(0.41f);
+            mBuffer3 *= Matrix3.CreateRotationY(0.42f);
+            mBuffer3 *= Matrix3.CreateScale(1.1f, 1.2f, 1.3f);
+            Data.Add(new Mat3UniformProperty("Mat4_4(mix)", ctrl,  mBuffer3));
+
             Data.Add(new Mat4UniformProperty("Mat4_0(empty)", ctrl, new Matrix4()));
             Data.Add(new Mat4UniformProperty("Mat4_1(identity)", ctrl, Matrix4.Identity));
             Data.Add(new Mat4UniformProperty("Mat4_2(translate)", ctrl,Matrix4.CreateTranslation(0.1f, 0.2f, 0.3f)));
             Data.Add(new Mat4UniformProperty("Mat4_3(rotateX)", ctrl, Matrix4.CreateRotationX(0.41f)));
             Data.Add(new Mat4UniformProperty("Mat4_4(rotateY)", ctrl, Matrix4.CreateRotationY(0.42f)));
             Data.Add(new Mat4UniformProperty("Mat4_5(rotateZ)", ctrl, Matrix4.CreateRotationZ(0.43f)));
-            var mBuffer = Matrix4.CreateRotationZ(.43f);
-            mBuffer *= Matrix4.CreateRotationX(0.41f);
-            mBuffer *= Matrix4.CreateRotationY(0.42f);
-            Data.Add(new Mat4UniformProperty("Mat4_6(rotateZXY)", ctrl, mBuffer));
+            var mBuffer4 = Matrix4.CreateRotationZ(.43f);
+            mBuffer4 *= Matrix4.CreateRotationX(0.41f);
+            mBuffer4 *= Matrix4.CreateRotationY(0.42f);
+            Data.Add(new Mat4UniformProperty("Mat4_6(rotateZXY)", ctrl, mBuffer4));
             Data.Add(new Mat4UniformProperty("Mat4_7(scale.5)", ctrl, Matrix4.CreateScale(0.5f)));
             Data.Add(new Mat4UniformProperty("Mat4_8(ortho)", ctrl, Matrix4.CreateOrthographic(640,480,1,256)));
             Data.Add(new Mat4UniformProperty("Mat4_9(45degpersp)", ctrl, Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(75), 1920.0f/1080.0f ,1 ,256)));
@@ -432,6 +457,34 @@ namespace ShaderIDE
         }
     }
 
+    public class Mat3UniformProperty : IUniformProperty
+    {
+        private readonly MatrixControl Grid;
+        private oMat3 Value;
+        public string Name { get; set; }
+
+        public Mat3UniformProperty(string name, MatrixControl grid, Matrix3 defaultValue)
+        {
+            Name = name;
+            Grid = grid;
+            Value = new oMat3
+            {
+                matrix = defaultValue
+            };
+        }
+
+        public void EditProperty()
+        {
+            Grid.SelectMatrix(Value);
+            Grid.Enabled = true;
+        }
+
+        public void ToOpenGL(int UniformLocation)
+        {
+            var matrix3 = Value.matrix;
+            GL.UniformMatrix3(UniformLocation, false, ref matrix3);
+        }
+    }
     public class Mat4UniformProperty : IUniformProperty
     {
         private readonly MatrixControl Grid;
