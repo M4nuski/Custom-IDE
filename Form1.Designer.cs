@@ -67,21 +67,25 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
-            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+            this.ContextPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.panel1 = new System.Windows.Forms.Panel();
             this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.listBox2 = new System.Windows.Forms.ListBox();
-            this.propertyGrid2 = new System.Windows.Forms.PropertyGrid();
-            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.UniformMatrixControl = new ShaderIDE.MatrixControl();
+            this.PropertiesListBox = new System.Windows.Forms.ListBox();
+            this.UniformPropertyGrid = new System.Windows.Forms.PropertyGrid();
+            this.UniformListBox = new System.Windows.Forms.ListBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.editorBox2 = new ShaderIDE.EditorBox();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.editorBox1 = new ShaderIDE.EditorBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.directorySearcher1 = new System.DirectoryServices.DirectorySearcher();
-            this.button2 = new System.Windows.Forms.Button();
-            this.editorBox1 = new ShaderIDE.EditorBox();
-            this.editorBox2 = new ShaderIDE.EditorBox();
-            this.matrixControl1 = new ShaderIDE.MatrixControl();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.button3 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.tabPage4.SuspendLayout();
             this.tabPage5.SuspendLayout();
@@ -390,7 +394,7 @@
             this.tabPage4.BackColor = System.Drawing.SystemColors.Control;
             this.tabPage4.Controls.Add(this.button2);
             this.tabPage4.Controls.Add(this.button1);
-            this.tabPage4.Controls.Add(this.propertyGrid1);
+            this.tabPage4.Controls.Add(this.ContextPropertyGrid);
             this.tabPage4.Controls.Add(this.panel1);
             this.tabPage4.Location = new System.Drawing.Point(4, 27);
             this.tabPage4.Name = "tabPage4";
@@ -398,6 +402,16 @@
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Output";
             this.tabPage4.Click += new System.EventHandler(this.tabPage4_Click);
+            // 
+            // button2
+            // 
+            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.button2.Location = new System.Drawing.Point(222, 510);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(187, 33);
+            this.button2.TabIndex = 21;
+            this.button2.Text = "Load Default Context";
+            this.button2.UseVisualStyleBackColor = true;
             // 
             // button1
             // 
@@ -412,13 +426,13 @@
             // 
             // propertyGrid1
             // 
-            this.propertyGrid1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.ContextPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.propertyGrid1.Location = new System.Drawing.Point(11, 9);
-            this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.PropertySort = System.Windows.Forms.PropertySort.Categorized;
-            this.propertyGrid1.Size = new System.Drawing.Size(398, 495);
-            this.propertyGrid1.TabIndex = 19;
+            this.ContextPropertyGrid.Location = new System.Drawing.Point(11, 9);
+            this.ContextPropertyGrid.Name = "ContextPropertyGrid";
+            this.ContextPropertyGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
+            this.ContextPropertyGrid.Size = new System.Drawing.Size(398, 495);
+            this.ContextPropertyGrid.TabIndex = 19;
             // 
             // panel1
             // 
@@ -433,10 +447,14 @@
             // 
             // tabPage5
             // 
-            this.tabPage5.Controls.Add(this.matrixControl1);
-            this.tabPage5.Controls.Add(this.listBox2);
-            this.tabPage5.Controls.Add(this.propertyGrid2);
-            this.tabPage5.Controls.Add(this.listBox1);
+            this.tabPage5.Controls.Add(this.button3);
+            this.tabPage5.Controls.Add(this.label3);
+            this.tabPage5.Controls.Add(this.label2);
+            this.tabPage5.Controls.Add(this.label1);
+            this.tabPage5.Controls.Add(this.UniformMatrixControl);
+            this.tabPage5.Controls.Add(this.PropertiesListBox);
+            this.tabPage5.Controls.Add(this.UniformPropertyGrid);
+            this.tabPage5.Controls.Add(this.UniformListBox);
             this.tabPage5.Location = new System.Drawing.Point(4, 27);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Size = new System.Drawing.Size(985, 550);
@@ -444,13 +462,24 @@
             this.tabPage5.Text = "Uniforms and Data";
             this.tabPage5.UseVisualStyleBackColor = true;
             // 
+            // matrixControl1
+            // 
+            this.UniformMatrixControl.BackColor = System.Drawing.SystemColors.Control;
+            this.UniformMatrixControl.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.UniformMatrixControl.Location = new System.Drawing.Point(522, 126);
+            this.UniformMatrixControl.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
+            this.UniformMatrixControl.Name = "UniformMatrixControl";
+            this.UniformMatrixControl.Size = new System.Drawing.Size(230, 412);
+            this.UniformMatrixControl.TabIndex = 3;
+            this.UniformMatrixControl.Load += new System.EventHandler(this.UniformMatrixControl_Load);
+            // 
             // listBox2
             // 
-            this.listBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.PropertiesListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.listBox2.FormattingEnabled = true;
-            this.listBox2.ItemHeight = 18;
-            this.listBox2.Items.AddRange(new object[] {
+            this.PropertiesListBox.FormattingEnabled = true;
+            this.PropertiesListBox.ItemHeight = 18;
+            this.PropertiesListBox.Items.AddRange(new object[] {
             "Projection Matrix",
             "View Matrix",
             "Model Matrix",
@@ -496,40 +525,40 @@
             "Color1",
             "Color2",
             "Color3"});
-            this.listBox2.Location = new System.Drawing.Point(265, 12);
-            this.listBox2.Name = "listBox2";
-            this.listBox2.Size = new System.Drawing.Size(251, 526);
-            this.listBox2.TabIndex = 2;
-            this.listBox2.SelectedIndexChanged += new System.EventHandler(this.listBox2_SelectedIndexChanged);
+            this.PropertiesListBox.Location = new System.Drawing.Point(265, 30);
+            this.PropertiesListBox.Name = "PropertiesListBox";
+            this.PropertiesListBox.Size = new System.Drawing.Size(251, 508);
+            this.PropertiesListBox.TabIndex = 2;
+            this.PropertiesListBox.SelectedIndexChanged += new System.EventHandler(this.PropertiesListBox_SelectedIndexChanged);
             // 
             // propertyGrid2
             // 
-            this.propertyGrid2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.UniformPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.propertyGrid2.HelpVisible = false;
-            this.propertyGrid2.Location = new System.Drawing.Point(522, 12);
-            this.propertyGrid2.Name = "propertyGrid2";
-            this.propertyGrid2.PropertySort = System.Windows.Forms.PropertySort.NoSort;
-            this.propertyGrid2.Size = new System.Drawing.Size(230, 89);
-            this.propertyGrid2.TabIndex = 1;
-            this.propertyGrid2.ToolbarVisible = false;
+            this.UniformPropertyGrid.HelpVisible = false;
+            this.UniformPropertyGrid.Location = new System.Drawing.Point(522, 30);
+            this.UniformPropertyGrid.Name = "UniformPropertyGrid";
+            this.UniformPropertyGrid.PropertySort = System.Windows.Forms.PropertySort.NoSort;
+            this.UniformPropertyGrid.Size = new System.Drawing.Size(230, 89);
+            this.UniformPropertyGrid.TabIndex = 1;
+            this.UniformPropertyGrid.ToolbarVisible = false;
             // 
             // listBox1
             // 
-            this.listBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.UniformListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.ItemHeight = 18;
-            this.listBox1.Items.AddRange(new object[] {
+            this.UniformListBox.FormattingEnabled = true;
+            this.UniformListBox.ItemHeight = 18;
+            this.UniformListBox.Items.AddRange(new object[] {
             "light_position",
             "light_color",
             "matrix_view",
             "matrix_model"});
-            this.listBox1.Location = new System.Drawing.Point(8, 12);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(251, 526);
-            this.listBox1.TabIndex = 0;
-            this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
+            this.UniformListBox.Location = new System.Drawing.Point(8, 30);
+            this.UniformListBox.Name = "UniformListBox";
+            this.UniformListBox.Size = new System.Drawing.Size(251, 508);
+            this.UniformListBox.TabIndex = 0;
+            this.UniformListBox.SelectedIndexChanged += new System.EventHandler(this.UniformListBox_SelectedIndexChanged);
             // 
             // tabPage2
             // 
@@ -542,6 +571,23 @@
             this.tabPage2.Text = "Fragment Shader";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // editorBox2
+            // 
+            this.editorBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.editorBox2.BackColor = System.Drawing.SystemColors.Window;
+            this.editorBox2.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.editorBox2.ForeColor = System.Drawing.Color.White;
+            this.editorBox2.Location = new System.Drawing.Point(0, 0);
+            this.editorBox2.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            this.editorBox2.Name = "editorBox2";
+            this.editorBox2.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
+            this.editorBox2.Size = new System.Drawing.Size(875, 432);
+            this.editorBox2.TabIndex = 0;
+            this.editorBox2.Text = resources.GetString("editorBox2.Text");
+            this.editorBox2.WordWrap = false;
+            // 
             // tabPage1
             // 
             this.tabPage1.Controls.Add(this.editorBox1);
@@ -552,6 +598,23 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Vertex Shader";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // editorBox1
+            // 
+            this.editorBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.editorBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.editorBox1.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.editorBox1.ForeColor = System.Drawing.Color.White;
+            this.editorBox1.Location = new System.Drawing.Point(0, 0);
+            this.editorBox1.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
+            this.editorBox1.Name = "editorBox1";
+            this.editorBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
+            this.editorBox1.Size = new System.Drawing.Size(875, 260);
+            this.editorBox1.TabIndex = 17;
+            this.editorBox1.Text = resources.GetString("editorBox1.Text");
+            this.editorBox1.WordWrap = false;
             // 
             // tabControl1
             // 
@@ -575,60 +638,41 @@
             this.directorySearcher1.ServerPageTimeLimit = System.TimeSpan.Parse("-00:00:01");
             this.directorySearcher1.ServerTimeLimit = System.TimeSpan.Parse("-00:00:01");
             // 
-            // button2
+            // label1
             // 
-            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button2.Location = new System.Drawing.Point(222, 510);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(187, 33);
-            this.button2.TabIndex = 21;
-            this.button2.Text = "Load Default Context";
-            this.button2.UseVisualStyleBackColor = true;
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(8, 9);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(172, 18);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "Uniforms From Shaders:";
             // 
-            // editorBox1
+            // label2
             // 
-            this.editorBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.editorBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.editorBox1.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.editorBox1.ForeColor = System.Drawing.Color.White;
-            this.editorBox1.Location = new System.Drawing.Point(0, 0);
-            this.editorBox1.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
-            this.editorBox1.Name = "editorBox1";
-            this.editorBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
-            this.editorBox1.Size = new System.Drawing.Size(875, 260);
-            this.editorBox1.TabIndex = 17;
-            this.editorBox1.Text = resources.GetString("editorBox1.Text");
-            this.editorBox1.WordWrap = false;
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(262, 9);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(95, 18);
+            this.label2.TabIndex = 5;
+            this.label2.Text = "Property List:";
             // 
-            // editorBox2
+            // label3
             // 
-            this.editorBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.editorBox2.BackColor = System.Drawing.SystemColors.Window;
-            this.editorBox2.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.editorBox2.ForeColor = System.Drawing.Color.White;
-            this.editorBox2.Location = new System.Drawing.Point(0, 0);
-            this.editorBox2.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            this.editorBox2.Name = "editorBox2";
-            this.editorBox2.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
-            this.editorBox2.Size = new System.Drawing.Size(875, 432);
-            this.editorBox2.TabIndex = 0;
-            this.editorBox2.Text = resources.GetString("editorBox2.Text");
-            this.editorBox2.WordWrap = false;
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(519, 9);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(103, 18);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "Property Data:";
             // 
-            // matrixControl1
+            // button3
             // 
-            this.matrixControl1.BackColor = System.Drawing.SystemColors.Control;
-            this.matrixControl1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.matrixControl1.Location = new System.Drawing.Point(522, 107);
-            this.matrixControl1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
-            this.matrixControl1.Name = "matrixControl1";
-            this.matrixControl1.Size = new System.Drawing.Size(230, 431);
-            this.matrixControl1.TabIndex = 3;
-            this.matrixControl1.Load += new System.EventHandler(this.matrixControl1_Load);
+            this.button3.Location = new System.Drawing.Point(184, 3);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(74, 27);
+            this.button3.TabIndex = 7;
+            this.button3.Text = "Copy->";
+            this.button3.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -650,6 +694,7 @@
             this.menuStrip1.PerformLayout();
             this.tabPage4.ResumeLayout(false);
             this.tabPage5.ResumeLayout(false);
+            this.tabPage5.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
@@ -698,20 +743,24 @@
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.TabPage tabPage4;
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.PropertyGrid propertyGrid1;
+        private System.Windows.Forms.PropertyGrid ContextPropertyGrid;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.TabPage tabPage5;
-        private System.Windows.Forms.ListBox listBox2;
-        private System.Windows.Forms.PropertyGrid propertyGrid2;
-        private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.ListBox PropertiesListBox;
+        private System.Windows.Forms.PropertyGrid UniformPropertyGrid;
+        private System.Windows.Forms.ListBox UniformListBox;
         private System.Windows.Forms.TabPage tabPage2;
         private EditorBox editorBox2;
         private System.Windows.Forms.TabPage tabPage1;
         private EditorBox editorBox1;
         private System.Windows.Forms.TabControl tabControl1;
         private System.DirectoryServices.DirectorySearcher directorySearcher1;
-        private MatrixControl matrixControl1;
+        private MatrixControl UniformMatrixControl;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Label label3;
     }
 }
 

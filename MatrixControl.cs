@@ -11,7 +11,7 @@ namespace ShaderIDE
         private int LastMouseCaptureX, LastMouseCaptureY;
         private bool CapturingXY, CapturingZ;
 
-        private oMat ExternalMatrix;
+        private IBoxMatrix ExternalMatrix;
         private MatrixData ExternalData;
 
         private Pen RedPen, BluePen, GreenPen;
@@ -26,6 +26,7 @@ namespace ShaderIDE
         public MatrixControl()
         {
             InitializeComponent();
+            //TODO update with OnPaint instead of buffering into bitmap
             RotationBox.Image = new Bitmap(64, 64);
             RedPen = new Pen(Color.Red, 3.0f);
             GreenPen = new Pen(Color.Lime, 3.0f);
@@ -122,7 +123,7 @@ namespace ShaderIDE
             Persp_CheckedChanged(sender, e);
         }
 
-        public void SelectMatrix(oMat oMatrix)
+        public void SelectMatrix(IBoxMatrix oMatrix)
         {
             //Ortho Projection (zfar znear width height)
             //Perspective Projection (zfar znear FieldOfView)

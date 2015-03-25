@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
-using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Platform;
@@ -37,16 +36,7 @@ namespace ShaderIDE
         #endregion
 
         #region Uniform and Data             
-
         private List<IUniformProperty> UniformData;
-        
-        private struct Vec3
-        {
-            public float X { get; set; }
-            public float Y { get; set; }
-            public float Z { get; set; }
-        }
-
         #endregion
 
         #endregion
@@ -76,11 +66,12 @@ namespace ShaderIDE
             editorBox2.Size = tabPage2.Size;
             editorBox1.ForceRedraw(sender, e);
             editorBox2.ForceRedraw(sender, e);
-            propertyGrid1.SelectedObject = ContextSetupData;
+            ContextPropertyGrid.SelectedObject = ContextSetupData;
             
             button1_Click(this, new EventArgs());
-            UniformData = UniformPropertyHelper.BuildDefaultList(propertyGrid2, matrixControl1);
+            UniformData = UniformPropertyTester.BuildDefaultList(UniformPropertyGrid, UniformMatrixControl);
             PopulateUniformList();
+           
         }
 
         private void quitToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -324,7 +315,7 @@ namespace ShaderIDE
                     }
                     else
                     {
-                        listBox1.Items.Add(currentUniform);
+                        UniformListBox.Items.Add(currentUniform);
                     }
                 }
             }
@@ -348,7 +339,8 @@ namespace ShaderIDE
                     if (editorBox2.Highlights[i].LineColor == _HintColor) editorBox2.Highlights.RemoveAt(i);
                 }
                 GL.UseProgram(_lastProgram);
-                listBox1.Items.Clear();
+                //TODO remove that shit and stop rebuilding the list every 2 seconds.
+                UniformListBox.Items.Clear();
                 FindAndBind(editorBox1, _lastProgram);
                 FindAndBind(editorBox2, _lastProgram);
             }
@@ -467,7 +459,7 @@ namespace ShaderIDE
                 {
                     GL.UseProgram(_lastProgram);
                     Console.Message(@"Done with " + shaderList.Count + " Shaders.");
-                    listBox1.Items.Clear();
+                    UniformListBox.Items.Clear();
                     FindAndBind(editorBox1, _lastProgram);
                     FindAndBind(editorBox2, _lastProgram);
 
@@ -542,33 +534,27 @@ namespace ShaderIDE
 
         private void PopulateUniformList()
         {
-            listBox2.Items.Clear();
+            PropertiesListBox.Items.Clear();
             foreach (var uniformProperty in UniformData)
             {
-                listBox2.Items.Add(uniformProperty.Name);
+                PropertiesListBox.Items.Add(uniformProperty.Name);
             }
         }
 
-        private void listBox2_SelectedIndexChanged(object sender, EventArgs e)
+        private void PropertiesListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
 
-            matrixControl1.Enabled = false;
-            propertyGrid2.Enabled = false;
-            UniformData[listBox2.SelectedIndex].EditProperty();
+            UniformMatrixControl.Enabled = false;
+            UniformPropertyGrid.Enabled = false;
+            UniformData[PropertiesListBox.SelectedIndex].EditProperty();
         }
         #endregion
-
-        private void button2_Click(object sender, EventArgs e)
+        private void UniformMatrixControl_Load(object sender, EventArgs e)
         {
 
         }
 
-        private void matrixControl1_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void UniformListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             //debug
             //var mat = new Matrix4();
