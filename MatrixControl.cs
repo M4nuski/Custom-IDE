@@ -26,7 +26,6 @@ namespace ShaderIDE
         public MatrixControl()
         {
             InitializeComponent();
-            //TODO update with OnPaint instead of buffering into bitmap
             RotationBox.Image = new Bitmap(64, 64);
             RedPen = new Pen(Color.Red, 3.0f);
             GreenPen = new Pen(Color.Lime, 3.0f);
@@ -336,9 +335,7 @@ namespace ShaderIDE
                 {
                     GraphicFromRotationBoxImage.DrawLine(axis[i].Pn, MidPoint, MidPoint, axis[i].Vc.X, axis[i].Vc.Y);
                 }
-                GraphicFromRotationBoxImage.DrawImage(RotationBox.Image, 0, 0, 64, 64);
-                RotationBox.Invalidate();
-                RotationBox.Update();
+                RotationBox.Refresh();
             }
         }
 
@@ -367,9 +364,7 @@ namespace ShaderIDE
             using (var GraphicFromRotationBoxImage = Graphics.FromImage(RotationBox.Image))
             {
                 GraphicFromRotationBoxImage.Clear(Color.DimGray);
-                GraphicFromRotationBoxImage.DrawImage(RotationBox.Image, 0, 0, 64, 64);
-                RotationBox.Invalidate();
-                RotationBox.Update();
+                RotationBox.Refresh();
             }
         }
 
