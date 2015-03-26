@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using OpenTK;
@@ -18,60 +17,61 @@ namespace ShaderIDE
     {
         public static List<IUniformProperty> BuildDefaultList(PropertyGrid grid, MatrixControl ctrl)
         {
-            var Data = new List<IUniformProperty>();
-            Data.Add(new BoolUniformProperty("Bool_0", grid, false));
-            Data.Add(new BoolUniformProperty("Bool_1", grid, false));
-            Data.Add(new BoolUniformProperty("Bool_2", grid, false));
-            Data.Add(new BoolUniformProperty("Bool_3", grid, false));
 
-            Data.Add(new IntUniformProperty("Int_0", grid, 0));
-            Data.Add(new IntUniformProperty("Int_1", grid, 0));
-            Data.Add(new IntUniformProperty("Int_2", grid, 0));
-            Data.Add(new IntUniformProperty("Int_3", grid, 0));
-
-            Data.Add(new FloatUniformProperty("Float_0", grid, 0.0f));
-            Data.Add(new FloatUniformProperty("Float_1", grid, 0.0f));
-            Data.Add(new FloatUniformProperty("Float_2", grid, 0.0f));
-            Data.Add(new FloatUniformProperty("Float_3", grid, 0.0f));
-
-            Data.Add(new Vec4UniformProperty("Vec4_0", grid, new Vector4(0, 0, 0, 0)));
-            Data.Add(new Vec4UniformProperty("Vec4_1", grid, new Vector4(0, 0, 0, 0)));
-            Data.Add(new Vec4UniformProperty("Vec4_2", grid, new Vector4(0, 0, 0, 0)));
-            Data.Add(new Vec4UniformProperty("Vec4_3", grid, new Vector4(0, 0, 0, 0)));
-
-            Data.Add(new IntUniformProperty("Texture_0", grid, 0));
-            Data.Add(new IntUniformProperty("Texture_1", grid, 0));
-            Data.Add(new IntUniformProperty("Texture_2", grid, 0));
-            Data.Add(new IntUniformProperty("Texture_3", grid, 0));
-
-            Data.Add(new ColorUniformProperty("Color_0", grid, Color.Black));
-            Data.Add(new ColorUniformProperty("Color_1", grid, Color.Red));
-            Data.Add(new ColorUniformProperty("Color_2", grid, Color.Green));
-            Data.Add(new ColorUniformProperty("Color_3", grid, Color.Blue));
-
-            Data.Add(new Matrix3UniformProperty("Mat3_0(empty)", ctrl, new Matrix3()));
-            Data.Add(new Matrix3UniformProperty("Mat3_1(identity)", ctrl, Matrix3.Identity));
-            Data.Add(new Matrix3UniformProperty("Mat3_2(scale)", ctrl, Matrix3.CreateScale(1.1f, 2.2f, 3.3f)));
-            Data.Add(new Matrix3UniformProperty("Mat3_3(rotation)", ctrl, Matrix3.CreateFromAxisAngle(new Vector3(1.0f, 1.0f, 1.0f), 45)));
             var mBuffer3 = Matrix3.CreateRotationZ(.43f);
             mBuffer3 *= Matrix3.CreateRotationX(0.41f);
             mBuffer3 *= Matrix3.CreateRotationY(0.42f);
             mBuffer3 *= Matrix3.CreateScale(1.1f, 1.2f, 1.3f);
-            Data.Add(new Matrix3UniformProperty("Mat4_4(mix)", ctrl,  mBuffer3));
 
-            Data.Add(new Matrix4UniformProperty("Mat4_0(empty)", ctrl, new Matrix4()));
-            Data.Add(new Matrix4UniformProperty("Mat4_1(identity)", ctrl, Matrix4.Identity));
-            Data.Add(new Matrix4UniformProperty("Mat4_2(translate)", ctrl,Matrix4.CreateTranslation(0.1f, 0.2f, 0.3f)));
-            Data.Add(new Matrix4UniformProperty("Mat4_3(rotateX)", ctrl, Matrix4.CreateRotationX(0.41f)));
-            Data.Add(new Matrix4UniformProperty("Mat4_4(rotateY)", ctrl, Matrix4.CreateRotationY(0.42f)));
-            Data.Add(new Matrix4UniformProperty("Mat4_5(rotateZ)", ctrl, Matrix4.CreateRotationZ(0.43f)));
             var mBuffer4 = Matrix4.CreateRotationZ(.43f);
             mBuffer4 *= Matrix4.CreateRotationX(0.41f);
             mBuffer4 *= Matrix4.CreateRotationY(0.42f);
-            Data.Add(new Matrix4UniformProperty("Mat4_6(rotateZXY)", ctrl, mBuffer4));
-            Data.Add(new Matrix4UniformProperty("Mat4_7(scale.5)", ctrl, Matrix4.CreateScale(0.5f)));
-            Data.Add(new Matrix4UniformProperty("Mat4_8(ortho)", ctrl, Matrix4.CreateOrthographic(640,480,1,256)));
-            Data.Add(new Matrix4UniformProperty("Mat4_9(45degpersp)", ctrl, Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(75), 1920.0f/1080.0f ,1 ,256)));
+
+            var Data = new List<IUniformProperty>
+            {
+                new BoolUniformProperty("Bool_0", grid, false),
+                new BoolUniformProperty("Bool_1", grid, false),
+                new BoolUniformProperty("Bool_2", grid, false),
+                new BoolUniformProperty("Bool_3", grid, false),
+                new IntUniformProperty("Int_0", grid, 0),
+                new IntUniformProperty("Int_1", grid, 0),
+                new IntUniformProperty("Int_2", grid, 0),
+                new IntUniformProperty("Int_3", grid, 0),
+                new FloatUniformProperty("Float_0", grid, 0.0f),
+                new FloatUniformProperty("Float_1", grid, 0.0f),
+                new FloatUniformProperty("Float_2", grid, 0.0f),
+                new FloatUniformProperty("Float_3", grid, 0.0f),
+                new Vec4UniformProperty("Vec4_0", grid, new Vector4(0, 0, 0, 0)),
+                new Vec4UniformProperty("Vec4_1", grid, new Vector4(0, 0, 0, 0)),
+                new Vec4UniformProperty("Vec4_2", grid, new Vector4(0, 0, 0, 0)),
+                new Vec4UniformProperty("Vec4_3", grid, new Vector4(0, 0, 0, 0)),
+                new IntUniformProperty("Texture_0", grid, 0),
+                new IntUniformProperty("Texture_1", grid, 0),
+                new IntUniformProperty("Texture_2", grid, 0),
+                new IntUniformProperty("Texture_3", grid, 0),
+                new ColorUniformProperty("Color_0", grid, Color.Black),
+                new ColorUniformProperty("Color_1", grid, Color.Red),
+                new ColorUniformProperty("Color_2", grid, Color.Green),
+                new ColorUniformProperty("Color_3", grid, Color.Blue),
+                new Matrix3UniformProperty("Mat3_0(empty)", ctrl, new Matrix3()),
+                new Matrix3UniformProperty("Mat3_1(identity)", ctrl, Matrix3.Identity),
+                new Matrix3UniformProperty("Mat3_2(scale)", ctrl, Matrix3.CreateScale(1.1f, 2.2f, 3.3f)),
+                new Matrix3UniformProperty("Mat3_3(rotation)", ctrl,
+                    Matrix3.CreateFromAxisAngle(new Vector3(1.0f, 1.0f, 1.0f), 45)),
+                new Matrix3UniformProperty("Mat4_4(mix)", ctrl, mBuffer3),
+                new Matrix4UniformProperty("Mat4_0(empty)", ctrl, new Matrix4()),
+                new Matrix4UniformProperty("Mat4_1(identity)", ctrl, Matrix4.Identity),
+                new Matrix4UniformProperty("Mat4_2(translate)", ctrl, Matrix4.CreateTranslation(0.1f, 0.2f, 0.3f)),
+                new Matrix4UniformProperty("Mat4_3(rotateX)", ctrl, Matrix4.CreateRotationX(0.41f)),
+                new Matrix4UniformProperty("Mat4_4(rotateY)", ctrl, Matrix4.CreateRotationY(0.42f)),
+                new Matrix4UniformProperty("Mat4_5(rotateZ)", ctrl, Matrix4.CreateRotationZ(0.43f)),
+                new Matrix4UniformProperty("Mat4_6(rotateZXY)", ctrl, mBuffer4),
+                new Matrix4UniformProperty("Mat4_7(scale.5)", ctrl, Matrix4.CreateScale(0.5f)),
+                new Matrix4UniformProperty("Mat4_8(ortho)", ctrl, Matrix4.CreateOrthographic(640, 480, 1, 256)),
+                new Matrix4UniformProperty("Mat4_9(45degpersp)", ctrl,
+                    Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(75), 1920.0f/1080.0f, 1, 256))
+            };
+
             return Data;
         }
     }
