@@ -72,20 +72,20 @@
             this.ContextPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.panel1 = new System.Windows.Forms.Panel();
             this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.UniformMatrixControl = new ShaderIDE.MatrixControl();
+            this.button3 = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.PropertiesListBox = new System.Windows.Forms.ListBox();
             this.UniformPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.UniformListBox = new System.Windows.Forms.ListBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.editorBox2 = new ShaderIDE.EditorBox();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.editorBox1 = new ShaderIDE.EditorBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.directorySearcher1 = new System.DirectoryServices.DirectorySearcher();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.button3 = new System.Windows.Forms.Button();
+            this.editorBox1 = new ShaderIDE.EditorBox();
+            this.editorBox2 = new ShaderIDE.EditorBox();
+            this.UniformMatrixControl = new ShaderIDE.MatrixControl();
             this.menuStrip1.SuspendLayout();
             this.tabPage4.SuspendLayout();
             this.tabPage5.SuspendLayout();
@@ -110,7 +110,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(993, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(993, 24);
             this.menuStrip1.TabIndex = 15;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -124,28 +124,28 @@
             this.quitToolStripMenuItem,
             this.quitToolStripMenuItem1});
             this.MenuStrip_TopFile.Name = "MenuStrip_TopFile";
-            this.MenuStrip_TopFile.Size = new System.Drawing.Size(44, 24);
+            this.MenuStrip_TopFile.Size = new System.Drawing.Size(37, 20);
             this.MenuStrip_TopFile.Text = "File";
             // 
             // newShaderToolStripMenuItem
             // 
             this.newShaderToolStripMenuItem.Name = "newShaderToolStripMenuItem";
             this.newShaderToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.newShaderToolStripMenuItem.Size = new System.Drawing.Size(221, 24);
+            this.newShaderToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
             this.newShaderToolStripMenuItem.Text = "New Shader";
             // 
             // loadShaderToolStripMenuItem
             // 
             this.loadShaderToolStripMenuItem.Name = "loadShaderToolStripMenuItem";
             this.loadShaderToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.loadShaderToolStripMenuItem.Size = new System.Drawing.Size(221, 24);
+            this.loadShaderToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
             this.loadShaderToolStripMenuItem.Text = "Open Shader";
             // 
             // saveShaderToolStripMenuItem
             // 
             this.saveShaderToolStripMenuItem.Name = "saveShaderToolStripMenuItem";
             this.saveShaderToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveShaderToolStripMenuItem.Size = new System.Drawing.Size(221, 24);
+            this.saveShaderToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
             this.saveShaderToolStripMenuItem.Text = "Save Shader";
             // 
             // saveAllToolStripMenuItem
@@ -153,19 +153,19 @@
             this.saveAllToolStripMenuItem.Name = "saveAllToolStripMenuItem";
             this.saveAllToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.S)));
-            this.saveAllToolStripMenuItem.Size = new System.Drawing.Size(221, 24);
+            this.saveAllToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
             this.saveAllToolStripMenuItem.Text = "Save All";
             // 
             // quitToolStripMenuItem
             // 
             this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-            this.quitToolStripMenuItem.Size = new System.Drawing.Size(218, 6);
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(184, 6);
             // 
             // quitToolStripMenuItem1
             // 
             this.quitToolStripMenuItem1.Name = "quitToolStripMenuItem1";
             this.quitToolStripMenuItem1.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.quitToolStripMenuItem1.Size = new System.Drawing.Size(221, 24);
+            this.quitToolStripMenuItem1.Size = new System.Drawing.Size(187, 22);
             this.quitToolStripMenuItem1.Text = "Exit";
             this.quitToolStripMenuItem1.Click += new System.EventHandler(this.quitToolStripMenuItem1_Click);
             // 
@@ -179,14 +179,14 @@
             this.MenuStrip_ThemeColors,
             this.MenuStrip_ThemeTokens});
             this.MenuStrip_TopTheme.Name = "MenuStrip_TopTheme";
-            this.MenuStrip_TopTheme.Size = new System.Drawing.Size(66, 24);
+            this.MenuStrip_TopTheme.Size = new System.Drawing.Size(56, 20);
             this.MenuStrip_TopTheme.Text = "Theme";
             // 
             // MenuStrip_ThemeLoad
             // 
             this.MenuStrip_ThemeLoad.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.MenuStrip_ThemeLoad.Name = "MenuStrip_ThemeLoad";
-            this.MenuStrip_ThemeLoad.Size = new System.Drawing.Size(124, 24);
+            this.MenuStrip_ThemeLoad.Size = new System.Drawing.Size(112, 22);
             this.MenuStrip_ThemeLoad.Text = "Load...";
             this.MenuStrip_ThemeLoad.Click += new System.EventHandler(this.MenuItem_LoadClick);
             // 
@@ -194,7 +194,7 @@
             // 
             this.MenuStrip_ThemeSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.MenuStrip_ThemeSave.Name = "MenuStrip_ThemeSave";
-            this.MenuStrip_ThemeSave.Size = new System.Drawing.Size(124, 24);
+            this.MenuStrip_ThemeSave.Size = new System.Drawing.Size(112, 22);
             this.MenuStrip_ThemeSave.Text = "Save...";
             this.MenuStrip_ThemeSave.Click += new System.EventHandler(this.MenuItem_SaveClick);
             // 
@@ -202,7 +202,7 @@
             // 
             this.MenuStrip_ThemeFont.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.MenuStrip_ThemeFont.Name = "MenuStrip_ThemeFont";
-            this.MenuStrip_ThemeFont.Size = new System.Drawing.Size(124, 24);
+            this.MenuStrip_ThemeFont.Size = new System.Drawing.Size(112, 22);
             this.MenuStrip_ThemeFont.Text = "Font";
             this.MenuStrip_ThemeFont.Click += new System.EventHandler(this.MenuItem_FontClick);
             // 
@@ -214,13 +214,13 @@
             this.MenuStrip_ColorsBackground,
             this.MenuStrip_ColorsCurrentline});
             this.MenuStrip_ThemeColors.Name = "MenuStrip_ThemeColors";
-            this.MenuStrip_ThemeColors.Size = new System.Drawing.Size(124, 24);
+            this.MenuStrip_ThemeColors.Size = new System.Drawing.Size(112, 22);
             this.MenuStrip_ThemeColors.Text = "Colors";
             // 
             // MenuStrip_ColorsText
             // 
             this.MenuStrip_ColorsText.Name = "MenuStrip_ColorsText";
-            this.MenuStrip_ColorsText.Size = new System.Drawing.Size(240, 24);
+            this.MenuStrip_ColorsText.Size = new System.Drawing.Size(206, 22);
             this.MenuStrip_ColorsText.Tag = "TXT_COLOR";
             this.MenuStrip_ColorsText.Text = "Text";
             this.MenuStrip_ColorsText.Click += new System.EventHandler(this.MenuItem_ColorsClick);
@@ -228,7 +228,7 @@
             // MenuStrip_ColorsBackground
             // 
             this.MenuStrip_ColorsBackground.Name = "MenuStrip_ColorsBackground";
-            this.MenuStrip_ColorsBackground.Size = new System.Drawing.Size(240, 24);
+            this.MenuStrip_ColorsBackground.Size = new System.Drawing.Size(206, 22);
             this.MenuStrip_ColorsBackground.Tag = "BG_COLOR";
             this.MenuStrip_ColorsBackground.Text = "Background";
             this.MenuStrip_ColorsBackground.Click += new System.EventHandler(this.MenuItem_ColorsClick);
@@ -236,7 +236,7 @@
             // MenuStrip_ColorsCurrentline
             // 
             this.MenuStrip_ColorsCurrentline.Name = "MenuStrip_ColorsCurrentline";
-            this.MenuStrip_ColorsCurrentline.Size = new System.Drawing.Size(240, 24);
+            this.MenuStrip_ColorsCurrentline.Size = new System.Drawing.Size(206, 22);
             this.MenuStrip_ColorsCurrentline.Tag = "LINE_COLOR";
             this.MenuStrip_ColorsCurrentline.Text = "Current Line Background";
             this.MenuStrip_ColorsCurrentline.Click += new System.EventHandler(this.MenuItem_ColorsClick);
@@ -250,7 +250,7 @@
             this.MenuStrip_TokensSpans,
             this.V0});
             this.MenuStrip_ThemeTokens.Name = "MenuStrip_ThemeTokens";
-            this.MenuStrip_ThemeTokens.Size = new System.Drawing.Size(124, 24);
+            this.MenuStrip_ThemeTokens.Size = new System.Drawing.Size(112, 22);
             this.MenuStrip_ThemeTokens.Text = "Tokens";
             // 
             // MenuStrip_TokensDelimiter
@@ -260,14 +260,14 @@
             this.MenuStrip_NewDelimiter,
             this.MenuStrip_SeparatorDelimiters});
             this.MenuStrip_TokensDelimiter.Name = "MenuStrip_TokensDelimiter";
-            this.MenuStrip_TokensDelimiter.Size = new System.Drawing.Size(146, 24);
+            this.MenuStrip_TokensDelimiter.Size = new System.Drawing.Size(127, 22);
             this.MenuStrip_TokensDelimiter.Text = "Delimiters";
             // 
             // MenuStrip_NewDelimiter
             // 
             this.MenuStrip_NewDelimiter.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.MenuStrip_NewDelimiter.Name = "MenuStrip_NewDelimiter";
-            this.MenuStrip_NewDelimiter.Size = new System.Drawing.Size(108, 24);
+            this.MenuStrip_NewDelimiter.Size = new System.Drawing.Size(98, 22);
             this.MenuStrip_NewDelimiter.Tag = "DEL_NEW";
             this.MenuStrip_NewDelimiter.Text = "New";
             this.MenuStrip_NewDelimiter.Click += new System.EventHandler(this.MenuItem_Tokens_NewClick);
@@ -275,7 +275,7 @@
             // MenuStrip_SeparatorDelimiters
             // 
             this.MenuStrip_SeparatorDelimiters.Name = "MenuStrip_SeparatorDelimiters";
-            this.MenuStrip_SeparatorDelimiters.Size = new System.Drawing.Size(105, 6);
+            this.MenuStrip_SeparatorDelimiters.Size = new System.Drawing.Size(95, 6);
             // 
             // MenuStrip_TokensWords
             // 
@@ -284,13 +284,13 @@
             this.MenuStrip_NewWord,
             this.MenuStrip_SeparatorWords});
             this.MenuStrip_TokensWords.Name = "MenuStrip_TokensWords";
-            this.MenuStrip_TokensWords.Size = new System.Drawing.Size(146, 24);
+            this.MenuStrip_TokensWords.Size = new System.Drawing.Size(127, 22);
             this.MenuStrip_TokensWords.Text = "Words";
             // 
             // MenuStrip_NewWord
             // 
             this.MenuStrip_NewWord.Name = "MenuStrip_NewWord";
-            this.MenuStrip_NewWord.Size = new System.Drawing.Size(108, 24);
+            this.MenuStrip_NewWord.Size = new System.Drawing.Size(98, 22);
             this.MenuStrip_NewWord.Tag = "WORD_NEW";
             this.MenuStrip_NewWord.Text = "New";
             this.MenuStrip_NewWord.Click += new System.EventHandler(this.MenuItem_Tokens_NewClick);
@@ -298,7 +298,7 @@
             // MenuStrip_SeparatorWords
             // 
             this.MenuStrip_SeparatorWords.Name = "MenuStrip_SeparatorWords";
-            this.MenuStrip_SeparatorWords.Size = new System.Drawing.Size(105, 6);
+            this.MenuStrip_SeparatorWords.Size = new System.Drawing.Size(95, 6);
             // 
             // MenuStrip_TokensSpans
             // 
@@ -307,13 +307,13 @@
             this.MenuStrip_NewSpan,
             this.MenuStrip_SeparatorSpans});
             this.MenuStrip_TokensSpans.Name = "MenuStrip_TokensSpans";
-            this.MenuStrip_TokensSpans.Size = new System.Drawing.Size(146, 24);
+            this.MenuStrip_TokensSpans.Size = new System.Drawing.Size(127, 22);
             this.MenuStrip_TokensSpans.Text = "Spans";
             // 
             // MenuStrip_NewSpan
             // 
             this.MenuStrip_NewSpan.Name = "MenuStrip_NewSpan";
-            this.MenuStrip_NewSpan.Size = new System.Drawing.Size(108, 24);
+            this.MenuStrip_NewSpan.Size = new System.Drawing.Size(98, 22);
             this.MenuStrip_NewSpan.Tag = "SPAN_NEW";
             this.MenuStrip_NewSpan.Text = "New";
             this.MenuStrip_NewSpan.Click += new System.EventHandler(this.MenuItem_Tokens_NewClick);
@@ -321,20 +321,20 @@
             // MenuStrip_SeparatorSpans
             // 
             this.MenuStrip_SeparatorSpans.Name = "MenuStrip_SeparatorSpans";
-            this.MenuStrip_SeparatorSpans.Size = new System.Drawing.Size(105, 6);
+            this.MenuStrip_SeparatorSpans.Size = new System.Drawing.Size(95, 6);
             // 
             // V0
             // 
             this.V0.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.V0.Name = "V0";
-            this.V0.Size = new System.Drawing.Size(146, 24);
+            this.V0.Size = new System.Drawing.Size(127, 22);
             this.V0.Text = "Values";
             this.V0.Click += new System.EventHandler(this.MenuItem_TokensClick);
             // 
             // MenuStrip_TopForceParse
             // 
             this.MenuStrip_TopForceParse.Name = "MenuStrip_TopForceParse";
-            this.MenuStrip_TopForceParse.Size = new System.Drawing.Size(96, 24);
+            this.MenuStrip_TopForceParse.Size = new System.Drawing.Size(79, 20);
             this.MenuStrip_TopForceParse.Text = "Force Parse";
             // 
             // compileShaderToolStripMenuItem
@@ -342,7 +342,7 @@
             this.compileShaderToolStripMenuItem.Name = "compileShaderToolStripMenuItem";
             this.compileShaderToolStripMenuItem.ShortcutKeyDisplayString = "";
             this.compileShaderToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.compileShaderToolStripMenuItem.Size = new System.Drawing.Size(156, 24);
+            this.compileShaderToolStripMenuItem.Size = new System.Drawing.Size(126, 20);
             this.compileShaderToolStripMenuItem.Text = "Compile Shader (F5)";
             this.compileShaderToolStripMenuItem.Click += new System.EventHandler(this.compileShaderToolStripMenuItem_Click);
             // 
@@ -351,7 +351,7 @@
             this.buildProgramToolStripMenuItem.Name = "buildProgramToolStripMenuItem";
             this.buildProgramToolStripMenuItem.ShortcutKeyDisplayString = "";
             this.buildProgramToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F6;
-            this.buildProgramToolStripMenuItem.Size = new System.Drawing.Size(145, 24);
+            this.buildProgramToolStripMenuItem.Size = new System.Drawing.Size(118, 20);
             this.buildProgramToolStripMenuItem.Text = "Build Program (F6)";
             this.buildProgramToolStripMenuItem.Click += new System.EventHandler(this.buildProgramToolStripMenuItem_Click);
             // 
@@ -396,9 +396,9 @@
             this.tabPage4.Controls.Add(this.button1);
             this.tabPage4.Controls.Add(this.ContextPropertyGrid);
             this.tabPage4.Controls.Add(this.panel1);
-            this.tabPage4.Location = new System.Drawing.Point(4, 27);
+            this.tabPage4.Location = new System.Drawing.Point(4, 24);
             this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Size = new System.Drawing.Size(985, 550);
+            this.tabPage4.Size = new System.Drawing.Size(985, 553);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Output";
             this.tabPage4.Click += new System.EventHandler(this.tabPage4_Click);
@@ -424,7 +424,7 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // propertyGrid1
+            // ContextPropertyGrid
             // 
             this.ContextPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
@@ -455,30 +455,55 @@
             this.tabPage5.Controls.Add(this.PropertiesListBox);
             this.tabPage5.Controls.Add(this.UniformPropertyGrid);
             this.tabPage5.Controls.Add(this.UniformListBox);
-            this.tabPage5.Location = new System.Drawing.Point(4, 27);
+            this.tabPage5.Location = new System.Drawing.Point(4, 24);
             this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Size = new System.Drawing.Size(985, 550);
+            this.tabPage5.Size = new System.Drawing.Size(985, 553);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Uniforms and Data";
             this.tabPage5.UseVisualStyleBackColor = true;
             // 
-            // matrixControl1
+            // button3
             // 
-            this.UniformMatrixControl.BackColor = System.Drawing.SystemColors.Control;
-            this.UniformMatrixControl.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.UniformMatrixControl.Location = new System.Drawing.Point(522, 126);
-            this.UniformMatrixControl.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
-            this.UniformMatrixControl.Name = "UniformMatrixControl";
-            this.UniformMatrixControl.Size = new System.Drawing.Size(230, 412);
-            this.UniformMatrixControl.TabIndex = 3;
-            this.UniformMatrixControl.Load += new System.EventHandler(this.UniformMatrixControl_Load);
+            this.button3.Location = new System.Drawing.Point(184, 3);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(74, 27);
+            this.button3.TabIndex = 7;
+            this.button3.Text = "Copy->";
+            this.button3.UseVisualStyleBackColor = true;
             // 
-            // listBox2
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(519, 9);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(84, 15);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "Property Data:";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(262, 9);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(77, 15);
+            this.label2.TabIndex = 5;
+            this.label2.Text = "Property List:";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(8, 9);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(141, 15);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "Uniforms From Shaders:";
+            // 
+            // PropertiesListBox
             // 
             this.PropertiesListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.PropertiesListBox.FormattingEnabled = true;
-            this.PropertiesListBox.ItemHeight = 18;
+            this.PropertiesListBox.ItemHeight = 15;
             this.PropertiesListBox.Items.AddRange(new object[] {
             "Projection Matrix",
             "View Matrix",
@@ -527,11 +552,11 @@
             "Color3"});
             this.PropertiesListBox.Location = new System.Drawing.Point(265, 30);
             this.PropertiesListBox.Name = "PropertiesListBox";
-            this.PropertiesListBox.Size = new System.Drawing.Size(251, 508);
+            this.PropertiesListBox.Size = new System.Drawing.Size(251, 499);
             this.PropertiesListBox.TabIndex = 2;
             this.PropertiesListBox.SelectedIndexChanged += new System.EventHandler(this.PropertiesListBox_SelectedIndexChanged);
             // 
-            // propertyGrid2
+            // UniformPropertyGrid
             // 
             this.UniformPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
@@ -542,13 +567,14 @@
             this.UniformPropertyGrid.Size = new System.Drawing.Size(230, 89);
             this.UniformPropertyGrid.TabIndex = 1;
             this.UniformPropertyGrid.ToolbarVisible = false;
+            this.UniformPropertyGrid.SelectedObjectsChanged += new System.EventHandler(this.UniformPropertyGrid_SelectedObjectsChanged);
             // 
-            // listBox1
+            // UniformListBox
             // 
             this.UniformListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.UniformListBox.FormattingEnabled = true;
-            this.UniformListBox.ItemHeight = 18;
+            this.UniformListBox.ItemHeight = 15;
             this.UniformListBox.Items.AddRange(new object[] {
             "light_position",
             "light_color",
@@ -556,65 +582,31 @@
             "matrix_model"});
             this.UniformListBox.Location = new System.Drawing.Point(8, 30);
             this.UniformListBox.Name = "UniformListBox";
-            this.UniformListBox.Size = new System.Drawing.Size(251, 508);
+            this.UniformListBox.Size = new System.Drawing.Size(251, 499);
             this.UniformListBox.TabIndex = 0;
             this.UniformListBox.SelectedIndexChanged += new System.EventHandler(this.UniformListBox_SelectedIndexChanged);
             // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.editorBox2);
-            this.tabPage2.Location = new System.Drawing.Point(4, 27);
+            this.tabPage2.Location = new System.Drawing.Point(4, 24);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(985, 550);
+            this.tabPage2.Size = new System.Drawing.Size(985, 553);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Fragment Shader";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // editorBox2
-            // 
-            this.editorBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.editorBox2.BackColor = System.Drawing.SystemColors.Window;
-            this.editorBox2.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.editorBox2.ForeColor = System.Drawing.Color.White;
-            this.editorBox2.Location = new System.Drawing.Point(0, 0);
-            this.editorBox2.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            this.editorBox2.Name = "editorBox2";
-            this.editorBox2.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
-            this.editorBox2.Size = new System.Drawing.Size(875, 432);
-            this.editorBox2.TabIndex = 0;
-            this.editorBox2.Text = resources.GetString("editorBox2.Text");
-            this.editorBox2.WordWrap = false;
-            // 
             // tabPage1
             // 
             this.tabPage1.Controls.Add(this.editorBox1);
-            this.tabPage1.Location = new System.Drawing.Point(4, 27);
+            this.tabPage1.Location = new System.Drawing.Point(4, 24);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(985, 550);
+            this.tabPage1.Size = new System.Drawing.Size(985, 553);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Vertex Shader";
             this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // editorBox1
-            // 
-            this.editorBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.editorBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.editorBox1.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.editorBox1.ForeColor = System.Drawing.Color.White;
-            this.editorBox1.Location = new System.Drawing.Point(0, 0);
-            this.editorBox1.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
-            this.editorBox1.Name = "editorBox1";
-            this.editorBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
-            this.editorBox1.Size = new System.Drawing.Size(875, 260);
-            this.editorBox1.TabIndex = 17;
-            this.editorBox1.Text = resources.GetString("editorBox1.Text");
-            this.editorBox1.WordWrap = false;
             // 
             // tabControl1
             // 
@@ -638,45 +630,54 @@
             this.directorySearcher1.ServerPageTimeLimit = System.TimeSpan.Parse("-00:00:01");
             this.directorySearcher1.ServerTimeLimit = System.TimeSpan.Parse("-00:00:01");
             // 
-            // label1
+            // editorBox1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(8, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(172, 18);
-            this.label1.TabIndex = 4;
-            this.label1.Text = "Uniforms From Shaders:";
+            this.editorBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.editorBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.editorBox1.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.editorBox1.ForeColor = System.Drawing.Color.White;
+            this.editorBox1.Location = new System.Drawing.Point(0, 0);
+            this.editorBox1.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
+            this.editorBox1.Name = "editorBox1";
+            this.editorBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
+            this.editorBox1.Size = new System.Drawing.Size(875, 256);
+            this.editorBox1.TabIndex = 17;
+            this.editorBox1.Text = resources.GetString("editorBox1.Text");
+            this.editorBox1.WordWrap = false;
             // 
-            // label2
+            // editorBox2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(262, 9);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(95, 18);
-            this.label2.TabIndex = 5;
-            this.label2.Text = "Property List:";
+            this.editorBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.editorBox2.BackColor = System.Drawing.SystemColors.Window;
+            this.editorBox2.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.editorBox2.ForeColor = System.Drawing.Color.White;
+            this.editorBox2.Location = new System.Drawing.Point(0, 0);
+            this.editorBox2.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            this.editorBox2.Name = "editorBox2";
+            this.editorBox2.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
+            this.editorBox2.Size = new System.Drawing.Size(875, 432);
+            this.editorBox2.TabIndex = 0;
+            this.editorBox2.Text = resources.GetString("editorBox2.Text");
+            this.editorBox2.WordWrap = false;
             // 
-            // label3
+            // UniformMatrixControl
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(519, 9);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(103, 18);
-            this.label3.TabIndex = 6;
-            this.label3.Text = "Property Data:";
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(184, 3);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(74, 27);
-            this.button3.TabIndex = 7;
-            this.button3.Text = "Copy->";
-            this.button3.UseVisualStyleBackColor = true;
+            this.UniformMatrixControl.BackColor = System.Drawing.SystemColors.Control;
+            this.UniformMatrixControl.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.UniformMatrixControl.Location = new System.Drawing.Point(522, 126);
+            this.UniformMatrixControl.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
+            this.UniformMatrixControl.Name = "UniformMatrixControl";
+            this.UniformMatrixControl.Size = new System.Drawing.Size(230, 412);
+            this.UniformMatrixControl.TabIndex = 3;
+            this.UniformMatrixControl.EnabledChanged += new System.EventHandler(this.UniformMatrixControl_EnabledChanged);
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.AppWorkspace;
             this.ClientSize = new System.Drawing.Size(993, 725);

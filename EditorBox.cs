@@ -39,7 +39,8 @@ namespace ShaderIDE
         private static bool IsValue(string s)
         {
             double doubleBuffer;
-            var result = double.TryParse(s.Trim().Replace('.', ','), out doubleBuffer);
+
+            var result = double.TryParse(s.Trim().Replace('.', ',') , out doubleBuffer) | double.TryParse(s.Trim(), out doubleBuffer);
             return (result | (s.ToUpper() == "TRUE") | (s.ToUpper() == "FALSE"));
         }
 

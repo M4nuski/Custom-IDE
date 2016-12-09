@@ -44,6 +44,7 @@ namespace ShaderIDE
         #region Initialization and basic Form Events
         private void Msg(string msg)
         {
+            //TODO use a freaking string builder / the Logger component
             textBox1.AppendText(msg + "\r\n");
             if (msg.SafeRemove(6) == "ERROR:")
             {
@@ -315,7 +316,7 @@ namespace ShaderIDE
                     }
                     else
                     {
-                        UniformListBox.Items.Add(currentUniform);
+                        UniformListBox.Items.Add(currentUniform + ":" + uniInt.ToString("D"));
                     }
                 }
             }
@@ -343,6 +344,10 @@ namespace ShaderIDE
                 UniformListBox.Items.Clear();
                 FindAndBind(editorBox1, _lastProgram);
                 FindAndBind(editorBox2, _lastProgram);
+                //keep all last properties
+                //find new set
+                //match selected properties if still exists
+                //if not deselect matrixcontrol and grid
             }
         }
         #endregion
@@ -549,19 +554,19 @@ namespace ShaderIDE
             UniformData[PropertiesListBox.SelectedIndex].EditProperty();
         }
         #endregion
-        private void UniformMatrixControl_Load(object sender, EventArgs e)
-        {
-
-        }
-
         private void UniformListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //debug
-            //var mat = new Matrix4();
-            //mat = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver6, 640/480, 1, 256);
-            //mat = Matrix4.CreateOrthographic(2, 2, 1, 256);
-            //matrixControl1.SelectMatrix4(ref mat);
+            //TODO Select PropertiesListBox index to match assigned value
+        }
 
+        private void UniformPropertyGrid_SelectedObjectsChanged(object sender, EventArgs e)
+        {
+            UniformMatrixControl.Enabled = false;
+        }
+
+        private void UniformMatrixControl_EnabledChanged(object sender, EventArgs e)
+        {
+            if (UniformMatrixControl.Enabled) UniformPropertyGrid.Enabled = false;
         }
     }//class
 }//namespace
