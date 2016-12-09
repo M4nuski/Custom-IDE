@@ -6,19 +6,8 @@ using System.Windows.Forms;
 namespace ShaderIDE
 {
     #region Structs
-    public struct FontAndColorStruct
-    {
-        public Font StyleFont;
-        public Color StyleColor;
 
-        public FontAndColorStruct(Font font, Color color)
-        {
-            StyleFont = font;
-            StyleColor = color;
-        }
-    }
-
-    public struct ThemeStruct // Main struct
+    public class ThemeStruct // Main struct
     {
         public string Name;
         public DelimiterStruct[] Delimiters;
@@ -26,6 +15,18 @@ namespace ShaderIDE
         public SpanStruct[] Spans;
         public FontAndColorStruct TextStyle, ValueStyle;
         public Color BackgroundColor, CurrentLineColor;
+
+        public ThemeStruct()
+        {
+            Name = "<Empty>";
+            //BackgroundColor = backColor;
+            //CurrentLineColor = backColor;
+            //TextStyle = new FontAndColorStruct(prototypeFont, textColor);
+            //ValueStyle = new FontAndColorStruct(prototypeFont, textColor);
+            Delimiters = new DelimiterStruct[0];
+            Words = new WordStruct[0];
+            Spans = new SpanStruct[0];
+        }
 
         public ThemeStruct(Font prototypeFont, Color textColor, Color backColor)
         {
@@ -37,6 +38,18 @@ namespace ShaderIDE
             Delimiters = new DelimiterStruct[0];
             Words = new WordStruct[0];
             Spans = new SpanStruct[0];
+        }
+    }
+
+    public struct FontAndColorStruct
+    {
+        public Font StyleFont;
+        public Color StyleColor;
+
+        public FontAndColorStruct(Font font, Color color)
+        {
+            StyleFont = font;
+            StyleColor = color;
         }
     }
 
@@ -354,8 +367,8 @@ namespace ShaderIDE
             return new ThemeStruct
             {
                 Name = "Default GLSL Dark",
-                BackgroundColor = Color.FromArgb(255, 64, 64, 64),
-                CurrentLineColor = Color.FromArgb(255, 56, 56, 56),
+                BackgroundColor = Color.FromArgb(255, 32, 32, 32),
+                CurrentLineColor = Color.FromArgb(255, 24, 24, 24),
                 TextStyle = new FontAndColorStruct(prototypeFont, Color.White),
                 ValueStyle = new FontAndColorStruct(new Font(prototypeFont, FontStyle.Regular), Color.RoyalBlue),
 

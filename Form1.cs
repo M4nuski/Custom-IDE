@@ -14,6 +14,8 @@ namespace ShaderIDE
     {
         #region Properties
 
+        private ThemeStruct Editors_Theme;
+
         #region Dialogs
         private readonly WordStyleDialog _styleDialogWords = new WordStyleDialog();
         private readonly DelimiterStyleDialog _styleDialogDelimiters = new DelimiterStyleDialog();
@@ -60,8 +62,9 @@ namespace ShaderIDE
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            editorBox1.Theme = ThemeHelper.DefaultGLSLDarkTheme(editorBox1.Font);
-            editorBox2.Theme = ThemeHelper.DefaultGLSLDarkTheme(editorBox1.Font);
+            Editors_Theme = ThemeHelper.DefaultGLSLDarkTheme(editorBox1.Font);
+            editorBox1.Theme = Editors_Theme;
+            editorBox2.Theme = Editors_Theme;
             PopulateMenu();
             editorBox1.Size = tabPage1.Size;
             editorBox2.Size = tabPage2.Size;
@@ -84,12 +87,14 @@ namespace ShaderIDE
         #region Menu Strip Color and Style Settings
         private void MenuItem_FontClick(object sender, EventArgs e)
         {
-            fontDialog1.Font = editorBox1.Theme.TextStyle.StyleFont;
+            fontDialog1.Font = Editors_Theme.TextStyle.StyleFont;
             if (fontDialog1.ShowDialog() == DialogResult.OK)
             {
-                editorBox1.Theme = ThemeHelper.ChangeFont(editorBox1.Theme, fontDialog1.Font);
+                Editors_Theme = ThemeHelper.ChangeFont(Editors_Theme, fontDialog1.Font);
                 editorBox1.Font = fontDialog1.Font;
                 editorBox1.ForceRedraw(sender, e);
+                editorBox2.Font = fontDialog1.Font;
+                editorBox2.ForceRedraw(sender, e);
             }
         }
 
@@ -99,7 +104,7 @@ namespace ShaderIDE
             {
                 try
                 {
-                    ThemeHelper.SaveTheme(editorBox1.Theme, saveFileDialog1.FileName);
+                    ThemeHelper.SaveTheme(Editors_Theme, saveFileDialog1.FileName);
                 }
                 catch (Exception ex)
                 {
@@ -112,9 +117,10 @@ namespace ShaderIDE
         {
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                editorBox1.Theme = ThemeHelper.LoadTheme(editorBox1.Theme, openFileDialog1.FileName);
+                Editors_Theme = ThemeHelper.LoadTheme(Editors_Theme, openFileDialog1.FileName);
                 PopulateMenu();
                 editorBox1.ForceRedraw(sender, e);
+                editorBox2.ForceRedraw(sender, e);
             }
         }
 
@@ -136,30 +142,30 @@ namespace ShaderIDE
         private void PopulateMenu()
         {
             while (MenuStrip_TokensDelimiter.DropDownItems.Count > 2) MenuStrip_TokensDelimiter.DropDownItems.RemoveAt(2);
-            for (var i = 0; i < editorBox1.Theme.Delimiters.Length; i++)
+            for (var i = 0; i < Editors_Theme.Delimiters.Length; i++)
             {
                 var currentItem = MenuStrip_TokensDelimiter.DropDownItems.Add(new ToolStripButton(
-                    editorBox1.Theme.Delimiters[i].Name));
+                    Editors_Theme.Delimiters[i].Name));
                 MenuStrip_TokensDelimiter.DropDownItems[currentItem].Name = "D" + i.ToString(CultureInfo.InvariantCulture);
                 MenuStrip_TokensDelimiter.DropDownItems[currentItem].Click += MenuItem_TokensClick;
             }
             SetToLargest(MenuStrip_TokensDelimiter.DropDownItems);
 
             while (MenuStrip_TokensWords.DropDownItems.Count > 2) MenuStrip_TokensWords.DropDownItems.RemoveAt(2);
-            for (var i = 0; i < editorBox1.Theme.Words.Length; i++)
+            for (var i = 0; i < Editors_Theme.Words.Length; i++)
             {
                 var currentItem = MenuStrip_TokensWords.DropDownItems.Add(new ToolStripButton(
-                    editorBox1.Theme.Words[i].Name));
+                    Editors_Theme.Words[i].Name));
                 MenuStrip_TokensWords.DropDownItems[currentItem].Name = "W" + i.ToString(CultureInfo.InvariantCulture);
                 MenuStrip_TokensWords.DropDownItems[currentItem].Click += MenuItem_TokensClick;
             }
             SetToLargest(MenuStrip_TokensWords.DropDownItems);
 
             while (MenuStrip_TokensSpans.DropDownItems.Count > 2) MenuStrip_TokensSpans.DropDownItems.RemoveAt(2);
-            for (var i = 0; i < editorBox1.Theme.Spans.Length; i++)
+            for (var i = 0; i < Editors_Theme.Spans.Length; i++)
             {
                 var currentItem = MenuStrip_TokensSpans.DropDownItems.Add(new ToolStripButton(
-                    editorBox1.Theme.Spans[i].Name));
+                    Editors_Theme.Spans[i].Name));
                 MenuStrip_TokensSpans.DropDownItems[currentItem].Name = "S" + i.ToString(CultureInfo.InvariantCulture);
                 MenuStrip_TokensSpans.DropDownItems[currentItem].Click += MenuItem_TokensClick;
             }
@@ -176,42 +182,43 @@ namespace ShaderIDE
                 if (int.TryParse(sendeMenu.Name.Substring(1), out currentIndex))
                 {
                     if (sendeMenu.Name[0] == 'V')
-                        if (_styleDialogWords.ShowDialog(editorBox1.Theme.ValueStyle, editorBox1.Theme.BackgroundColor) == DialogResult.OK)
+                        if (_styleDialogWords.ShowDialog(Editors_Theme.ValueStyle, Editors_Theme.BackgroundColor) == DialogResult.OK)
                         {
-                            var bufferTheme = editorBox1.Theme;
+                            var bufferTheme = Editors_Theme;
                             var microsoftsWeirdMarshalingWariningEliminator = _styleDialogWords.DialogOutput;
                             bufferTheme.ValueStyle = microsoftsWeirdMarshalingWariningEliminator.Style;
-                            editorBox1.Theme = bufferTheme;
+                            Editors_Theme = bufferTheme;
                         }
                     if (sendeMenu.Name[0] == 'D')
                     {
-                        if (_styleDialogDelimiters.ShowDialog(editorBox1.Theme.Delimiters[currentIndex], editorBox1.Theme.BackgroundColor) == DialogResult.OK)
+                        if (_styleDialogDelimiters.ShowDialog(Editors_Theme.Delimiters[currentIndex], Editors_Theme.BackgroundColor) == DialogResult.OK)
                         {
-                            editorBox1.Theme.Delimiters[currentIndex] = _styleDialogDelimiters.DialogOutput;
-                            MenuStrip_TokensDelimiter.DropDownItems[currentIndex + 2].Text = editorBox1.Theme.Delimiters[currentIndex].Name;
+                            Editors_Theme.Delimiters[currentIndex] = _styleDialogDelimiters.DialogOutput;
+                            MenuStrip_TokensDelimiter.DropDownItems[currentIndex + 2].Text = Editors_Theme.Delimiters[currentIndex].Name;
                             SetToLargest(MenuStrip_TokensDelimiter.DropDownItems);
                         }
                     }
                     if (sendeMenu.Name[0] == 'W')
-                        if (_styleDialogWords.ShowDialog(editorBox1.Theme.Words[currentIndex], editorBox1.Theme.BackgroundColor) == DialogResult.OK)
+                        if (_styleDialogWords.ShowDialog(Editors_Theme.Words[currentIndex], Editors_Theme.BackgroundColor) == DialogResult.OK)
                         {
-                            editorBox1.Theme.Words[currentIndex] = _styleDialogWords.DialogOutput;
-                            MenuStrip_TokensWords.DropDownItems[currentIndex + 2].Text = editorBox1.Theme.Words[currentIndex].Name;
+                            Editors_Theme.Words[currentIndex] = _styleDialogWords.DialogOutput;
+                            MenuStrip_TokensWords.DropDownItems[currentIndex + 2].Text = Editors_Theme.Words[currentIndex].Name;
                             SetToLargest(MenuStrip_TokensWords.DropDownItems);
                         }
 
                     if (sendeMenu.Name[0] == 'S')
                     {
-                        if (_styleDialogSpans.ShowDialog(editorBox1.Theme.Spans[currentIndex], editorBox1.Theme.BackgroundColor) == DialogResult.OK)
+                        if (_styleDialogSpans.ShowDialog(Editors_Theme.Spans[currentIndex], Editors_Theme.BackgroundColor) == DialogResult.OK)
                         {
-                            editorBox1.Theme.Spans[currentIndex] = _styleDialogSpans.DialogOutput;
-                            MenuStrip_TokensSpans.DropDownItems[currentIndex + 2].Text = editorBox1.Theme.Spans[currentIndex].Name;
+                            Editors_Theme.Spans[currentIndex] = _styleDialogSpans.DialogOutput;
+                            MenuStrip_TokensSpans.DropDownItems[currentIndex + 2].Text = Editors_Theme.Spans[currentIndex].Name;
                             SetToLargest(MenuStrip_TokensSpans.DropDownItems);
                         }
                     }
 
                 } //tryparse
                 editorBox1.ForceRedraw(sender, e);
+                editorBox2.ForceRedraw(sender, e);
             }//not null
             else Text = @"Null Reference in TokensClick";
         }
@@ -235,12 +242,13 @@ namespace ShaderIDE
             var senderObject = sender as ToolStripItem;
             if (senderObject != null)
             {
-                var bufferTheme = editorBox1.Theme;
-                if (senderObject.Tag.ToString() == "TXT_COLOR") bufferTheme.TextStyle.StyleColor = GetColorDialogResult(editorBox1.Theme.TextStyle.StyleColor);
-                if (senderObject.Tag.ToString() == "BG_COLOR") bufferTheme.BackgroundColor = GetColorDialogResult(editorBox1.Theme.BackgroundColor);
-                if (senderObject.Tag.ToString() == "LINE_COLOR") bufferTheme.CurrentLineColor = GetColorDialogResult(editorBox1.Theme.CurrentLineColor);
-                editorBox1.Theme = bufferTheme;
+                var bufferTheme = Editors_Theme;
+                if (senderObject.Tag.ToString() == "TXT_COLOR") bufferTheme.TextStyle.StyleColor = GetColorDialogResult(Editors_Theme.TextStyle.StyleColor);
+                if (senderObject.Tag.ToString() == "BG_COLOR") bufferTheme.BackgroundColor = GetColorDialogResult(Editors_Theme.BackgroundColor);
+                if (senderObject.Tag.ToString() == "LINE_COLOR") bufferTheme.CurrentLineColor = GetColorDialogResult(Editors_Theme.CurrentLineColor);
+                Editors_Theme = bufferTheme;
                 editorBox1.ForceRedraw(sender, e);
+                editorBox2.ForceRedraw(sender, e);
             }
             else Text = @"Null Reference in ColorClick";
         }
@@ -252,36 +260,37 @@ namespace ShaderIDE
             {
                 if (senderObject.Tag.ToString() == "DEL_NEW")
                     if (_styleDialogDelimiters.ShowDialog(
-                        new DelimiterStruct(editorBox1.Theme.TextStyle.StyleFont),
-                        editorBox1.Theme.BackgroundColor) == DialogResult.OK)
+                        new DelimiterStruct(Editors_Theme.TextStyle.StyleFont),
+                        Editors_Theme.BackgroundColor) == DialogResult.OK)
                     {
-                        var bufferTheme = editorBox1.Theme;
-                        bufferTheme.Delimiters = AppendArray(editorBox1.Theme.Delimiters, _styleDialogDelimiters.DialogOutput);
-                        editorBox1.Theme = bufferTheme;
+                        var bufferTheme = Editors_Theme;
+                        bufferTheme.Delimiters = AppendArray(Editors_Theme.Delimiters, _styleDialogDelimiters.DialogOutput);
+                        Editors_Theme = bufferTheme;
                     }
 
                 if (senderObject.Tag.ToString() == "WORD_NEW")
                     if (_styleDialogWords.ShowDialog(
-                        new WordStruct(editorBox1.Theme.TextStyle.StyleFont),
-                        editorBox1.Theme.BackgroundColor) == DialogResult.OK)
+                        new WordStruct(Editors_Theme.TextStyle.StyleFont),
+                        Editors_Theme.BackgroundColor) == DialogResult.OK)
                     {
-                        var bufferTheme = editorBox1.Theme;
-                        bufferTheme.Words = AppendArray(editorBox1.Theme.Words, _styleDialogWords.DialogOutput);
-                        editorBox1.Theme = bufferTheme;
+                        var bufferTheme = Editors_Theme;
+                        bufferTheme.Words = AppendArray(Editors_Theme.Words, _styleDialogWords.DialogOutput);
+                        Editors_Theme = bufferTheme;
                     }
 
                 if (senderObject.Tag.ToString() == "SPAN_NEW")
                     if (_styleDialogSpans.ShowDialog(
-                        new SpanStruct(editorBox1.Theme.TextStyle.StyleFont),
-                        editorBox1.Theme.BackgroundColor) == DialogResult.OK)
+                        new SpanStruct(Editors_Theme.TextStyle.StyleFont),
+                        Editors_Theme.BackgroundColor) == DialogResult.OK)
                     {
-                        var bufferTheme = editorBox1.Theme;
-                        bufferTheme.Spans = AppendArray(editorBox1.Theme.Spans, _styleDialogSpans.DialogOutput);
-                        editorBox1.Theme = bufferTheme;
+                        var bufferTheme = Editors_Theme;
+                        bufferTheme.Spans = AppendArray(Editors_Theme.Spans, _styleDialogSpans.DialogOutput);
+                        Editors_Theme = bufferTheme;
                     }
 
                 PopulateMenu();
                 editorBox1.ForceRedraw(sender, e);
+                editorBox2.ForceRedraw(sender, e);
             }
             else Text = @"Null Reference in NewTokensClick";
         }
@@ -508,7 +517,7 @@ namespace ShaderIDE
             var accumFormat = new ColorFormat(ContextSetupData.AccumRed, ContextSetupData.AccumGreen, ContextSetupData.AccumBlue, ContextSetupData.AccumAlpha);
 
             var mode = new GraphicsMode(colorFormat, ContextSetupData.Depth, ContextSetupData.Stencil, ContextSetupData.Samples, accumFormat, ContextSetupData.Buffers, ContextSetupData.Stereo);
-            if (_context != null) _context.Dispose();
+            _context?.Dispose();
             _context = new GraphicsContext(mode, _windowInfo, ContextSetupData.MajorVersion, ContextSetupData.MinorVersion, BoolToGraphContextFlags());
             _context.MakeCurrent(_windowInfo);
             (_context as IGraphicsContextInternal).LoadAll();
