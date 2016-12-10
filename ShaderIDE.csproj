@@ -82,7 +82,7 @@
       <DependentUpon>SpanStyleDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="StringSafeRemove.cs" />
-    <Compile Include="ThemeHelper.cs" />
+    <Compile Include="EditorBoxTheme.cs" />
     <Compile Include="UniformSetup.cs" />
     <Compile Include="ValueTypeBoxing.cs" />
     <Compile Include="WordStyleDialog.cs">
