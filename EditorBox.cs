@@ -25,7 +25,7 @@ namespace ShaderIDE
         #endregion
 
         #region Parser and Editor controls
-        public ThemeStruct Theme { get; set; }
+        public EditorBoxTheme Theme { get; set; }
         private bool _inParser;
         private Point _textboxBottomLeftPoint;
         private int _lineSelectionStart, _lineSelectionLength;
@@ -42,6 +42,16 @@ namespace ShaderIDE
 
             var result = double.TryParse(s.Trim().Replace('.', ',') , out doubleBuffer) | double.TryParse(s.Trim(), out doubleBuffer);
             return (result | (s.ToUpper() == "TRUE") | (s.ToUpper() == "FALSE"));
+        }
+
+        static private bool StyleEqual(FontAndColorStruct a, FontAndColorStruct b)
+        {
+            return (a.StyleColor == b.StyleColor) & (a.StyleFont.Equals(b.StyleFont));
+        }
+
+        static private bool TokenEqual(TokenStruct a, TokenStruct b)
+        {
+            return (a.Text == b.Text) & (StyleEqual(a.Style, b.Style));
         }
 
         private FontAndColorStruct GetDelimiterFont(char c)
@@ -273,7 +283,7 @@ namespace ShaderIDE
             ScrollBars = RichTextBoxScrollBars.ForcedBoth;
             WordWrap = false;
 
-            Theme = new ThemeStruct(Font, ForeColor, BackColor);
+            Theme = new EditorBoxTheme(Font, ForeColor, BackColor);
 
             _hoverToolTip.Active = true;
             _hoverTimer.Tick += hoverTimer_Tick;
@@ -295,7 +305,7 @@ namespace ShaderIDE
         {
             if (Theme.Name == "<Default>")
             {
-                Theme = new ThemeStruct(Font, ForeColor, BackColor);
+                Theme = new EditorBoxTheme(Font, ForeColor, BackColor);
             }
         }
 
@@ -355,11 +365,11 @@ namespace ShaderIDE
                     var lastMismatch = TokenList.Count - 1;
                     var tokenCountsDelta = TokenList.Count - _lastTokenList.Count;
 
-                    while (ThemeHelper.TokenEqual(TokenList[firstMismatch], _lastTokenList[firstMismatch]) & (firstMismatch < _lastTokenList.Count - 1))
+                    while (TokenEqual(TokenList[firstMismatch], _lastTokenList[firstMismatch]) & (firstMismatch < _lastTokenList.Count - 1))
                     {
                         firstMismatch++;
                     }
-                    while (ThemeHelper.TokenEqual(TokenList[lastMismatch], _lastTokenList[lastMismatch - tokenCountsDelta]) & (lastMismatch > (firstMismatch + tokenCountsDelta)))
+                    while (TokenEqual(TokenList[lastMismatch], _lastTokenList[lastMismatch - tokenCountsDelta]) & (lastMismatch > (firstMismatch + tokenCountsDelta)))
                     {
                         lastMismatch--;
                     }
@@ -375,11 +385,11 @@ namespace ShaderIDE
                     var lastMismatch = _lastTokenList.Count - 1;
                     var tokenCountsDelta = _lastTokenList.Count - TokenList.Count;
 
-                    while (ThemeHelper.TokenEqual(_lastTokenList[firstMismatch], TokenList[firstMismatch]) & (firstMismatch < TokenList.Count - 1))
+                    while (TokenEqual(_lastTokenList[firstMismatch], TokenList[firstMismatch]) & (firstMismatch < TokenList.Count - 1))
                     {
                         firstMismatch++;
                     }
-                    while (ThemeHelper.TokenEqual(_lastTokenList[lastMismatch], TokenList[lastMismatch - tokenCountsDelta]) & (lastMismatch > (firstMismatch + tokenCountsDelta)))
+                    while (TokenEqual(_lastTokenList[lastMismatch], TokenList[lastMismatch - tokenCountsDelta]) & (lastMismatch > (firstMismatch + tokenCountsDelta)))
                     {
                         lastMismatch--;
                     }

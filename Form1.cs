@@ -14,7 +14,7 @@ namespace ShaderIDE
     {
         #region Properties
 
-        private ThemeStruct Editors_Theme;
+        private EditorBoxTheme Editors_Theme = new EditorBoxTheme();
 
         #region Dialogs
         private readonly WordStyleDialog _styleDialogWords = new WordStyleDialog();
@@ -62,9 +62,11 @@ namespace ShaderIDE
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            Editors_Theme = ThemeHelper.DefaultGLSLDarkTheme(editorBox1.Font);
+            Editors_Theme.LoadDefaultGLSLDarkTheme(editorBox1.Font);
+
             editorBox1.Theme = Editors_Theme;
             editorBox2.Theme = Editors_Theme;
+
             PopulateMenu();
             editorBox1.Size = tabPage1.Size;
             editorBox2.Size = tabPage2.Size;
@@ -90,7 +92,7 @@ namespace ShaderIDE
             fontDialog1.Font = Editors_Theme.TextStyle.StyleFont;
             if (fontDialog1.ShowDialog() == DialogResult.OK)
             {
-                Editors_Theme = ThemeHelper.ChangeFont(Editors_Theme, fontDialog1.Font);
+                Editors_Theme.ChangeFont(fontDialog1.Font);
                 editorBox1.Font = fontDialog1.Font;
                 editorBox1.ForceRedraw(sender, e);
                 editorBox2.Font = fontDialog1.Font;
@@ -104,7 +106,7 @@ namespace ShaderIDE
             {
                 try
                 {
-                    ThemeHelper.SaveTheme(Editors_Theme, saveFileDialog1.FileName);
+                    Editors_Theme.SaveToFile(saveFileDialog1.FileName);
                 }
                 catch (Exception ex)
                 {
@@ -117,7 +119,7 @@ namespace ShaderIDE
         {
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                Editors_Theme = ThemeHelper.LoadTheme(Editors_Theme, openFileDialog1.FileName);
+                Editors_Theme.LoadFromFile(openFileDialog1.FileName);
                 PopulateMenu();
                 editorBox1.ForceRedraw(sender, e);
                 editorBox2.ForceRedraw(sender, e);
@@ -557,7 +559,6 @@ namespace ShaderIDE
 
         private void PropertiesListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-
             UniformMatrixControl.Enabled = false;
             UniformPropertyGrid.Enabled = false;
             UniformData[PropertiesListBox.SelectedIndex].EditProperty();
