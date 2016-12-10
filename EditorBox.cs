@@ -31,6 +31,7 @@ namespace ShaderIDE
         private int _lineSelectionStart, _lineSelectionLength;
         private int _lastSelectionStart, _lastSelectionLength;
         private int _lastNumLines;
+        private bool _ctrlKey;
         #endregion
 
         #endregion
@@ -279,9 +280,12 @@ namespace ShaderIDE
             MouseMove += EditorBox_MouseMove;
             ForeColorChanged += OnForeColorChanged;
             Disposed += OnDisposed;
-
+            MouseWheel += OnMouseWheel;
+            KeyDown += OnKeyDown;
+            KeyUp += OnKeyUp;
             ScrollBars = RichTextBoxScrollBars.ForcedBoth;
             WordWrap = false;
+            AcceptsTab = true;
 
             Theme = new EditorBoxTheme(Font, ForeColor, BackColor);
 
@@ -290,6 +294,31 @@ namespace ShaderIDE
             _hoverTimer.Interval = 100;
             _hoverTimer.Enabled = true;
 
+        }
+
+        private void OnKeyUp(object sender, KeyEventArgs keyEventArgs)
+        {
+            _ctrlKey = keyEventArgs.Control;
+        }
+
+        private void OnKeyDown(object sender, KeyEventArgs keyEventArgs)
+        {
+            _ctrlKey = keyEventArgs.Control;
+        }
+
+        private void OnMouseWheel(object sender, MouseEventArgs mouseEventArgs)
+        {
+            if (_ctrlKey)
+            {
+                if (mouseEventArgs.Delta > 0)
+                {
+                    if (ZoomFactor < 2.0f) ZoomFactor += 0.15f;
+                }
+                else
+                {
+                    if (ZoomFactor > 0.5f) ZoomFactor -= 0.15f;
+                }
+            }
         }
 
         private void OnDisposed(object sender, EventArgs eventArgs)
