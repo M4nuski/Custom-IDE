@@ -40,18 +40,18 @@ namespace ShaderIDE
         {
             double doubleBuffer;
 
-            var result = double.TryParse(s.Trim().Replace('.', ',') , out doubleBuffer) | double.TryParse(s.Trim(), out doubleBuffer);
-            return (result | (s.ToUpper() == "TRUE") | (s.ToUpper() == "FALSE"));
+            var result = double.TryParse(s.Trim(), out doubleBuffer) || double.TryParse(s.Trim().Replace('.', ',') , out doubleBuffer);
+            return (result || (s.ToUpper() == "TRUE") || (s.ToUpper() == "FALSE"));
         }
 
         static private bool StyleEqual(FontAndColorStruct a, FontAndColorStruct b)
         {
-            return (a.StyleColor == b.StyleColor) & (a.StyleFont.Equals(b.StyleFont));
+            return (a.StyleColor == b.StyleColor) && (a.StyleFont.Equals(b.StyleFont));
         }
 
         static private bool TokenEqual(TokenStruct a, TokenStruct b)
         {
-            return (a.Text == b.Text) & (StyleEqual(a.Style, b.Style));
+            return (a.Text == b.Text) && (StyleEqual(a.Style, b.Style));
         }
 
         private FontAndColorStruct GetDelimiterFont(char c)
@@ -120,7 +120,7 @@ namespace ShaderIDE
                 var firstSpanType = -1;
                 for (var j = 0; j < spanStartIndices.Length; j++)
                 {
-                    if ((spanStartIndices[j] >= 0) & (spanStartIndices[j] < firstSpanStartIndex))
+                    if ((spanStartIndices[j] >= 0) && (spanStartIndices[j] < firstSpanStartIndex))
                     {
                         firstSpanStartIndex = spanStartIndices[j];
                         firstSpanType = j;
@@ -144,7 +144,7 @@ namespace ShaderIDE
                     if (spanEndIndex == -1) spanEndIndex = line.Length;
 
                     // Skip Escape Char
-                    while ((spanEndIndex < line.Length) & (line[spanEndIndex - 1] == Theme.Spans[firstSpanType].EscapeChar))
+                    while ((spanEndIndex < line.Length) && (line[spanEndIndex - 1] == Theme.Spans[firstSpanType].EscapeChar))
                     {
                         spanEndIndex = line.IndexOf(Theme.Spans[firstSpanType].StopKeyword, spanEndIndex + 1, StringComparison.Ordinal);
                         if (spanEndIndex == -1) spanEndIndex = line.Length;
@@ -236,7 +236,7 @@ namespace ShaderIDE
             if (_currentMousePos == _lastMousePos)
             {
                 _hoverCount++;
-                if ((_hoverCount > 3) & (_hoverToolTip.Active))
+                if ((_hoverCount > 3) && (_hoverToolTip.Active))
                 {
                     var hoverLine = GetLineFromCharIndex(GetCharIndexFromPosition(_currentMousePos));
                     var hoverHint = Highlights.Where(hlLine => hlLine.LineNumber == hoverLine)
@@ -259,7 +259,7 @@ namespace ShaderIDE
         private void EditorBox_MouseMove(object sender, MouseEventArgs e)
         {
             _currentMousePos = e.Location;
-            if ((_currentMousePos != _lastMousePos) & (_hoverToolTip != null))
+            if ((_currentMousePos != _lastMousePos) && (_hoverToolTip != null))
             {
                 _hoverToolTip.Hide(this);
                 _hoverCount = 0;
@@ -317,7 +317,7 @@ namespace ShaderIDE
         private void EditorBox_Click(object sender, EventArgs e) //Redraw selections and background
         {
 
-            if (!_inParser & (TokenList != null))
+            if (!_inParser && (TokenList != null))
             {
                 if (_lastNumLines != Lines.Length)
                 {
@@ -326,14 +326,14 @@ namespace ShaderIDE
                 }
                 _inParser = true;
                 var dummyArray = new bool[TokenList.Count];
-                if ((_lastSelectionStart != SelectionStart) |
+                if ((_lastSelectionStart != SelectionStart) ||
                     (_lastSelectionLength != SelectionLength))
                 {
                     var startOffset = GetFirstCharIndexFromLine(GetLineFromCharIndex(_lastSelectionStart));
 
                     for (var i = 0; i < dummyArray.Length; i++)
                     {
-                        dummyArray[i] = (TokenList[i].Offset + 1 >= startOffset) &
+                        dummyArray[i] = (TokenList[i].Offset + 1 >= startOffset) &&
                              (TokenList[i].Offset - 1 <= _lastSelectionStart + _lastSelectionLength);
                     }
                     _lastSelectionStart = SelectionStart;
@@ -348,7 +348,7 @@ namespace ShaderIDE
         #region Editor Update
         public void ForceRedraw(object sender, EventArgs e)
         {
-            _lastTokenList = new List<TokenStruct>(); //Clear old list
+            _lastTokenList.Clear();// = new List<TokenStruct>(); //Clear old list
             _inParser = false;
             EditorBox_TextChanged(sender, e);
         }
@@ -357,7 +357,7 @@ namespace ShaderIDE
         {
             var result = new bool[TokenList.Count];
 
-            if ((TokenList.Count > 0) & (_lastTokenList.Count > 0))
+            if ((TokenList.Count > 0) && (_lastTokenList.Count > 0))
             {
                 if (TokenList.Count >= _lastTokenList.Count)
                 {
@@ -365,18 +365,18 @@ namespace ShaderIDE
                     var lastMismatch = TokenList.Count - 1;
                     var tokenCountsDelta = TokenList.Count - _lastTokenList.Count;
 
-                    while (TokenEqual(TokenList[firstMismatch], _lastTokenList[firstMismatch]) & (firstMismatch < _lastTokenList.Count - 1))
+                    while (TokenEqual(TokenList[firstMismatch], _lastTokenList[firstMismatch]) && (firstMismatch < _lastTokenList.Count - 1))
                     {
                         firstMismatch++;
                     }
-                    while (TokenEqual(TokenList[lastMismatch], _lastTokenList[lastMismatch - tokenCountsDelta]) & (lastMismatch > (firstMismatch + tokenCountsDelta)))
+                    while (TokenEqual(TokenList[lastMismatch], _lastTokenList[lastMismatch - tokenCountsDelta]) && (lastMismatch > (firstMismatch + tokenCountsDelta)))
                     {
                         lastMismatch--;
                     }
 
                     for (var j = 0; j < TokenList.Count; j++)
                     {
-                        result[j] = (j >= firstMismatch) & (j <= lastMismatch);
+                        result[j] = (j >= firstMismatch) && (j <= lastMismatch);
                     }
                 }
                 else
@@ -385,18 +385,18 @@ namespace ShaderIDE
                     var lastMismatch = _lastTokenList.Count - 1;
                     var tokenCountsDelta = _lastTokenList.Count - TokenList.Count;
 
-                    while (TokenEqual(_lastTokenList[firstMismatch], TokenList[firstMismatch]) & (firstMismatch < TokenList.Count - 1))
+                    while (TokenEqual(_lastTokenList[firstMismatch], TokenList[firstMismatch]) && (firstMismatch < TokenList.Count - 1))
                     {
                         firstMismatch++;
                     }
-                    while (TokenEqual(_lastTokenList[lastMismatch], TokenList[lastMismatch - tokenCountsDelta]) & (lastMismatch > (firstMismatch + tokenCountsDelta)))
+                    while (TokenEqual(_lastTokenList[lastMismatch], TokenList[lastMismatch - tokenCountsDelta]) && (lastMismatch > (firstMismatch + tokenCountsDelta)))
                     {
                         lastMismatch--;
                     }
 
                     for (var j = 0; j < TokenList.Count; j++)
                     {
-                        result[j] = (j >= firstMismatch) & (j <= lastMismatch);
+                        result[j] = (j >= firstMismatch) && (j <= lastMismatch);
                     }
                 }
             }
@@ -414,7 +414,7 @@ namespace ShaderIDE
 
         private void GetSelectionFromLine(int lineNumber)
         {
-            if ((Lines.Length > 0) & (lineNumber > -1))
+            if ((Lines.Length > 0) && (lineNumber > -1))
             {
                 var maxLine = Lines.Length - 1;
                 if (lineNumber < maxLine)

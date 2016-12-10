@@ -76,16 +76,16 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.UniformMatrixControl = new ShaderIDE.MatrixControl();
             this.PropertiesListBox = new System.Windows.Forms.ListBox();
             this.UniformPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.UniformListBox = new System.Windows.Forms.ListBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.editorBox2 = new ShaderIDE.EditorBox();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.editorBox1 = new ShaderIDE.EditorBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.directorySearcher1 = new System.DirectoryServices.DirectorySearcher();
-            this.editorBox1 = new ShaderIDE.EditorBox();
-            this.editorBox2 = new ShaderIDE.EditorBox();
-            this.UniformMatrixControl = new ShaderIDE.MatrixControl();
             this.menuStrip1.SuspendLayout();
             this.tabPage4.SuspendLayout();
             this.tabPage5.SuspendLayout();
@@ -186,7 +186,7 @@
             // 
             this.MenuStrip_ThemeLoad.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.MenuStrip_ThemeLoad.Name = "MenuStrip_ThemeLoad";
-            this.MenuStrip_ThemeLoad.Size = new System.Drawing.Size(112, 22);
+            this.MenuStrip_ThemeLoad.Size = new System.Drawing.Size(111, 22);
             this.MenuStrip_ThemeLoad.Text = "Load...";
             this.MenuStrip_ThemeLoad.Click += new System.EventHandler(this.MenuItem_LoadClick);
             // 
@@ -194,7 +194,7 @@
             // 
             this.MenuStrip_ThemeSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.MenuStrip_ThemeSave.Name = "MenuStrip_ThemeSave";
-            this.MenuStrip_ThemeSave.Size = new System.Drawing.Size(112, 22);
+            this.MenuStrip_ThemeSave.Size = new System.Drawing.Size(111, 22);
             this.MenuStrip_ThemeSave.Text = "Save...";
             this.MenuStrip_ThemeSave.Click += new System.EventHandler(this.MenuItem_SaveClick);
             // 
@@ -202,7 +202,7 @@
             // 
             this.MenuStrip_ThemeFont.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.MenuStrip_ThemeFont.Name = "MenuStrip_ThemeFont";
-            this.MenuStrip_ThemeFont.Size = new System.Drawing.Size(112, 22);
+            this.MenuStrip_ThemeFont.Size = new System.Drawing.Size(111, 22);
             this.MenuStrip_ThemeFont.Text = "Font";
             this.MenuStrip_ThemeFont.Click += new System.EventHandler(this.MenuItem_FontClick);
             // 
@@ -214,7 +214,7 @@
             this.MenuStrip_ColorsBackground,
             this.MenuStrip_ColorsCurrentline});
             this.MenuStrip_ThemeColors.Name = "MenuStrip_ThemeColors";
-            this.MenuStrip_ThemeColors.Size = new System.Drawing.Size(112, 22);
+            this.MenuStrip_ThemeColors.Size = new System.Drawing.Size(111, 22);
             this.MenuStrip_ThemeColors.Text = "Colors";
             // 
             // MenuStrip_ColorsText
@@ -250,7 +250,7 @@
             this.MenuStrip_TokensSpans,
             this.V0});
             this.MenuStrip_ThemeTokens.Name = "MenuStrip_ThemeTokens";
-            this.MenuStrip_ThemeTokens.Size = new System.Drawing.Size(112, 22);
+            this.MenuStrip_ThemeTokens.Size = new System.Drawing.Size(111, 22);
             this.MenuStrip_ThemeTokens.Text = "Tokens";
             // 
             // MenuStrip_TokensDelimiter
@@ -498,6 +498,17 @@
             this.label1.TabIndex = 4;
             this.label1.Text = "Uniforms From Shaders:";
             // 
+            // UniformMatrixControl
+            // 
+            this.UniformMatrixControl.BackColor = System.Drawing.SystemColors.Control;
+            this.UniformMatrixControl.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.UniformMatrixControl.Location = new System.Drawing.Point(522, 126);
+            this.UniformMatrixControl.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
+            this.UniformMatrixControl.Name = "UniformMatrixControl";
+            this.UniformMatrixControl.Size = new System.Drawing.Size(230, 412);
+            this.UniformMatrixControl.TabIndex = 3;
+            this.UniformMatrixControl.EnabledChanged += new System.EventHandler(this.UniformMatrixControl_EnabledChanged);
+            // 
             // PropertiesListBox
             // 
             this.PropertiesListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -597,6 +608,23 @@
             this.tabPage2.Text = "Fragment Shader";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // editorBox2
+            // 
+            this.editorBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.editorBox2.BackColor = System.Drawing.SystemColors.Window;
+            this.editorBox2.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.editorBox2.ForeColor = System.Drawing.Color.White;
+            this.editorBox2.Location = new System.Drawing.Point(0, 0);
+            this.editorBox2.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            this.editorBox2.Name = "editorBox2";
+            this.editorBox2.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
+            this.editorBox2.Size = new System.Drawing.Size(875, 432);
+            this.editorBox2.TabIndex = 0;
+            this.editorBox2.Text = resources.GetString("editorBox2.Text");
+            this.editorBox2.WordWrap = false;
+            // 
             // tabPage1
             // 
             this.tabPage1.Controls.Add(this.editorBox1);
@@ -607,6 +635,23 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Vertex Shader";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // editorBox1
+            // 
+            this.editorBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.editorBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.editorBox1.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.editorBox1.ForeColor = System.Drawing.Color.White;
+            this.editorBox1.Location = new System.Drawing.Point(0, 0);
+            this.editorBox1.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
+            this.editorBox1.Name = "editorBox1";
+            this.editorBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
+            this.editorBox1.Size = new System.Drawing.Size(875, 256);
+            this.editorBox1.TabIndex = 17;
+            this.editorBox1.Text = resources.GetString("editorBox1.Text");
+            this.editorBox1.WordWrap = false;
             // 
             // tabControl1
             // 
@@ -630,51 +675,6 @@
             this.directorySearcher1.ServerPageTimeLimit = System.TimeSpan.Parse("-00:00:01");
             this.directorySearcher1.ServerTimeLimit = System.TimeSpan.Parse("-00:00:01");
             // 
-            // editorBox1
-            // 
-            this.editorBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.editorBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.editorBox1.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.editorBox1.ForeColor = System.Drawing.Color.White;
-            this.editorBox1.Location = new System.Drawing.Point(0, 0);
-            this.editorBox1.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
-            this.editorBox1.Name = "editorBox1";
-            this.editorBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
-            this.editorBox1.Size = new System.Drawing.Size(875, 256);
-            this.editorBox1.TabIndex = 17;
-            this.editorBox1.Text = resources.GetString("editorBox1.Text");
-            this.editorBox1.WordWrap = false;
-            // 
-            // editorBox2
-            // 
-            this.editorBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.editorBox2.BackColor = System.Drawing.SystemColors.Window;
-            this.editorBox2.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.editorBox2.ForeColor = System.Drawing.Color.White;
-            this.editorBox2.Location = new System.Drawing.Point(0, 0);
-            this.editorBox2.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            this.editorBox2.Name = "editorBox2";
-            this.editorBox2.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
-            this.editorBox2.Size = new System.Drawing.Size(875, 432);
-            this.editorBox2.TabIndex = 0;
-            this.editorBox2.Text = resources.GetString("editorBox2.Text");
-            this.editorBox2.WordWrap = false;
-            // 
-            // UniformMatrixControl
-            // 
-            this.UniformMatrixControl.BackColor = System.Drawing.SystemColors.Control;
-            this.UniformMatrixControl.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.UniformMatrixControl.Location = new System.Drawing.Point(522, 126);
-            this.UniformMatrixControl.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
-            this.UniformMatrixControl.Name = "UniformMatrixControl";
-            this.UniformMatrixControl.Size = new System.Drawing.Size(230, 412);
-            this.UniformMatrixControl.TabIndex = 3;
-            this.UniformMatrixControl.EnabledChanged += new System.EventHandler(this.UniformMatrixControl_EnabledChanged);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -684,6 +684,7 @@
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.menuStrip1);
+            this.DoubleBuffered = true;
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;

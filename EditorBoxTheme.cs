@@ -101,18 +101,6 @@ namespace ShaderIDE
         public FontAndColorStruct TextStyle, ValueStyle;
         public Color BackgroundColor, CurrentLineColor;
 
-        public EditorBoxTheme()
-        {
-            Name = "<Empty>";
-            //BackgroundColor = backColor;
-            //CurrentLineColor = backColor;
-            //TextStyle = new FontAndColorStruct(prototypeFont, textColor);
-            //ValueStyle = new FontAndColorStruct(prototypeFont, textColor);
-            Delimiters = new DelimiterStruct[0];
-            Words = new WordStruct[0];
-            Spans = new SpanStruct[0];
-        }
-
         public EditorBoxTheme(Font prototypeFont, Color textColor, Color backColor)
         {
             Name = "<Default>";
@@ -434,7 +422,7 @@ namespace ShaderIDE
 
 
 
-        public  void LoadDefaultGLSLLightTheme(Font prototypeFont)
+        public void LoadDefaultGLSLLightTheme(Font prototypeFont)
         {
 
             Name = "Default GLSL Light";

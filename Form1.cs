@@ -14,7 +14,7 @@ namespace ShaderIDE
     {
         #region Properties
 
-        private EditorBoxTheme Editors_Theme = new EditorBoxTheme();
+        private EditorBoxTheme Editors_Theme;
 
         #region Dialogs
         private readonly WordStyleDialog _styleDialogWords = new WordStyleDialog();
@@ -62,6 +62,7 @@ namespace ShaderIDE
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            Editors_Theme = new EditorBoxTheme(editorBox1.Font, editorBox1.ForeColor, editorBox1.BackColor);
             Editors_Theme.LoadDefaultGLSLDarkTheme(editorBox1.Font);
 
             editorBox1.Theme = Editors_Theme;
