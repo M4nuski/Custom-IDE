@@ -28,9 +28,10 @@ namespace ShaderIDE
         #region PopBox
         // auto-complete listbox of keywords
         private ListBox _popBox = new ListBox();
+
         private string protoWord;
 
-        public List<string> PopBox_HintList = new List<string>();
+        public List<string> PopBox_HintList = new List<string>() {"TestString", "TestStatus", "OtherStuff", "OtterStemCell", "otherString","orgarnStirrer","origamiSterilCrab" };
         private List<string> _theme_HintList = new List<string>();
 
         public List<char> PopBox_DelimiterList = new List<char>() { ' ', '\n', ':', ';', '\t' };
@@ -297,6 +298,7 @@ namespace ShaderIDE
             ForeColorChanged += OnForeColorChanged;
             Disposed += OnDisposed;
 
+
             KeyDown += OnKeyDown;
             //KeyPress += OnKeyPress;
 
@@ -317,37 +319,6 @@ namespace ShaderIDE
             _popBox.BorderStyle = BorderStyle.FixedSingle;
             _popBox.ScrollAlwaysVisible = true;
             _popBox.Sorted = true;
-        }
-
-        private void OnKeyDown(object sender, KeyEventArgs keyEventArgs)
-        {
-            if (_popBox.Visible)
-            {
-                if (keyEventArgs.KeyCode == Keys.Up)
-                {
-                    //previous item
-                    if (_popBox.SelectedIndex > 0) _popBox.SelectedIndex--;
-                    keyEventArgs.Handled = true;
-                }
-                else if (keyEventArgs.KeyCode == Keys.Down)
-                {
-                    //next item
-                    if (_popBox.SelectedIndex < _popBox.Items.Count-1) _popBox.SelectedIndex++;
-                    keyEventArgs.Handled = true;
-                }
-                else if (keyEventArgs.KeyCode == Keys.Enter)
-                {
-                    //inject selected item
-                    SelectedText = _popBox.SelectedItem.ToString().Substring(protoWord.Length);
-                    _popBox.Visible = false;
-                    keyEventArgs.Handled = true;
-                }
-                else
-                {
-                    //close
-                    _popBox.Visible = false;
-                }
-            }
         }
 
         private void OnDisposed(object sender, EventArgs eventArgs)
@@ -593,28 +564,67 @@ namespace ShaderIDE
 
 
         #region Auto-Complete PopBox
-        private static bool compStart(string x, string y) //x = start of text, y = keyword
+
+        private static bool compProtoWithString(string proto, string keyword)
         {
-            var result = ((x.Length > 0) && (y.Length > 0) && (x.Length <= y.Length) && (x[0] == y[0]));
-            if (result)
+            return compStart(proto, keyword) || compCapitalLetters(proto, keyword);
+        }
+
+        private static bool compStart(string x, string y) //x = start of text, y = full keyword
+        {
+            var ordinal_result = ((x.Length > 0) && (y.Length > 0) && (x.Length <= y.Length) && (x[0] == y[0]));
+            if (ordinal_result)
             {
                 for (var i = 1; i < x.Length; i++)
                 {
-                    result &= (x[i] == y[i]);
+                    ordinal_result &= (x[i] == y[i]);
                 }
             }
-            return result;
+            return ordinal_result;
+        }
+
+        private static bool compCapitalLetters(string x, string y) //x = start of text, y = full keyword
+        {
+            var Capital_result = ((x.Length > 0) && (y.Length > 0) && (x.Length <= y.Length));
+
+            if (Capital_result)
+            {
+                x = x.ToUpperInvariant();
+
+                var capStr = y[0].ToString().ToUpperInvariant();
+                for (var i = 1; i < y.Length; i++)
+                {
+                    if (y[i].ToString().ToUpperInvariant() == y[i].ToString())
+                        capStr += y[i].ToString().ToUpperInvariant();
+                }
+
+                Capital_result = (x.Length <= capStr.Length);
+                if (Capital_result)
+                {
+                    for (var i = 0; i < x.Length; i++)
+                    {
+                        Capital_result &= (x[i] == capStr[i]);
+                    }
+                }
+            }
+            return Capital_result;
+        }
+
+
+        private int getOffsetOfPrecedingDelimiter(string text, int offset)
+        {
+            var carret = offset - 1;
+            while ((carret > 0) && !_theme_DelimiterList.Contains(text[carret]) && !PopBox_DelimiterList.Contains(text[carret]))
+            {
+                carret--;
+            } 
+            return carret;
         }
 
         private string getWordUntilOffset(string text, int endOffset)
         {
-            var carret = endOffset - 1;
-            while ((carret > 0) && !_theme_DelimiterList.Contains(text[carret]) && !PopBox_DelimiterList.Contains(text[carret]) )
-            {
-                carret--;
-            }
-            //if (carret < 0) carret = 0;
-            carret++;
+            var carret = getOffsetOfPrecedingDelimiter(text, endOffset);
+            carret++; // "until"
             return text.Substring(carret, endOffset - carret);
         }
 
@@ -631,23 +641,75 @@ namespace ShaderIDE
                     _popBox.Items.Clear();
                     foreach (var VARIABLE in _theme_HintList)
                     {
-                        if (compStart(protoWord, VARIABLE)) _popBox.Items.Add(VARIABLE);
+                        if (compProtoWithString(protoWord, VARIABLE)) _popBox.Items.Add(VARIABLE);
                     }
                     foreach (var VARIABLE in PopBox_HintList)
                     {
-                        if (compStart(protoWord, VARIABLE)) _popBox.Items.Add(VARIABLE);
+                        if (compProtoWithString(protoWord, VARIABLE)) _popBox.Items.Add(VARIABLE);
                     }
                     
                     if (_popBox.Items.Count > 0)
                     {
                         _popBox.Location = GetPositionFromCharIndex(SelectionStart);
                         _popBox.SelectedIndex = 0;
+
+                        _popBox.Width = longestItemWidth(_popBox);
                         _popBox.Visible = true;
                     }
                     else _popBox.Visible = false;
                 }
             }
         }
+
+        private int longestItemWidth(ListBox popBox)
+        {
+
+            var min = 10;
+            var lastGraphic = CreateGraphics();
+
+            for (var i = 0; i < popBox.Items.Count; i++)
+            {
+                var thisWidth = (int)lastGraphic.MeasureString(popBox.Items[i].ToString(), popBox.Font).Width;
+                if (thisWidth > min) min = thisWidth;
+            }
+
+            return min + SystemInformation.VerticalScrollBarWidth;
+        }
+
+        private void OnKeyDown(object sender, KeyEventArgs keyEventArgs)
+        {
+            if (_popBox.Visible)
+            {
+                if (keyEventArgs.KeyCode == Keys.Up)
+                {
+                    //previous item
+                    if (_popBox.SelectedIndex > 0) _popBox.SelectedIndex--;
+                    keyEventArgs.Handled = true;
+                }
+                else if (keyEventArgs.KeyCode == Keys.Down)
+                {
+                    //next item
+                    if (_popBox.SelectedIndex < _popBox.Items.Count - 1) _popBox.SelectedIndex++;
+                    keyEventArgs.Handled = true;
+                }
+                else if ((keyEventArgs.KeyCode == Keys.Enter) || (keyEventArgs.KeyCode == Keys.Tab))
+                {
+                    //inject selected item
+                    var injectionPoint = getOffsetOfPrecedingDelimiter(Text, SelectionStart);
+                    SelectionLength = SelectionStart - injectionPoint - 1;
+                    SelectionStart = injectionPoint + 1;
+                    SelectedText = _popBox.SelectedItem.ToString();
+                    _popBox.Visible = false;
+                    keyEventArgs.Handled = true;
+                }
+                else
+                {
+                    //close
+                    _popBox.Visible = false;
+                }
+            }
+        }
+
         #endregion
 
     }
