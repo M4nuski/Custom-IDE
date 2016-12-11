@@ -32,11 +32,11 @@ namespace ShaderIDE
         private string protoWord;
         private bool _tabInjection;
 
-        public List<string> PopBox_HintList = new List<string>() {"TestString", "TestStatus", "OtherStuff", "OtterStemCell", "otherString","orgarnStirrer","origamiSterilCrab" };
-        private List<string> _theme_HintList = new List<string>();
+        public List<string> AutoComplete_KeywordsList = new List<string>();
+        private List<string> _keywordsList = new List<string>();
 
-        public List<char> PopBox_DelimiterList = new List<char>() { ' ', '\n', ':', ';', '\t' };
-        private List<char> _theme_DelimiterList = new List<char>();
+        public List<char> AutoComplete_DelimiterList = new List<char>();
+        private List<char> _delimiterList = new List<char>();
         #endregion
 
         #region Parser and Editor controls
@@ -387,17 +387,22 @@ namespace ShaderIDE
             _popBox.ForeColor = Theme.TextStyle.StyleColor;
             _popBox.Font = Theme.TextStyle.StyleFont;
 
-            _theme_DelimiterList.Clear();
+            _delimiterList.Clear();
+            _delimiterList.Add('\n');
+
             foreach (var del_list in Theme.Delimiters)
             {
-                _theme_DelimiterList.AddRange(del_list.Keychars);
+                _delimiterList.AddRange(del_list.Keychars);
             }
+            _delimiterList.AddRange(AutoComplete_DelimiterList);
             
-            _theme_HintList.Clear();
+            _keywordsList.Clear();
             foreach (var word_list in Theme.Words)
             {
-                _theme_HintList.AddRange(word_list.Keywords);
+                _keywordsList.AddRange(word_list.Keywords);
             }
+            _keywordsList.AddRange(AutoComplete_KeywordsList);
+
         }
 
         private bool[] CheckForChanges()
@@ -616,7 +621,7 @@ namespace ShaderIDE
         private int getOffsetOfPrecedingDelimiter(string text, int offset)
         {
             var carret = offset - 1;
-            while ((carret > 0) && !_theme_DelimiterList.Contains(text[carret]) && !PopBox_DelimiterList.Contains(text[carret]))
+            while ((carret > 0) && !_delimiterList.Contains(text[carret]))
             {
                 carret--;
             } 
@@ -633,7 +638,7 @@ namespace ShaderIDE
         private void CheckForPopBox()
         {
             //check if current carret is not whitespace and text from start of line or last whitespace to current is available in list
-            if ( (SelectionStart > 0) && (!_theme_DelimiterList.Contains(Text[SelectionStart-1])) && (!PopBox_DelimiterList.Contains(Text[SelectionStart - 1]))) 
+            if ( (SelectionStart > 0) && (!_delimiterList.Contains(Text[SelectionStart-1]))) 
             {
                 protoWord = getWordUntilOffset(Text, SelectionStart);
 
@@ -641,11 +646,7 @@ namespace ShaderIDE
                 {
 
                     _popBox.Items.Clear();
-                    foreach (var VARIABLE in _theme_HintList)
-                    {
-                        if (compProtoWithString(protoWord, VARIABLE)) _popBox.Items.Add(VARIABLE);
-                    }
-                    foreach (var VARIABLE in PopBox_HintList)
+                    foreach (var VARIABLE in _keywordsList)
                     {
                         if (compProtoWithString(protoWord, VARIABLE)) _popBox.Items.Add(VARIABLE);
                     }
