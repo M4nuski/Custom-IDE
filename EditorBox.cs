@@ -30,6 +30,7 @@ namespace ShaderIDE
         private ListBox _popBox = new ListBox();
 
         private string protoWord;
+        private bool _tabInjection;
 
         public List<string> PopBox_HintList = new List<string>() {"TestString", "TestStatus", "OtherStuff", "OtterStemCell", "otherString","orgarnStirrer","origamiSterilCrab" };
         private List<string> _theme_HintList = new List<string>();
@@ -300,7 +301,7 @@ namespace ShaderIDE
 
 
             KeyDown += OnKeyDown;
-            //KeyPress += OnKeyPress;
+            KeyPress += OnKeyPress;
 
             Theme = new EditorBoxTheme(Font, ForeColor, BackColor);
 
@@ -320,6 +321,7 @@ namespace ShaderIDE
             _popBox.ScrollAlwaysVisible = true;
             _popBox.Sorted = true;
         }
+
 
         private void OnDisposed(object sender, EventArgs eventArgs)
         {
@@ -678,6 +680,7 @@ namespace ShaderIDE
 
         private void OnKeyDown(object sender, KeyEventArgs keyEventArgs)
         {
+            _tabInjection = false;
             if (_popBox.Visible)
             {
                 if (keyEventArgs.KeyCode == Keys.Up)
@@ -692,15 +695,14 @@ namespace ShaderIDE
                     if (_popBox.SelectedIndex < _popBox.Items.Count - 1) _popBox.SelectedIndex++;
                     keyEventArgs.Handled = true;
                 }
-                else if ((keyEventArgs.KeyCode == Keys.Enter) || (keyEventArgs.KeyCode == Keys.Tab))
+                else if (keyEventArgs.KeyCode == Keys.Enter)
                 {
-                    //inject selected item
-                    var injectionPoint = getOffsetOfPrecedingDelimiter(Text, SelectionStart);
-                    SelectionLength = SelectionStart - injectionPoint - 1;
-                    SelectionStart = injectionPoint + 1;
-                    SelectedText = _popBox.SelectedItem.ToString();
-                    _popBox.Visible = false;
+                    InjectKeyWord();
                     keyEventArgs.Handled = true;
+                }
+                else if (keyEventArgs.KeyCode == Keys.Tab)
+                {
+                    _tabInjection = true;
                 }
                 else
                 {
@@ -708,6 +710,24 @@ namespace ShaderIDE
                     _popBox.Visible = false;
                 }
             }
+        }
+
+        private void OnKeyPress(object sender, KeyPressEventArgs e)
+        {
+            if ((_tabInjection) && (e.KeyChar == '\t')) //tab override
+            {
+                InjectKeyWord();
+                e.Handled = true;
+            }
+        }
+
+        private void InjectKeyWord()
+        {
+            var injectionPoint = getOffsetOfPrecedingDelimiter(Text, SelectionStart);
+            SelectionLength = SelectionStart - injectionPoint - 1;
+            SelectionStart = injectionPoint + 1;
+            SelectedText = _popBox.SelectedItem.ToString();
+            _popBox.Visible = false;
         }
 
         #endregion
