@@ -318,7 +318,7 @@ namespace ShaderIDE
             _popBox.ScrollAlwaysVisible = true;
 
             //TODO remove and replace with method LoadKeywordsFromTheme and AddKeywords
-            theme_HintList.AddRange(new [] {"int", "float", "vec2", "vec3", "vec4", "mat2", "mat3", "mat4", "uniform", "gl_Position", "layout" ,"location", "min", "max", "mix", "clamp"});
+            theme_HintList.AddRange(new [] {"int", "float", "vec2", "vec3", "vec4", "mat3", "mat4", "normalize", "pow", "uniform", "gl_Position", "layout" ,"location", "min", "max", "mix", "clamp"});
 
         }
 
@@ -620,16 +620,20 @@ namespace ShaderIDE
 
                 if (protoWord != "")
                 {
-                    var list_from_theme = theme_HintList.Where(a => compStart(protoWord, a)).ToList();
-                    var list_from_aux = aux_HintList.Where(a => compStart(protoWord, a)).ToList();
 
                     _popBox.Items.Clear();
-                    _popBox.Items.AddRange(list_from_theme.ToArray());
-                    _popBox.Items.AddRange(list_from_aux.ToArray());
+                    foreach (var VARIABLE in theme_HintList)
+                    {
+                        if (compStart(protoWord, VARIABLE)) _popBox.Items.Add(VARIABLE);
+                    }
+                    foreach (var VARIABLE in aux_HintList)
+                    {
+                        if (compStart(protoWord, VARIABLE)) _popBox.Items.Add(VARIABLE);
+                    }
 
                     if (_popBox.Items.Count > 0)
                     {
-                        _popBox.Location = this.GetPositionFromCharIndex(this.SelectionStart);
+                        _popBox.Location = GetPositionFromCharIndex(SelectionStart);
                         _popBox.SelectedIndex = 0;
                         _popBox.Visible = true;
                     }
