@@ -27,6 +27,7 @@ namespace ShaderIDE
 
         #region PopBox
         private ListBox _popBox = new ListBox();
+        private string protoWord;
         public List<string> theme_HintList = new List<string>();
         public List<string> aux_HintList = new List<string>();
         public List<Tuple<string, string>> capital_autoComplete_HintList; 
@@ -317,73 +318,23 @@ namespace ShaderIDE
             _popBox.ScrollAlwaysVisible = true;
 
             //TODO remove and replace with method LoadKeywordsFromTheme and AddKeywords
-            theme_HintList.AddRange(new [] {"int", "float", "vec2", "vec3", "vec4", "mat2", "mat3", "mat4", "uniform", "gl_Position", "min", "max", "mix", "clamp"});
+            theme_HintList.AddRange(new [] {"int", "float", "vec2", "vec3", "vec4", "mat2", "mat3", "mat4", "uniform", "gl_Position", "layout" ,"location", "min", "max", "mix", "clamp"});
 
         }
 
-        private bool compStart(string x, string y) //x = start of text, y = keyword
+        private static bool compStart(string x, string y) //x = start of text, y = keyword
         {
             var result = ((x.Length > 0) && (y.Length > 0) && (x.Length <= y.Length) && (x[0] == y[0]));
             if (result)
             {
                 for (var i = 1; i < x.Length; i++)
                 {
-                    result |= x[i] == y[i];
+                    result &= (x[i] == y[i]);
                 }
             }
             return result;
         }
 
-
-
-
-        private void OnKeyPress(object sender, KeyPressEventArgs keyPressEventArgs)
-        {
-            if (!_popBox.Visible)
-            {
-                //check if current carret is not whitespace and text from start of line or last whitespace to current is available in list
-                if (!delimiterList.Contains(keyPressEventArgs.KeyChar))
-                {
-                    //var protoWord = "";
-                    //var lineStart = this.GetFirstCharIndexFromLine(GetLineFromCharIndex(this.SelectionStart));
-                    //var currentLine = this.Text.Substring(lineStart, SelectionStart - lineStart);
-                    //var checkIndex = currentLine.LastIndexOfAny(delimiterList.ToArray());//todo optimize to array
-
-                    //if (checkIndex == -1)
-                    //{
-                    //    protoWord = currentLine;
-                    //}
-                    //else 
-                    //if ((lineStart + checkIndex) < SelectionStart)
-                    //{
-                    //    protoWord = Text.Substring(lineStart + checkIndex, SelectionStart - lineStart - checkIndex);
-                    //}
-
-
-                    var protoWord = getWordUntilOffset(Text, SelectionStart);
-
-                    if (protoWord != "")
-                    {
-                        var list_from_theme = theme_HintList.Where(a => compStart(protoWord, a)).ToList();
-                        var list_from_aux = aux_HintList.Where(a => compStart(protoWord, a)).ToList();
-
-                        _popBox.Items.Clear();
-                        _popBox.Items.AddRange(list_from_theme.ToArray());
-                        _popBox.Items.AddRange(list_from_aux.ToArray());
-
-                        if (_popBox.Items.Count > 0)
-                        {
-                            _popBox.Location = this.GetPositionFromCharIndex(this.SelectionStart);
-                            _popBox.SelectedIndex = 0;
-                            _popBox.Visible = true;
-                        }
-                    }
-
-
-
-                }
-            }
-        }
 
         private void OnKeyDown(object sender, KeyEventArgs keyEventArgs)
         {
@@ -393,16 +344,20 @@ namespace ShaderIDE
                 {
                     //previous item
                     if (_popBox.SelectedIndex > 0) _popBox.SelectedIndex--;
+                    keyEventArgs.Handled = true;
                 }
                 else if (keyEventArgs.KeyCode == Keys.Down)
                 {
                     //next item
                     if (_popBox.SelectedIndex < _popBox.Items.Count-1) _popBox.SelectedIndex++;
+                    keyEventArgs.Handled = true;
                 }
                 else if (keyEventArgs.KeyCode == Keys.Enter)
                 {
                     //inject selected item
+                    SelectedText = _popBox.SelectedItem.ToString().Substring(protoWord.Length);
                     _popBox.Visible = false;
+                    keyEventArgs.Handled = true;
                 }
                 else
                 {
@@ -661,7 +616,7 @@ namespace ShaderIDE
             //check if current carret is not whitespace and text from start of line or last whitespace to current is available in list
             if ((SelectionStart > 0) && (!delimiterList.Contains(Text[SelectionStart-1]) )   )
             {
-                var protoWord = getWordUntilOffset(Text, SelectionStart);
+                protoWord = getWordUntilOffset(Text, SelectionStart);
 
                 if (protoWord != "")
                 {
