@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 
 namespace ShaderIDE
@@ -17,12 +18,23 @@ namespace ShaderIDE
 
         #region Properties
 
-        #region Tooptip
+        #region Tooltip
         private Point _lastMousePos, _currentMousePos;
         private int _hoverCount;
         private readonly ToolTip _hoverToolTip = new ToolTip();
         private readonly Timer _hoverTimer = new Timer();
         #endregion
+
+        #region PopBox
+        private ListBox _popBox = new ListBox();
+        public List<string> theme_HintList = new List<string>();
+        public List<string> aux_HintList = new List<string>();
+        public List<Tuple<string, string>> capital_autoComplete_HintList; 
+        private List<char> delimiterList = new List<char>() { ' ', '\n', ':', ';', '\t' }; 
+        //private readonly Timer _popTimer = new Timer();
+        //TODO add context list
+        //TODO add uppercase letter keyword
+        #endregion  
 
         #region Parser and Editor controls
         public EditorBoxTheme Theme { get; set; }
@@ -31,7 +43,6 @@ namespace ShaderIDE
         private int _lineSelectionStart, _lineSelectionLength;
         private int _lastSelectionStart, _lastSelectionLength;
         private int _lastNumLines;
-
         #endregion
 
         #endregion
@@ -39,8 +50,8 @@ namespace ShaderIDE
         #region Parsing / Tokens
         private static bool IsValue(string s)
         {
-            double doubleBuffer;
-
+            double doubleBuffer; 
+            
             var result = double.TryParse(s.Trim(), out doubleBuffer) || double.TryParse(s.Trim().Replace('.', ',') , out doubleBuffer);
             return (result || (s.ToUpper() == "TRUE") || (s.ToUpper() == "FALSE"));
         }
@@ -65,12 +76,12 @@ namespace ShaderIDE
                 {
                     return delimiterStruct.Style;
                 }
-            }
+            } 
             return Theme.TextStyle;
         }
 
         private FontAndColorStruct GetWordFont(string s)
-        {
+        { 
             if (Theme.Words != null)
             {
                 foreach (var wordStruct in Theme.Words.Where(wordStruct => wordStruct.Keywords.Contains(s)))
@@ -274,15 +285,19 @@ namespace ShaderIDE
             _lastTokenList = new List<TokenStruct>();
             _inParser = false;
 
+            ScrollBars = RichTextBoxScrollBars.ForcedBoth;
+            WordWrap = false;
+            AcceptsTab = true;
+
             TextChanged += EditorBox_TextChanged;
             Resize += EditorBox_Resize;
             Click += EditorBox_Click;
             MouseMove += EditorBox_MouseMove;
             ForeColorChanged += OnForeColorChanged;
             Disposed += OnDisposed;
-            ScrollBars = RichTextBoxScrollBars.ForcedBoth;
-            WordWrap = false;
-            AcceptsTab = true;
+
+            KeyDown += OnKeyDown;
+            //KeyPress += OnKeyPress;
 
             Theme = new EditorBoxTheme(Font, ForeColor, BackColor);
 
@@ -291,6 +306,110 @@ namespace ShaderIDE
             _hoverTimer.Interval = 100;
             _hoverTimer.Enabled = true;
 
+            Controls.Add(_popBox);
+
+            _popBox.BackColor = BackColor;
+            _popBox.ForeColor = ForeColor;
+            _popBox.Font = Font;
+            _popBox.Visible = false;
+            _popBox.Size = new Size(120, 78);
+            _popBox.BorderStyle = BorderStyle.FixedSingle;
+            _popBox.ScrollAlwaysVisible = true;
+
+            //TODO remove and replace with method LoadKeywordsFromTheme and AddKeywords
+            theme_HintList.AddRange(new [] {"int", "float", "vec2", "vec3", "vec4", "mat2", "mat3", "mat4", "uniform", "gl_Position", "min", "max", "mix", "clamp"});
+
+        }
+
+        private bool compStart(string x, string y) //x = start of text, y = keyword
+        {
+            var result = ((x.Length > 0) && (y.Length > 0) && (x.Length <= y.Length) && (x[0] == y[0]));
+            if (result)
+            {
+                for (var i = 1; i < x.Length; i++)
+                {
+                    result |= x[i] == y[i];
+                }
+            }
+            return result;
+        }
+
+
+
+
+        private void OnKeyPress(object sender, KeyPressEventArgs keyPressEventArgs)
+        {
+            if (!_popBox.Visible)
+            {
+                //check if current carret is not whitespace and text from start of line or last whitespace to current is available in list
+                if (!delimiterList.Contains(keyPressEventArgs.KeyChar))
+                {
+                    //var protoWord = "";
+                    //var lineStart = this.GetFirstCharIndexFromLine(GetLineFromCharIndex(this.SelectionStart));
+                    //var currentLine = this.Text.Substring(lineStart, SelectionStart - lineStart);
+                    //var checkIndex = currentLine.LastIndexOfAny(delimiterList.ToArray());//todo optimize to array
+
+                    //if (checkIndex == -1)
+                    //{
+                    //    protoWord = currentLine;
+                    //}
+                    //else 
+                    //if ((lineStart + checkIndex) < SelectionStart)
+                    //{
+                    //    protoWord = Text.Substring(lineStart + checkIndex, SelectionStart - lineStart - checkIndex);
+                    //}
+
+
+                    var protoWord = getWordUntilOffset(Text, SelectionStart);
+
+                    if (protoWord != "")
+                    {
+                        var list_from_theme = theme_HintList.Where(a => compStart(protoWord, a)).ToList();
+                        var list_from_aux = aux_HintList.Where(a => compStart(protoWord, a)).ToList();
+
+                        _popBox.Items.Clear();
+                        _popBox.Items.AddRange(list_from_theme.ToArray());
+                        _popBox.Items.AddRange(list_from_aux.ToArray());
+
+                        if (_popBox.Items.Count > 0)
+                        {
+                            _popBox.Location = this.GetPositionFromCharIndex(this.SelectionStart);
+                            _popBox.SelectedIndex = 0;
+                            _popBox.Visible = true;
+                        }
+                    }
+
+
+
+                }
+            }
+        }
+
+        private void OnKeyDown(object sender, KeyEventArgs keyEventArgs)
+        {
+            if (_popBox.Visible)
+            {
+                if (keyEventArgs.KeyCode == Keys.Up)
+                {
+                    //previous item
+                    if (_popBox.SelectedIndex > 0) _popBox.SelectedIndex--;
+                }
+                else if (keyEventArgs.KeyCode == Keys.Down)
+                {
+                    //next item
+                    if (_popBox.SelectedIndex < _popBox.Items.Count-1) _popBox.SelectedIndex++;
+                }
+                else if (keyEventArgs.KeyCode == Keys.Enter)
+                {
+                    //inject selected item
+                    _popBox.Visible = false;
+                }
+                else
+                {
+                    //close
+                    _popBox.Visible = false;
+                }
+            }
         }
 
         private void OnDisposed(object sender, EventArgs eventArgs)
@@ -352,6 +471,14 @@ namespace ShaderIDE
             _lastTokenList.Clear();// = new List<TokenStruct>(); //Clear old list
             _inParser = false;
             EditorBox_TextChanged(sender, e);
+
+            _popBox.BackColor = Theme.BackgroundColor;
+            _popBox.ForeColor = Theme.TextStyle.StyleColor;
+            _popBox.Font = Theme.TextStyle.StyleFont;
+
+
+
+
         }
 
         private bool[] CheckForChanges()
@@ -512,9 +639,52 @@ namespace ShaderIDE
                 _inParser = true;
                 TokenList = TokenizeLines(Lines);
                 ReDraw(CheckForChanges());
+                CheckForPopBox();
                 _inParser = false;
             }
         }
+
+        private string getWordUntilOffset(string text, int endOffset)
+        {
+            var carret = endOffset - 1;
+            while ((carret > 0) && !delimiterList.Contains(text[carret]))
+            {
+                carret--;
+            }
+            //if (carret < 0) carret = 0;
+            carret++;
+            return text.Substring(carret, endOffset - carret);
+        }
+
+        private void CheckForPopBox()
+        {
+            //check if current carret is not whitespace and text from start of line or last whitespace to current is available in list
+            if ((SelectionStart > 0) && (!delimiterList.Contains(Text[SelectionStart-1]) )   )
+            {
+                var protoWord = getWordUntilOffset(Text, SelectionStart);
+
+                if (protoWord != "")
+                {
+                    var list_from_theme = theme_HintList.Where(a => compStart(protoWord, a)).ToList();
+                    var list_from_aux = aux_HintList.Where(a => compStart(protoWord, a)).ToList();
+
+                    _popBox.Items.Clear();
+                    _popBox.Items.AddRange(list_from_theme.ToArray());
+                    _popBox.Items.AddRange(list_from_aux.ToArray());
+
+                    if (_popBox.Items.Count > 0)
+                    {
+                        _popBox.Location = this.GetPositionFromCharIndex(this.SelectionStart);
+                        _popBox.SelectedIndex = 0;
+                        _popBox.Visible = true;
+                    }
+                    else _popBox.Visible = false;
+                }
+            }
+        }
+
+
+
         #endregion
     }
 }
