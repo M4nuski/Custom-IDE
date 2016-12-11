@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 
 namespace ShaderIDE
@@ -18,7 +17,8 @@ namespace ShaderIDE
 
         #region Properties
 
-        #region Tooltip
+        #region Tooltip 
+        // bubble with feedback from compiler messages
         private Point _lastMousePos, _currentMousePos;
         private int _hoverCount;
         private readonly ToolTip _hoverToolTip = new ToolTip();
@@ -26,16 +26,16 @@ namespace ShaderIDE
         #endregion
 
         #region PopBox
+        // auto-complete listbox of keywords
         private ListBox _popBox = new ListBox();
         private string protoWord;
-        public List<string> theme_HintList = new List<string>();
-        public List<string> aux_HintList = new List<string>();
-        public List<Tuple<string, string>> capital_autoComplete_HintList; 
-        private List<char> delimiterList = new List<char>() { ' ', '\n', ':', ';', '\t' }; 
-        //private readonly Timer _popTimer = new Timer();
-        //TODO add context list
-        //TODO add uppercase letter keyword
-        #endregion  
+
+        public List<string> PopBox_HintList = new List<string>();
+        private List<string> _theme_HintList = new List<string>();
+
+        public List<char> PopBox_DelimiterList = new List<char>() { ' ', '\n', ':', ';', '\t' };
+        private List<char> _theme_DelimiterList = new List<char>();
+        #endregion
 
         #region Parser and Editor controls
         public EditorBoxTheme Theme { get; set; }
@@ -316,25 +316,8 @@ namespace ShaderIDE
             _popBox.Size = new Size(120, 78);
             _popBox.BorderStyle = BorderStyle.FixedSingle;
             _popBox.ScrollAlwaysVisible = true;
-
-            //TODO remove and replace with method LoadKeywordsFromTheme and AddKeywords
-            theme_HintList.AddRange(new [] {"int", "float", "vec2", "vec3", "vec4", "mat3", "mat4", "normalize", "pow", "uniform", "gl_Position", "layout" ,"location", "min", "max", "mix", "clamp"});
-
+            _popBox.Sorted = true;
         }
-
-        private static bool compStart(string x, string y) //x = start of text, y = keyword
-        {
-            var result = ((x.Length > 0) && (y.Length > 0) && (x.Length <= y.Length) && (x[0] == y[0]));
-            if (result)
-            {
-                for (var i = 1; i < x.Length; i++)
-                {
-                    result &= (x[i] == y[i]);
-                }
-            }
-            return result;
-        }
-
 
         private void OnKeyDown(object sender, KeyEventArgs keyEventArgs)
         {
@@ -421,7 +404,7 @@ namespace ShaderIDE
         #endregion
 
         #region Editor Update
-        public void ForceRedraw(object sender, EventArgs e)
+        public void UpdateTheme(object sender, EventArgs e) 
         {
             _lastTokenList.Clear();// = new List<TokenStruct>(); //Clear old list
             _inParser = false;
@@ -431,9 +414,17 @@ namespace ShaderIDE
             _popBox.ForeColor = Theme.TextStyle.StyleColor;
             _popBox.Font = Theme.TextStyle.StyleFont;
 
-
-
-
+            _theme_DelimiterList.Clear();
+            foreach (var del_list in Theme.Delimiters)
+            {
+                _theme_DelimiterList.AddRange(del_list.Keychars);
+            }
+            
+            _theme_HintList.Clear();
+            foreach (var word_list in Theme.Words)
+            {
+                _theme_HintList.AddRange(word_list.Keywords);
+            }
         }
 
         private bool[] CheckForChanges()
@@ -598,11 +589,27 @@ namespace ShaderIDE
                 _inParser = false;
             }
         }
+        #endregion
+
+
+        #region Auto-Complete PopBox
+        private static bool compStart(string x, string y) //x = start of text, y = keyword
+        {
+            var result = ((x.Length > 0) && (y.Length > 0) && (x.Length <= y.Length) && (x[0] == y[0]));
+            if (result)
+            {
+                for (var i = 1; i < x.Length; i++)
+                {
+                    result &= (x[i] == y[i]);
+                }
+            }
+            return result;
+        }
 
         private string getWordUntilOffset(string text, int endOffset)
         {
             var carret = endOffset - 1;
-            while ((carret > 0) && !delimiterList.Contains(text[carret]))
+            while ((carret > 0) && !_theme_DelimiterList.Contains(text[carret]) && !PopBox_DelimiterList.Contains(text[carret]) )
             {
                 carret--;
             }
@@ -614,7 +621,7 @@ namespace ShaderIDE
         private void CheckForPopBox()
         {
             //check if current carret is not whitespace and text from start of line or last whitespace to current is available in list
-            if ((SelectionStart > 0) && (!delimiterList.Contains(Text[SelectionStart-1]) )   )
+            if ( (SelectionStart > 0) && (!_theme_DelimiterList.Contains(Text[SelectionStart-1])) && (!PopBox_DelimiterList.Contains(Text[SelectionStart - 1]))) 
             {
                 protoWord = getWordUntilOffset(Text, SelectionStart);
 
@@ -622,15 +629,15 @@ namespace ShaderIDE
                 {
 
                     _popBox.Items.Clear();
-                    foreach (var VARIABLE in theme_HintList)
+                    foreach (var VARIABLE in _theme_HintList)
                     {
                         if (compStart(protoWord, VARIABLE)) _popBox.Items.Add(VARIABLE);
                     }
-                    foreach (var VARIABLE in aux_HintList)
+                    foreach (var VARIABLE in PopBox_HintList)
                     {
                         if (compStart(protoWord, VARIABLE)) _popBox.Items.Add(VARIABLE);
                     }
-
+                    
                     if (_popBox.Items.Count > 0)
                     {
                         _popBox.Location = GetPositionFromCharIndex(SelectionStart);
@@ -641,9 +648,7 @@ namespace ShaderIDE
                 }
             }
         }
-
-
-
         #endregion
+
     }
 }

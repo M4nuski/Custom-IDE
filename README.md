@@ -5,7 +5,8 @@ C# Framework for building custom IDE.
 * Current Line Highlighting.
 * Dynamic Highlighting with popup text.
 * Loading and Saving of Theme and Editor Font
-* Default Theme
+* Default Themes
+* Code completion listbox of theme keywords and on-the-fly list of possibilities
 
 Current work-in-progress
 --------

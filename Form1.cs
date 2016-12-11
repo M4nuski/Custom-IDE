@@ -71,8 +71,8 @@ namespace ShaderIDE
             PopulateMenu();
             editorBox1.Size = tabPage1.Size;
             editorBox2.Size = tabPage2.Size;
-            editorBox1.ForceRedraw(sender, e);
-            editorBox2.ForceRedraw(sender, e);
+            editorBox1.UpdateTheme(sender, e);
+            editorBox2.UpdateTheme(sender, e);
             ContextPropertyGrid.SelectedObject = ContextSetupData;
             
             button1_Click(this, new EventArgs());
@@ -95,9 +95,9 @@ namespace ShaderIDE
             {
                 Editors_Theme.ChangeFont(fontDialog1.Font);
                 editorBox1.Font = fontDialog1.Font;
-                editorBox1.ForceRedraw(sender, e);
+                editorBox1.UpdateTheme(sender, e);
                 editorBox2.Font = fontDialog1.Font;
-                editorBox2.ForceRedraw(sender, e);
+                editorBox2.UpdateTheme(sender, e);
             }
         }
 
@@ -122,8 +122,8 @@ namespace ShaderIDE
             {
                 Editors_Theme.LoadFromFile(openFileDialog1.FileName);
                 PopulateMenu();
-                editorBox1.ForceRedraw(sender, e);
-                editorBox2.ForceRedraw(sender, e);
+                editorBox1.UpdateTheme(sender, e);
+                editorBox2.UpdateTheme(sender, e);
             }
         }
 
@@ -220,8 +220,8 @@ namespace ShaderIDE
                     }
 
                 } //tryparse
-                editorBox1.ForceRedraw(sender, e);
-                editorBox2.ForceRedraw(sender, e);
+                editorBox1.UpdateTheme(sender, e);
+                editorBox2.UpdateTheme(sender, e);
             }//not null
             else Text = @"Null Reference in TokensClick";
         }
@@ -250,8 +250,8 @@ namespace ShaderIDE
                 if (senderObject.Tag.ToString() == "BG_COLOR") bufferTheme.BackgroundColor = GetColorDialogResult(Editors_Theme.BackgroundColor);
                 if (senderObject.Tag.ToString() == "LINE_COLOR") bufferTheme.CurrentLineColor = GetColorDialogResult(Editors_Theme.CurrentLineColor);
                 Editors_Theme = bufferTheme;
-                editorBox1.ForceRedraw(sender, e);
-                editorBox2.ForceRedraw(sender, e);
+                editorBox1.UpdateTheme(sender, e);
+                editorBox2.UpdateTheme(sender, e);
             }
             else Text = @"Null Reference in ColorClick";
         }
@@ -292,8 +292,8 @@ namespace ShaderIDE
                     }
 
                 PopulateMenu();
-                editorBox1.ForceRedraw(sender, e);
-                editorBox2.ForceRedraw(sender, e);
+                editorBox1.UpdateTheme(sender, e);
+                editorBox2.UpdateTheme(sender, e);
             }
             else Text = @"Null Reference in NewTokensClick";
         }
@@ -417,7 +417,7 @@ namespace ShaderIDE
                     }
                     else
                     {
-                        editorBox1.ForceRedraw(this, new EventArgs());
+                        editorBox1.UpdateTheme(this, new EventArgs());
                     }
                 }
 
@@ -433,7 +433,7 @@ namespace ShaderIDE
                     }
                     else
                     {
-                        editorBox2.ForceRedraw(this, new EventArgs());
+                        editorBox2.UpdateTheme(this, new EventArgs());
                     }
                 }
                 timer1.Start();
@@ -485,8 +485,8 @@ namespace ShaderIDE
                 {
                     Console.Message(@"Program Link Failed.");
                 }
-                editorBox1.ForceRedraw(this, new EventArgs());
-                editorBox2.ForceRedraw(this, new EventArgs());
+                editorBox1.UpdateTheme(this, new EventArgs());
+                editorBox2.UpdateTheme(this, new EventArgs());
             }
         }
         #endregion
