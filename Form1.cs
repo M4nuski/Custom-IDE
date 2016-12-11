@@ -307,6 +307,7 @@ namespace ShaderIDE
 
         private void FindAndBind(EditorBox editor, int _program)
         {
+            editor.AutoComplete_KeywordsList.Clear();
             for (var i = 0; i < editor.Lines.Length; i++)
             {
                 var currentUniform = editor.Lines[i];
@@ -316,6 +317,9 @@ namespace ShaderIDE
                     var uniformStart = currentUniform.LastIndexOf(' ') + 1;
 
                     currentUniform = currentUniform.Substring(uniformStart, currentUniform.Length - uniformStart);
+
+                    editor.AutoComplete_KeywordsList.Add(currentUniform);
+
                     var uniInt = BindAndMsg(currentUniform, _program);
                     if (uniInt == -1)
                     {
@@ -329,6 +333,7 @@ namespace ShaderIDE
                     else
                     {
                         UniformListBox.Items.Add(currentUniform + ":" + uniInt.ToString("D"));
+
                     }
                 }
             }
