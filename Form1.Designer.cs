@@ -336,6 +336,7 @@
             this.MenuStrip_TopForceParse.Name = "MenuStrip_TopForceParse";
             this.MenuStrip_TopForceParse.Size = new System.Drawing.Size(79, 20);
             this.MenuStrip_TopForceParse.Text = "Force Parse";
+            this.MenuStrip_TopForceParse.Click += new System.EventHandler(this.MenuStrip_TopForceParse_Click);
             // 
             // compileShaderToolStripMenuItem
             // 
@@ -643,7 +644,7 @@
             this.editorBox1.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
             this.editorBox1.Name = "editorBox1";
             this.editorBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
-            this.editorBox1.Size = new System.Drawing.Size(875, 218);
+            this.editorBox1.Size = new System.Drawing.Size(875, 204);
             this.editorBox1.TabIndex = 17;
             this.editorBox1.Text = resources.GetString("editorBox1.Text");
             this.editorBox1.WordWrap = false;

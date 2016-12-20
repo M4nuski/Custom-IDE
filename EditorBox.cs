@@ -3,29 +3,36 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
+using Timer = System.Windows.Forms.Timer;
 
 namespace ShaderIDE
 {
-    sealed class EditorBox : RichTextBox
+    internal sealed class EditorBox : RichTextBox
     {
         #region Lists
+
         public List<TokenStruct> TokenList;
         private List<TokenStruct> _lastTokenList;
         public List<HighlightStruct> Highlights = new List<HighlightStruct>();
+
         #endregion
 
         #region Properties
 
         #region Tooltip 
+
         // bubble with feedback from compiler messages
         private Point _lastMousePos, _currentMousePos;
         private int _hoverCount;
         private readonly ToolTip _hoverToolTip = new ToolTip();
         private readonly Timer _hoverTimer = new Timer();
+
         #endregion
 
         #region PopBox
+
         // auto-complete listbox of keywords
         private ListBox _popBox = new ListBox();
 
@@ -37,34 +44,42 @@ namespace ShaderIDE
 
         public List<char> AutoComplete_DelimiterList = new List<char>();
         private List<char> _delimiterList = new List<char>();
+
         #endregion
 
         #region Parser and Editor controls
+
         public EditorBoxTheme Theme { get; set; }
         private bool _inParser;
         private Point _textboxBottomLeftPoint;
         private int _lineSelectionStart, _lineSelectionLength;
         private int _lastSelectionStart, _lastSelectionLength;
         private int _lastNumLines;
+        private bool _commandInjection;
+        private bool _commandInjectionReverse;
+        private char _commandFirstChar;
+
         #endregion
 
         #endregion
 
         #region Parsing / Tokens
+
         private static bool IsValue(string s)
         {
-            double doubleBuffer; 
-            
-            var result = double.TryParse(s.Trim(), out doubleBuffer) || double.TryParse(s.Trim().Replace('.', ',') , out doubleBuffer);
+            double doubleBuffer;
+
+            var result = double.TryParse(s.Trim(), out doubleBuffer) ||
+                         double.TryParse(s.Trim().Replace('.', ','), out doubleBuffer);
             return (result || (s.ToUpper() == "TRUE") || (s.ToUpper() == "FALSE"));
         }
 
-        static private bool StyleEqual(FontAndColorStruct a, FontAndColorStruct b)
+        private static bool StyleEqual(FontAndColorStruct a, FontAndColorStruct b)
         {
             return (a.StyleColor == b.StyleColor) && (a.StyleFont.Equals(b.StyleFont));
         }
 
-        static private bool TokenEqual(TokenStruct a, TokenStruct b)
+        private static bool TokenEqual(TokenStruct a, TokenStruct b)
         {
             return (a.Text == b.Text) && (StyleEqual(a.Style, b.Style));
         }
@@ -79,12 +94,12 @@ namespace ShaderIDE
                 {
                     return delimiterStruct.Style;
                 }
-            } 
+            }
             return Theme.TextStyle;
         }
 
         private FontAndColorStruct GetWordFont(string s)
-        { 
+        {
             if (Theme.Words != null)
             {
                 foreach (var wordStruct in Theme.Words.Where(wordStruct => wordStruct.Keywords.Contains(s)))
@@ -112,7 +127,7 @@ namespace ShaderIDE
                 {
                     result.AddRange(TokenizeLinePerDelimiter(line, textOffset));
                 }
-                textOffset += line.Length + 1;// implicit "\n",  +1 for "\r"
+                textOffset += line.Length + 1; // implicit "\n",  +1 for "\r"
             }
             return result;
         }
@@ -155,13 +170,16 @@ namespace ShaderIDE
                     }
 
                     // Find end of current Span
-                    var spanEndIndex = line.IndexOf(Theme.Spans[firstSpanType].StopKeyword, Theme.Spans[firstSpanType].StartKeyword.Length, StringComparison.Ordinal);
+                    var spanEndIndex = line.IndexOf(Theme.Spans[firstSpanType].StopKeyword,
+                        Theme.Spans[firstSpanType].StartKeyword.Length, StringComparison.Ordinal);
                     if (spanEndIndex == -1) spanEndIndex = line.Length;
 
                     // Skip Escape Char
-                    while ((spanEndIndex < line.Length) && (line[spanEndIndex - 1] == Theme.Spans[firstSpanType].EscapeChar))
+                    while ((spanEndIndex < line.Length) &&
+                           (line[spanEndIndex - 1] == Theme.Spans[firstSpanType].EscapeChar))
                     {
-                        spanEndIndex = line.IndexOf(Theme.Spans[firstSpanType].StopKeyword, spanEndIndex + 1, StringComparison.Ordinal);
+                        spanEndIndex = line.IndexOf(Theme.Spans[firstSpanType].StopKeyword, spanEndIndex + 1,
+                            StringComparison.Ordinal);
                         if (spanEndIndex == -1) spanEndIndex = line.Length;
                     }
 
@@ -185,7 +203,8 @@ namespace ShaderIDE
                     lineOffset += spanEndIndex;
                 }
                 else
-                {   // No more span in this line
+                {
+                    // No more span in this line
                     result.AddRange(TokenizeLinePerDelimiter(line, offset + lineOffset));
                     line = "";
                 }
@@ -243,9 +262,11 @@ namespace ShaderIDE
             }
             return result;
         }
+
         #endregion
 
         #region Tooltip Handling
+
         private void hoverTimer_Tick(object sender, EventArgs e)
         {
             if (_currentMousePos == _lastMousePos)
@@ -280,9 +301,11 @@ namespace ShaderIDE
                 _hoverCount = 0;
             }
         }
+
         #endregion
 
         #region Form Events
+
         public EditorBox()
         {
             _lastTokenList = new List<TokenStruct>();
@@ -301,6 +324,7 @@ namespace ShaderIDE
 
 
             KeyDown += OnKeyDown;
+            KeyUp += OnKeyUp;
             KeyPress += OnKeyPress;
 
             Theme = new EditorBoxTheme(Font, ForeColor, BackColor);
@@ -322,7 +346,6 @@ namespace ShaderIDE
             _popBox.Sorted = true;
         }
 
-
         private void OnDisposed(object sender, EventArgs eventArgs)
         {
             if (_hoverTimer != null)
@@ -342,7 +365,7 @@ namespace ShaderIDE
 
         private void EditorBox_Resize(object sender, EventArgs e)
         {
-            _textboxBottomLeftPoint = new Point(ClientSize) { Y = 1 };
+            _textboxBottomLeftPoint = new Point(ClientSize) {Y = 1};
         }
 
         private void EditorBox_Click(object sender, EventArgs e) //Redraw selections and background
@@ -365,7 +388,7 @@ namespace ShaderIDE
                     for (var i = 0; i < dummyArray.Length; i++)
                     {
                         dummyArray[i] = (TokenList[i].Offset + 1 >= startOffset) &&
-                             (TokenList[i].Offset - 1 <= _lastSelectionStart + _lastSelectionLength);
+                                        (TokenList[i].Offset - 1 <= _lastSelectionStart + _lastSelectionLength);
                     }
                     _lastSelectionStart = SelectionStart;
                     _lastSelectionLength = SelectionLength;
@@ -374,14 +397,14 @@ namespace ShaderIDE
                 _inParser = false;
             }
         }
+
         #endregion
 
         #region Editor Update
-        public void UpdateTheme(object sender, EventArgs e) 
+
+        public void UpdateTheme(object sender, EventArgs e)
         {
-            _lastTokenList.Clear();// = new List<TokenStruct>(); //Clear old list
-            _inParser = false;
-            EditorBox_TextChanged(sender, e);
+            ForceRedraw();
 
             _popBox.BackColor = Theme.BackgroundColor;
             _popBox.ForeColor = Theme.TextStyle.StyleColor;
@@ -395,7 +418,7 @@ namespace ShaderIDE
                 _delimiterList.AddRange(del_list.Keychars);
             }
             _delimiterList.AddRange(AutoComplete_DelimiterList);
-            
+
             _keywordsList.Clear();
             foreach (var word_list in Theme.Words)
             {
@@ -403,6 +426,13 @@ namespace ShaderIDE
             }
             _keywordsList.AddRange(AutoComplete_KeywordsList);
 
+        }
+
+        public void ForceRedraw()
+        {
+            _lastTokenList.Clear();
+            _inParser = false;
+            EditorBox_TextChanged(null, null);
         }
 
         private bool[] CheckForChanges()
@@ -417,11 +447,13 @@ namespace ShaderIDE
                     var lastMismatch = TokenList.Count - 1;
                     var tokenCountsDelta = TokenList.Count - _lastTokenList.Count;
 
-                    while (TokenEqual(TokenList[firstMismatch], _lastTokenList[firstMismatch]) && (firstMismatch < _lastTokenList.Count - 1))
+                    while (TokenEqual(TokenList[firstMismatch], _lastTokenList[firstMismatch]) &&
+                           (firstMismatch < _lastTokenList.Count - 1))
                     {
                         firstMismatch++;
                     }
-                    while (TokenEqual(TokenList[lastMismatch], _lastTokenList[lastMismatch - tokenCountsDelta]) && (lastMismatch > (firstMismatch + tokenCountsDelta)))
+                    while (TokenEqual(TokenList[lastMismatch], _lastTokenList[lastMismatch - tokenCountsDelta]) &&
+                           (lastMismatch > (firstMismatch + tokenCountsDelta)))
                     {
                         lastMismatch--;
                     }
@@ -437,11 +469,13 @@ namespace ShaderIDE
                     var lastMismatch = _lastTokenList.Count - 1;
                     var tokenCountsDelta = _lastTokenList.Count - TokenList.Count;
 
-                    while (TokenEqual(_lastTokenList[firstMismatch], TokenList[firstMismatch]) && (firstMismatch < TokenList.Count - 1))
+                    while (TokenEqual(_lastTokenList[firstMismatch], TokenList[firstMismatch]) &&
+                           (firstMismatch < TokenList.Count - 1))
                     {
                         firstMismatch++;
                     }
-                    while (TokenEqual(_lastTokenList[lastMismatch], TokenList[lastMismatch - tokenCountsDelta]) && (lastMismatch > (firstMismatch + tokenCountsDelta)))
+                    while (TokenEqual(_lastTokenList[lastMismatch], TokenList[lastMismatch - tokenCountsDelta]) &&
+                           (lastMismatch > (firstMismatch + tokenCountsDelta)))
                     {
                         lastMismatch--;
                     }
@@ -492,11 +526,11 @@ namespace ShaderIDE
             factor = (factor > 1.0f) ? 1.0f : (factor < 0) ? 0 : factor;
 
             var invFactor = 1.0f - factor;
-            var aa = (A.A * invFactor) + (B.A * factor);
-            var rr = (A.R * invFactor) + (B.R * factor);
-            var gg = (A.G * invFactor) + (B.G * factor);
-            var bb = (A.B * invFactor) + (B.B * factor);
-            return Color.FromArgb((int)(aa), (int)(rr), (int)(gg), (int)(bb));
+            var aa = (A.A*invFactor) + (B.A*factor);
+            var rr = (A.R*invFactor) + (B.R*factor);
+            var gg = (A.G*invFactor) + (B.G*factor);
+            var bb = (A.B*invFactor) + (B.B*factor);
+            return Color.FromArgb((int) (aa), (int) (rr), (int) (gg), (int) (bb));
         }
 
         private void ReDraw(bool[] changedList)
@@ -536,7 +570,9 @@ namespace ShaderIDE
             {
                 GetSelectionFromLine(currentHighlight.LineNumber);
                 Select(_lineSelectionStart, _lineSelectionLength);
-                SelectionBackColor = currentLineIndex != _lineSelectionStart ? currentHighlight.LineColor : MixColors(Theme.CurrentLineColor, currentHighlight.LineColor, 0.3f);
+                SelectionBackColor = currentLineIndex != _lineSelectionStart
+                    ? currentHighlight.LineColor
+                    : MixColors(Theme.CurrentLineColor, currentHighlight.LineColor, 0.3f);
             }
 
             // Reset View
@@ -567,6 +603,7 @@ namespace ShaderIDE
                 _inParser = false;
             }
         }
+
         #endregion
 
 
@@ -624,7 +661,7 @@ namespace ShaderIDE
             while ((carret > 0) && !_delimiterList.Contains(text[carret]))
             {
                 carret--;
-            } 
+            }
             return carret;
         }
 
@@ -638,7 +675,7 @@ namespace ShaderIDE
         private void CheckForPopBox()
         {
             //check if current carret is not whitespace and text from start of line or last whitespace to current is available in list
-            if ( (SelectionStart > 0) && (!_delimiterList.Contains(Text[SelectionStart-1]))) 
+            if ((SelectionStart > 0) && (!_delimiterList.Contains(Text[SelectionStart - 1])))
             {
                 protoWord = getWordUntilOffset(Text, SelectionStart);
 
@@ -650,7 +687,7 @@ namespace ShaderIDE
                     {
                         if (compProtoWithString(protoWord, VARIABLE)) _popBox.Items.Add(VARIABLE);
                     }
-                    
+
                     if (_popBox.Items.Count > 0)
                     {
                         _popBox.Location = GetPositionFromCharIndex(SelectionStart);
@@ -672,7 +709,7 @@ namespace ShaderIDE
 
             for (var i = 0; i < popBox.Items.Count; i++)
             {
-                var thisWidth = (int)lastGraphic.MeasureString(popBox.Items[i].ToString(), popBox.Font).Width;
+                var thisWidth = (int) lastGraphic.MeasureString(popBox.Items[i].ToString(), popBox.Font).Width;
                 if (thisWidth > min) min = thisWidth;
             }
 
@@ -707,20 +744,177 @@ namespace ShaderIDE
                 }
                 else
                 {
-                    //close
                     _popBox.Visible = false;
                 }
+            }
+
+            if (keyEventArgs.Alt) 
+            {
+                if (keyEventArgs.KeyCode == Keys.Up)
+                {
+                    moveLineUp();
+                    keyEventArgs.Handled = true;
+                }
+                if (keyEventArgs.KeyCode == Keys.Down)
+                {
+                    moveLineDown();
+                    keyEventArgs.Handled = true;
+                }
+            }
+
+            _commandInjection = keyEventArgs.Control;
+            _commandInjectionReverse = _commandInjection && keyEventArgs.Shift;
+        }
+
+        private void OnKeyUp(object sender, KeyEventArgs keyEventArgs)
+        {
+            if ((keyEventArgs.KeyCode == Keys.Up) || (keyEventArgs.KeyCode == Keys.Down) ||
+                (keyEventArgs.KeyCode == Keys.Left) || (keyEventArgs.KeyCode == Keys.Right))
+            {
+                EditorBox_Click(null, null);
+            }
+        }
+
+        private void moveLineDown()
+        {
+            var startLine = GetLineFromCharIndex(SelectionStart);
+            // var numLines = 1 + GetLineFromCharIndex(SelectionStart + SelectionLength) - startLine;
+            var endLine = GetLineFromCharIndex(SelectionStart + SelectionLength);
+            if (endLine < Lines.Length - 1)
+            {
+                var ssCopy = SelectionStart + Lines[endLine+1].Length + 1;
+                var slCopy = SelectionLength;
+                SuspendUpdate.Suspend(this);
+                //expand selection to all lines
+                var ss = GetFirstCharIndexFromLine(startLine);
+
+                var SelectionEnd = GetFirstCharIndexFromLine(endLine + 1);
+                var sl = SelectionEnd - ss;
+
+                SelectionStart = ss;
+                SelectionLength = sl;
+
+                //copy selection
+                var buffer = SelectedText;
+
+                //paste selection 
+                SelectionStart = GetFirstCharIndexFromLine(endLine + 2); 
+                SelectionLength = 0;
+                SelectedText = buffer;
+
+
+                //delete selection
+                SelectionStart = ss;
+                SelectionLength = sl;
+                SelectedText = "";
+
+                //reset selection
+                SelectionStart = ssCopy;
+                SelectionLength = slCopy;
+                SuspendUpdate.Resume(this);
+                //using Lines directly cause too much redrawing
+                //var ssCopy = SelectionStart;
+                //var slCopy = SelectionLength;
+
+                //var lcopy = Lines;
+
+                //lcopy[startLine] = Lines[startLine + numLines];
+
+                //for (var i = startLine; i < startLine + numLines; i++)
+                //{
+                //    lcopy[i+1] = Lines[i];
+                //}
+
+                //Lines = lcopy; 
+                //ForceRedraw();
+                //SelectionStart = ssCopy + lcopy[startLine].Length + 1;
+                //SelectionLength = slCopy;
+            }
+        }
+
+        private void moveLineUp()
+        {
+            var startLine = GetLineFromCharIndex(SelectionStart);
+            // var numLines = 1 + GetLineFromCharIndex(SelectionStart + SelectionLength) - startLine;
+            var endLine = GetLineFromCharIndex(SelectionStart + SelectionLength);
+            if (startLine > 0)
+            {
+                var ssCopy = SelectionStart - Lines[startLine - 1].Length - 1;
+                var slCopy = SelectionLength;
+                SuspendUpdate.Suspend(this);
+                //expand selection to all lines
+                var ss = GetFirstCharIndexFromLine(startLine);
+
+                var SelectionEnd = GetFirstCharIndexFromLine(endLine + 1);
+                var sl = SelectionEnd - ss;
+
+                SelectionStart = ss;
+                SelectionLength = sl;
+
+                //copy selection
+                var buffer = SelectedText;
+
+                //delete selection
+             //   SelectionStart = ss;
+             //   SelectionLength = sl;
+                SelectedText = "";
+
+                //paste selection 
+                SelectionStart = GetFirstCharIndexFromLine(startLine - 1);
+                SelectionLength = 0;
+                SelectedText = buffer;
+
+
+
+                //reset selection
+                SelectionStart = ssCopy;
+                SelectionLength = slCopy;
+                SuspendUpdate.Resume(this);
             }
         }
 
         private void OnKeyPress(object sender, KeyPressEventArgs e)
         {
-            if ((_tabInjection) && (e.KeyChar == '\t')) //tab override
+            if (e.KeyChar == '\t') //tab override 
             {
-                InjectKeyWord();
-                e.Handled = true;
+                if (_tabInjection)
+                {
+                    InjectKeyWord();
+                    e.Handled = true;
+                }
+                else
+                {
+                    //multiline tab
+                }
+            }
+
+            if (_commandInjection)
+            {
+                if (char.IsLetter(e.KeyChar))
+                {
+                    if (_commandFirstChar == char.MinValue)
+                    {
+                        _commandFirstChar = e.KeyChar;
+                    }
+                    else
+                    {
+                        //command 
+                        //kc multiline comment
+                        //kf multiline format
+
+                    }
+                }
+                else
+                {
+                    _commandFirstChar = char.MinValue;
+                }
+            }
+            else
+            {
+                _commandFirstChar = char.MinValue;
             }
         }
+
 
         private void InjectKeyWord()
         {

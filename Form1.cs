@@ -584,5 +584,11 @@ namespace ShaderIDE
         {
             if (UniformMatrixControl.Enabled) UniformPropertyGrid.Enabled = false;
         }
+
+        private void MenuStrip_TopForceParse_Click(object sender, EventArgs e)
+        {
+            editorBox1.ForceRedraw();
+            editorBox2.ForceRedraw();
+        }
     }//class
 }//namespace
