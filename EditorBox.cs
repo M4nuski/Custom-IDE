@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
-using System.Threading;
 using System.Windows.Forms;
-using Timer = System.Windows.Forms.Timer;
 
 namespace ShaderIDE
 {
@@ -383,6 +381,8 @@ namespace ShaderIDE
                 if ((_lastSelectionStart != SelectionStart) ||
                     (_lastSelectionLength != SelectionLength))
                 {
+
+
                     var startOffset = GetFirstCharIndexFromLine(GetLineFromCharIndex(_lastSelectionStart));
 
                     for (var i = 0; i < dummyArray.Length; i++)
@@ -763,7 +763,7 @@ namespace ShaderIDE
             }
 
             _commandInjection = keyEventArgs.Control;
-            _commandInjectionReverse = _commandInjection && keyEventArgs.Shift;
+            _commandInjectionReverse = keyEventArgs.Shift;
         }
 
         private void OnKeyUp(object sender, KeyEventArgs keyEventArgs)
@@ -778,13 +778,14 @@ namespace ShaderIDE
         private void moveLineDown()
         {
             var startLine = GetLineFromCharIndex(SelectionStart);
-            // var numLines = 1 + GetLineFromCharIndex(SelectionStart + SelectionLength) - startLine;
             var endLine = GetLineFromCharIndex(SelectionStart + SelectionLength);
+
             if (endLine < Lines.Length - 1)
             {
                 var ssCopy = SelectionStart + Lines[endLine+1].Length + 1;
                 var slCopy = SelectionLength;
                 SuspendUpdate.Suspend(this);
+
                 //expand selection to all lines
                 var ss = GetFirstCharIndexFromLine(startLine);
 
@@ -802,7 +803,6 @@ namespace ShaderIDE
                 SelectionLength = 0;
                 SelectedText = buffer;
 
-
                 //delete selection
                 SelectionStart = ss;
                 SelectionLength = sl;
@@ -812,36 +812,20 @@ namespace ShaderIDE
                 SelectionStart = ssCopy;
                 SelectionLength = slCopy;
                 SuspendUpdate.Resume(this);
-                //using Lines directly cause too much redrawing
-                //var ssCopy = SelectionStart;
-                //var slCopy = SelectionLength;
-
-                //var lcopy = Lines;
-
-                //lcopy[startLine] = Lines[startLine + numLines];
-
-                //for (var i = startLine; i < startLine + numLines; i++)
-                //{
-                //    lcopy[i+1] = Lines[i];
-                //}
-
-                //Lines = lcopy; 
-                //ForceRedraw();
-                //SelectionStart = ssCopy + lcopy[startLine].Length + 1;
-                //SelectionLength = slCopy;
             }
         }
 
         private void moveLineUp()
         {
             var startLine = GetLineFromCharIndex(SelectionStart);
-            // var numLines = 1 + GetLineFromCharIndex(SelectionStart + SelectionLength) - startLine;
             var endLine = GetLineFromCharIndex(SelectionStart + SelectionLength);
+
             if (startLine > 0)
             {
                 var ssCopy = SelectionStart - Lines[startLine - 1].Length - 1;
                 var slCopy = SelectionLength;
                 SuspendUpdate.Suspend(this);
+
                 //expand selection to all lines
                 var ss = GetFirstCharIndexFromLine(startLine);
 
@@ -855,16 +839,12 @@ namespace ShaderIDE
                 var buffer = SelectedText;
 
                 //delete selection
-             //   SelectionStart = ss;
-             //   SelectionLength = sl;
                 SelectedText = "";
 
                 //paste selection 
                 SelectionStart = GetFirstCharIndexFromLine(startLine - 1);
                 SelectionLength = 0;
                 SelectedText = buffer;
-
-
 
                 //reset selection
                 SelectionStart = ssCopy;
@@ -877,14 +857,12 @@ namespace ShaderIDE
         {
             if (e.KeyChar == '\t') //tab override 
             {
-                if (_tabInjection)
+               e.Handled = MultilineTab();
+
+                if (_tabInjection && !e.Handled)
                 {
                     InjectKeyWord();
                     e.Handled = true;
-                }
-                else
-                {
-                    //multiline tab
                 }
             }
 
@@ -915,6 +893,47 @@ namespace ShaderIDE
             }
         }
 
+        private bool MultilineTab()
+        {
+            var startLine = GetLineFromCharIndex(SelectionStart);
+            var endLine = GetLineFromCharIndex(SelectionStart + SelectionLength);
+            if (startLine != endLine)
+            {
+                var ssCopy = SelectionStart;
+                var slCopy = SelectionLength;
+                SuspendUpdate.Suspend(this);
+
+                for (var i = startLine; i <= endLine; i++)
+                {
+                    SelectionStart = GetFirstCharIndexFromLine(i);
+                    SelectionLength = 0;
+                    if (!_commandInjectionReverse)
+                    {
+                        SelectionLength = 0;
+                        SelectedText = "\t";
+                        if (i == startLine) ssCopy++;
+                        else slCopy++;
+                    }
+                    else
+                    {
+                        SelectionLength = 1;
+                        if (SelectedText == "\t")
+                        {
+                            SelectedText = "";
+                            if (i == startLine) ssCopy--;
+                            else slCopy--;
+                        }
+                    }
+                }
+
+                SelectionStart = ssCopy;
+                SelectionLength = slCopy;
+
+                SuspendUpdate.Resume(this);
+                return true;
+            }
+            return false;
+        }
 
         private void InjectKeyWord()
         {
