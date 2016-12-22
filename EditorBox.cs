@@ -53,9 +53,9 @@ namespace ShaderIDE
         private int _lineSelectionStart, _lineSelectionLength;
         private int _lastSelectionStart, _lastSelectionLength;
         private int _lastNumLines;
-        private bool _commandInjection;
+        //private bool _commandInjection;
         private bool _commandInjectionReverse;
-        private char _commandFirstChar;
+        private Keys _commandFirstKey, _commandSecondKey;
 
         #endregion
 
@@ -762,8 +762,28 @@ namespace ShaderIDE
                 }
             }
 
-            _commandInjection = keyEventArgs.Control;
+          //  _commandInjection = keyEventArgs.Control;
             _commandInjectionReverse = keyEventArgs.Shift;
+
+            _commandFirstKey = _commandSecondKey;
+            _commandSecondKey = keyEventArgs.KeyCode;
+
+            if (keyEventArgs.Control)
+            {
+                //command 
+                if ((_commandFirstKey == Keys.K) && (_commandSecondKey == Keys.C))
+                { //kc multiline comment
+                    keyEventArgs.Handled = MultilineComment();
+
+                }
+                if ((_commandFirstKey == Keys.K) && (_commandSecondKey == Keys.F))
+                { //kf multiline format
+
+                }
+            }
+
+            
+
         }
 
         private void OnKeyUp(object sender, KeyEventArgs keyEventArgs)
@@ -865,32 +885,46 @@ namespace ShaderIDE
                     e.Handled = true;
                 }
             }
+        }
 
-            if (_commandInjection)
+        private bool MultilineComment()
+        {
+            var startLine = GetLineFromCharIndex(SelectionStart);
+            var endLine = GetLineFromCharIndex(SelectionStart + SelectionLength);
+
+            var ssCopy = SelectionStart;
+            var slCopy = SelectionLength;
+            SuspendUpdate.Suspend(this);
+
+            for (var i = startLine; i <= endLine; i++)
             {
-                if (char.IsLetter(e.KeyChar))
+                SelectionStart = GetFirstCharIndexFromLine(i);
+                SelectionLength = 0;
+                if (!_commandInjectionReverse)
                 {
-                    if (_commandFirstChar == char.MinValue)
-                    {
-                        _commandFirstChar = e.KeyChar;
-                    }
-                    else
-                    {
-                        //command 
-                        //kc multiline comment
-                        //kf multiline format
-
-                    }
+                    SelectionLength = 0;
+                    SelectedText = "//";
+                    if (i == startLine) ssCopy += "//".Length;
+                    else slCopy += "//".Length;
                 }
                 else
                 {
-                    _commandFirstChar = char.MinValue;
+                    SelectionLength = "//".Length;
+                    if (SelectedText == "//")
+                    {
+                        SelectedText = "";
+                        if (i == startLine) ssCopy -= "//".Length;
+                        else slCopy -= "//".Length;
+                    }
                 }
             }
-            else
-            {
-                _commandFirstChar = char.MinValue;
-            }
+
+            SelectionStart = ssCopy;
+            SelectionLength = slCopy;
+
+            SuspendUpdate.Resume(this);
+            return true;
+
         }
 
         private bool MultilineTab()
