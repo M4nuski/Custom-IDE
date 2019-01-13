@@ -48,12 +48,23 @@ namespace ShaderIDE
         #region Parser and Editor controls
 
         public EditorBoxTheme Theme { get; set; }
+        private string _tab = "    ";
+        private int _tabWidth = 4;
+        public int TabWidth
+        {
+            get { return _tabWidth; }
+            set
+            {
+                _tabWidth = value;
+                _tab = new string(' ', _tabWidth);
+            }
+        }
+
         private bool _inParser;
         private Point _textboxBottomLeftPoint;
         private int _lineSelectionStart, _lineSelectionLength;
         private int _lastSelectionStart, _lastSelectionLength;
         private int _lastNumLines;
-        //private bool _commandInjection;
         private bool _commandInjectionReverse;
         private Keys _commandFirstKey, _commandSecondKey;
 
